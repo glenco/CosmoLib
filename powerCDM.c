@@ -361,7 +361,7 @@ double powerEHv2(double k,const CosmoHndl cosmo){
     }else{
       TFset_parameters((cosmo->Omo*cosmo->h*cosmo->h),(cosmo->Omb/cosmo->Omo),2.728);
     }
-    cosmo_copy(&cosmo_old,&cosmo);
+    cosmo_copy(&cosmo_old,cosmo);
   }
  
   Trans=TFfit_onek(k, &baryon_piece, &cdm_piece);
