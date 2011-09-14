@@ -16,6 +16,7 @@ calculate other quantities given in Section 4 of the paper. */
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <nrutil.h>
 #include <cosmo.h>
 
 //void TFset_parameters(double omega0hh, double f_baryon, double Tcmb);
@@ -121,8 +122,8 @@ static double	omhh,		/* Omega_matter*h^2 */
 	alpha_gamma;	/* Gamma suppression in approximate TF */
 
 /* Convenience from Numerical Recipes in C, 2nd edition */
-static double sqrarg;
-#define SQR(a) ((sqrarg=(a)) == 0.0 ? 0.0 : sqrarg*sqrarg)
+//static double sqrarg;
+//#define SQR(a) ((sqrarg=(a)) == 0.0 ? 0.0 : sqrarg*sqrarg)
 static double cubearg;
 #define CUBE(a) ((cubearg=(a)) == 0.0 ? 0.0 : cubearg*cubearg*cubearg)
 static double pow4arg;
@@ -154,7 +155,7 @@ You can access them yourself, if you want. */
     theta_cmb = Tcmb/2.7;
 
     z_equality = 2.50e4*omhh/POW4(theta_cmb);  /* Really 1+z */
-    k_equality = 0.0746*omhh/SQR(theta_cmb);
+    k_equality = 0.0746*omhh/DSQR(theta_cmb);
 
     z_drag_b1 = 0.313*pow(omhh,-0.419)*(1+0.607*pow(omhh,0.674));
     z_drag_b2 = 0.238*pow(omhh,0.223);
@@ -189,7 +190,7 @@ You can access them yourself, if you want. */
     sound_horizon_fit = 44.5*log(9.83/omhh)/sqrt(1+10.0*pow(obhh,0.75));
 
     alpha_gamma = 1-0.328*log(431.0*omhh)*f_baryon + 0.38*log(22.3*omhh)*
-		SQR(f_baryon);
+		DSQR(f_baryon);
     
     return;
 }
@@ -226,14 +227,14 @@ double TFfit_onek(double k, double *tf_baryon, double *tf_cdm)
     T_c_C_noalpha = 14.2 + 386.0/(1+69.9*pow(q,1.08));
 
     T_c_f = 1.0/(1.0+POW4(xx/5.4));
-    T_c = T_c_f*T_c_ln_beta/(T_c_ln_beta+T_c_C_noalpha*SQR(q)) +
-	    (1-T_c_f)*T_c_ln_beta/(T_c_ln_beta+T_c_C_alpha*SQR(q));
+    T_c = T_c_f*T_c_ln_beta/(T_c_ln_beta+T_c_C_noalpha*DSQR(q)) +
+	    (1-T_c_f)*T_c_ln_beta/(T_c_ln_beta+T_c_C_alpha*DSQR(q));
     
     s_tilde = sound_horizon*pow(1+CUBE(beta_node/xx),-1./3.);
     xx_tilde = k*s_tilde;
 
-    T_b_T0 = T_c_ln_nobeta/(T_c_ln_nobeta+T_c_C_noalpha*SQR(q));
-    T_b = sin(xx_tilde)/(xx_tilde)*(T_b_T0/(1+SQR(xx/5.2))+
+    T_b_T0 = T_c_ln_nobeta/(T_c_ln_nobeta+T_c_C_noalpha*DSQR(q));
+    T_b = sin(xx_tilde)/(xx_tilde)*(T_b_T0/(1+DSQR(xx/5.2))+
 		alpha_b/(1+CUBE(beta_b/xx))*exp(-pow(k/k_silk,1.4)));
     
     f_baryon = obhh/omhh;
@@ -302,18 +303,18 @@ and omega0 -> omega0*hubble^2. */
     if (Tcmb<=0.0) Tcmb=2.728;	/* COBE FIRAS */
     theta_cmb = Tcmb/2.7;
 
-    k_equality = 0.0746*omhh/SQR(theta_cmb);
+    k_equality = 0.0746*omhh/DSQR(theta_cmb);
     q = k/13.41/k_equality;
     xx = k*TFsound_horizon_fit(omhh, f_baryon, 1.0);
 
     alpha_gamma = 1-0.328*log(431.0*omhh)*f_baryon + 0.38*log(22.3*omhh)*
-		SQR(f_baryon);
+		DSQR(f_baryon);
     gamma_eff = omhh*(alpha_gamma+(1-alpha_gamma)/(1+POW4(0.43*xx)));
     q_eff = q*omhh/gamma_eff;
 
     T_nowiggles_L0 = log(2.0*2.718282+1.8*q_eff);
     T_nowiggles_C0 = 14.2 + 731.0/(1+62.5*q_eff);
-    return T_nowiggles_L0/(T_nowiggles_L0+T_nowiggles_C0*SQR(q_eff));
+    return T_nowiggles_L0/(T_nowiggles_L0+T_nowiggles_C0*DSQR(q_eff));
 }
 
 /* ======================= Zero Baryon Formula =========================== */
@@ -335,7 +336,7 @@ and omega0 -> omega0*hubble^2. */
     if (Tcmb<=0.0) Tcmb=2.728;	/* COBE FIRAS */
     theta_cmb = Tcmb/2.7;
 
-    k_equality = 0.0746*omhh/SQR(theta_cmb);
+    k_equality = 0.0746*omhh/DSQR(theta_cmb);
     q = k/13.41/k_equality;
 
     T_0_L0 = log(2.0*2.718282+1.8*q);
@@ -343,4 +344,3 @@ and omega0 -> omega0*hubble^2. */
     return T_0_L0/(T_0_L0+T_0_C0*q*q);
 }
 
-#undef SQR(a)
