@@ -15,8 +15,6 @@ class COSMOLOGY{
 public:
   double h;
   double n;
-  double A;
-  double sig8;  /* do not access these normalization outside */
   double Omo;
   double Oml;
   double Omb;
@@ -68,9 +66,16 @@ public:
     double nintegrateDcos(pt2MemFunc func,double a,double b,double tols);
     double trapzdDcoslocal(pt2MemFunc func, double a, double b, int n);
 
+    // accesser functions
+    double getSigma8(){return sig8;}
+
     COSMOLOGY();
     ~COSMOLOGY();
 
+
+private:
+    double A;
+    double sig8;  /* do not access these normalization outside */
 };
 
 typedef COSMOLOGY *CosmoHndl;
