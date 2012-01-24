@@ -1,4 +1,7 @@
 
+#include <iostream>
+using namespace std;
+
 #ifndef pi
 #define pi  3.141593
 #endif
@@ -8,7 +11,8 @@
 #endif
 
 #ifndef cosmo_declare
-typedef struct cosmology{
+class COSMOLOGY{
+public:
   double h;
   double n;
   double A;
@@ -31,7 +35,43 @@ typedef struct cosmology{
     double *a;
     double *growth;
     int Ntable;
-} COSMOLOGY;
+
+    void SetConcordenceCosmology();
+    void PrintCosmology();
+    double rcurve();
+    double DRradius(double zo,double z,double pfrac);
+    double DRradius2(double zo,double z);
+    double Dgrowth(double z);
+    double psdfdm(double sig8,double z,double m);
+    double stdfdm(double sig8,double z,double m);
+    double coorDist(double zo,double z);
+    double angDist(double zo,double z);
+    double lumDist(double zo,double z);
+    double gradius(double R,double rd);
+    double power_normalize(double sigma8);
+    double radiusm(double x);
+    double radiusm_dark(double x);
+
+    double powerEH(double k,double z);
+    double powerEHv2(double k);
+    double npow(double k);
+    double powerloc(double k,double z);
+    double power_linear(double k,double z);
+    double powerCDMz(double k,double z);
+    double powerCDM(double k,double rt);
+    double De(double rad);
+    void dir(double r,double a[],double dadr[]);
+    double normL(double lgk);
+
+    typedef double (COSMOLOGY::*pt2MemFunc)(double);
+
+    double nintegrateDcos(pt2MemFunc func,double a,double b,double tols);
+    double trapzdDcoslocal(pt2MemFunc func, double a, double b, int n);
+
+    COSMOLOGY();
+    ~COSMOLOGY();
+
+};
 
 typedef COSMOLOGY *CosmoHndl;
 
@@ -39,54 +79,15 @@ typedef COSMOLOGY *CosmoHndl;
 #endif
 
 /*** in cosmo.c ***/
-void SetConcordenceCosmology(const CosmoHndl cosmo);
-void PrintCosmology(struct cosmology cos1);
-int cosmo_compare(struct cosmology *cos1,struct cosmology *cos2);
-void cosmo_copy(struct cosmology *cos1,struct cosmology *cos2);
-double rcurve(const CosmoHndl cosmo);
-double radiusm(double x);
-double DRradius(double zo,double z,double pfrac,const CosmoHndl cosmo);
-double DRradius2(double zo,double z,const CosmoHndl cosmo);
+int cosmo_compare(CosmoHndl cos1,CosmoHndl cos2);
+void cosmo_copy(CosmoHndl cos1,CosmoHndl cos2);
 void ders(double z,double Da[],double dDdz[]);
 double arctanh(double x);
 double fmini(double a,double b);
 double fmaxi(double a,double b);
-double Dgrowth(double z,const CosmoHndl cosmo);
-double psdfdm(double sig8,double z,double m,const CosmoHndl cosmo);
-double stdfdm(double sig8,double z,double m,const CosmoHndl cosmo);
-double dsigdM(double m,const CosmoHndl cosmo);
-double Deltao(double m,const CosmoHndl cosmo);
+double dsigdM(double m);
 double f4(double u);
-double Ex(double x,CosmoHndl cosmo);
-double nintegrateDcos(double (*func)(double),double a,double b,double tols);
-double trapzdDcoslocal(double (*func)(double), double a, double b, int n);
-double coorDist(double zo,double z,const CosmoHndl cosmo);
-double angDist(double zo,double z,const CosmoHndl cosmo);
-double lumDist(double zo,double z,const CosmoHndl cosmo);
-double gradius(double R,double rd,const CosmoHndl cosmo);
-/* in powerCDM.c */
-double powerCDMz(double k,double z,const CosmoHndl cosmo);
-double powerCDM(double k,double rt,const CosmoHndl cosmo);
-double De(double rad,const CosmoHndl cosmo);
-void dir(double r,double a[],double dadr[]);
-double npow(double k,const CosmoHndl cosmo);
-double powerloc(double k,double z,const CosmoHndl cosmo);
-double power_normalize(double sigma8,CosmoHndl cosmo);
-double normL(double lgk);
-double powerEH(double k,double z,const CosmoHndl cosmo);
-double powerEHv2(double k,const CosmoHndl cosmo);
-/* in powerCDMdark.c */
-double powerCDMdark(double k,double z,const CosmoHndl cosmo);
-double radiusm_dark(double x);
-double Ex_dark(double x,CosmoHndl cosmo);
-double dEx_darkda(double x,const CosmoHndl cosmo);
-double growth_dark1(double a,const CosmoHndl cosmo);
-double growth_dark2(double a,const CosmoHndl cosmo);
-double dg2dla(double lna);
-double growth_dark(double a,const CosmoHndl cosmo);
-void dgrowth_dark(double lna,double y[],double dydlna[]);
-double growth_table(double a,double *a_table,double *g_table,int Ntable);
-void make_growth_table(double z,double *a_table,double *g_table,int Ntable,const CosmoHndl cosmo);
+double Deltao(double m);
 
 /* in powerEH.c */
 int TFmdm_set_cosm(double omega_matter, double omega_baryon, double omega_hdm,
