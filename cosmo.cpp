@@ -52,7 +52,9 @@ void COSMOLOGY::SetConcordenceCosmology(){
 	// which needs to be done separately
 
 	/* default parameterization */
-	if( (physical != 0)*(physical != 1) ) physical = 0;
+	//if( (physical != 0)*(physical != 1) ) physical = 0;
+
+	physical = 0;
 
 	Omo=0.1358;
 	Omb=0.02267;
@@ -108,11 +110,11 @@ void COSMOLOGY::PrintCosmology(){
 }
 
 /** see if cosmologies are identical **/
-int cosmo_compare(COSMOLOGY *cos1, COSMOLOGY *cos2){
-
+int cosmo_compare(CosmoHndl cos1, CosmoHndl cos2){
   return 1-(cos1->h == cos2->h)*(cos1->n == cos2->n)*(cos1->A == cos2->A)*(cos1->Omo == cos2->Omo)*(cos1->Oml == cos2->Oml)*(cos1->Omb == cos2->Omb)*(cos1->Omnu == cos2->Omnu)*(cos1->w == cos2->w)*(cos1->w1 == cos2->w1)*(cos1->Gamma == cos2->Gamma)*(cos1->Nnu == cos2->Nnu);
 }
-void cosmo_copy(COSMOLOGY *cos1, COSMOLOGY *cos2){
+
+void cosmo_copy(CosmoHndl cos1, CosmoHndl cos2){
 	cos1->physical=cos2->physical;
 	cos1->Omo=cos2->Omo;
 	cos1->Oml=cos2->Oml;

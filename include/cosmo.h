@@ -60,7 +60,6 @@ public:
     double powerCDMz(double k,double z);
     double powerCDM(double k,double rt);
     double De(double rad);
-    void dir(double r,double a[],double dadr[]);
     double normL(double lgk);
 
     typedef double (COSMOLOGY::*pt2MemFunc)(double);
@@ -82,6 +81,7 @@ typedef COSMOLOGY *CosmoHndl;
 int cosmo_compare(CosmoHndl cos1,CosmoHndl cos2);
 void cosmo_copy(CosmoHndl cos1,CosmoHndl cos2);
 void ders(double z,double Da[],double dDdz[]);
+void dir(double r,double a[],double dadr[]);
 double arctanh(double x);
 double fmini(double a,double b);
 double fmaxi(double a,double b);

@@ -6,6 +6,8 @@
 #include <nrD.h>
 #include <cosmo.h>
 
+static double omo, oml, hh;
+
 double COSMOLOGY::powerCDMz(double k,double z){
 
   double kn=0.0,kl,powL,powNL,nin;
@@ -164,6 +166,8 @@ double COSMOLOGY::De(double rad){
     oml=Oml;
   }
 
+  hh = h;
+
   if(omo==1.0) return pow(1-0.5*h*rad/3.0e3,2);
 
   a[0]=1.0;
@@ -175,18 +179,8 @@ double COSMOLOGY::De(double rad){
   return a[0];
 }
 
-void COSMOLOGY::dir(double r,double a[],double dadr[]){
-  double omo,oml;
-
-  if(physical){
-    omo=Omo/h/h;
-    oml=Oml/h/h;
-  }else{
-    omo=Omo;
-    oml=Oml;
-  }
-
-  dadr[1] = -h*sqrt( a[1]*(omo+oml*pow(a[1],3)+(omo+oml-1.0)*a[1]) )/3.0e3;
+void dir(double r,double a[],double dadr[]){
+  dadr[1] = -hh*sqrt( a[1]*(omo+oml*pow(a[1],3)+(omo+oml-1.0)*a[1]) )/3.0e3;
 }
 
 double COSMOLOGY::npow(double k){
@@ -266,7 +260,7 @@ double COSMOLOGY::normL(double lgk){
 /** this is the power spectrum from Eisinstein & Hu **/
 /** with neutrinos but no BAO  **/
 double COSMOLOGY::powerEH(double k,double z){
-  COSMOLOGY cosmo_old;
+  CosmoHndl cosmo_old;
   static double zloc=-100;
   double Trans;
 
@@ -277,6 +271,7 @@ double COSMOLOGY::powerEH(double k,double z){
   /** remove this after tests **/
   /** if( zin < 10) z=7;  **/
 
+  /*
   if( z != zloc){
     if(physical) {
       TFmdm_set_cosm((Omo/h/h)
@@ -292,9 +287,9 @@ double COSMOLOGY::powerEH(double k,double z){
 		     ,Nnu,(Oml),(h),(z));
  
     }
-    cosmo_copy(&cosmo_old,this);
+    cosmo_copy(cosmo_old,this);
     zloc=z;
-  }else if(cosmo_compare(&cosmo_old,this)){
+  }else if(cosmo_compare(cosmo_old,this)){
     if(physical) {
       TFmdm_set_cosm((Omo/h/h)
 		     ,(Omb/h/h)
@@ -306,9 +301,20 @@ double COSMOLOGY::powerEH(double k,double z){
 		   ,Nnu,(Oml),(h),(z));
      }
 
-    cosmo_copy(&cosmo_old,this);
-  }
- 
+    cosmo_copy(cosmo_old,this);
+  }*/
+
+  if(physical) {
+    TFmdm_set_cosm((Omo/h/h)
+		     ,(Omb/h/h)
+		     ,(Omnu/h/h)
+		     ,Nnu,(Oml/h/h)
+		     ,(h),(z));
+  }else{
+  TFmdm_set_cosm((Omo),(Omb),(Omnu)
+		   ,Nnu,(Oml),(h),(z));
+   }
+
   Trans=TFmdm_onek_mpc(k);
   //printf("trans=%e A=%e h=%e n=%e\n",Trans,A,h,n);
   return A*pow(k/h,n+dndlnk*log(k))*Trans*Trans/pow(h/3.0e3,3);
@@ -317,7 +323,7 @@ double COSMOLOGY::powerEH(double k,double z){
 /** this is the power spectrum from Eisinstein & Hu **/
 /** with BAO bA*ut no neutrinos  **/
 double COSMOLOGY::powerEHv2(double k){
-  COSMOLOGY cosmo_old;
+  CosmoHndl cosmo_old;
   double Trans;
   double baryon_piece,cdm_piece;
 
@@ -325,13 +331,13 @@ double COSMOLOGY::powerEHv2(double k){
   /*  PrintCosmology(cosmo_old);*/
   /*printf("compare = %i\n",cosmo_compare(cosmo_old,cosmo));*/
   
-  if(cosmo_compare(&cosmo_old,this)){
+  if(cosmo_compare(cosmo_old,this)){
     if(physical) {
       TFset_parameters((Omo),(Omb/Omo),2.728);
     }else{
       TFset_parameters((Omo*h*h),(Omb/Omo),2.728);
     }
-    cosmo_copy(&cosmo_old,this);
+    cosmo_copy(cosmo_old,this);
   }
  
   Trans=TFfit_onek(k, &baryon_piece, &cdm_piece);
