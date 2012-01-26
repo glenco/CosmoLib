@@ -1,5 +1,5 @@
-/********************************************
-  powerCDM.c calculates the nonlinear P(k,r)/a(r)^2
+/** ******************************************
+  powerCDM.c calculates the nonlinear P(k,z)/a(r)^2
     example of how to use is in testpower.c
   *******************************************/
 #include <math.h>
@@ -204,7 +204,7 @@ double COSMOLOGY::npow(double k){
     -0.5*qt*(3.89+qt*(5.1842e2+qt*(4.8831e2+8.1088e3*qt)))/( 1+qt*(3.89+qt*(2.5921e2+qt*(1.6277e2+2.0272e3*qt))) );
 }
 
-/* linear power spectrum P(k,z)/a^2 */
+/** linear power spectrum P(k,z)/a^2 */
 double COSMOLOGY::power_linear(double k,double z){
 
   if(z==0.0) return powerloc(k,0);
@@ -223,8 +223,9 @@ double COSMOLOGY::power_linear(double k,double z){
   /*return g*g*powerloc(k,z)/go/go;*/
 }
 
-/** linear power spectrum without growth factor **/
-/**   growth factor should be normalized to 1 at z=0 **/
+/** linear power spectrum without growth factor
+**   growth factor should be normalized to 1 at z=0
+**   **/
 double COSMOLOGY::powerloc(double k,double z){
   //double qt,ans;
   //double powerEH(double,double);
@@ -257,8 +258,9 @@ double COSMOLOGY::normL(double lgk){
   return k*k*k*powerEH(k,0)*win*win;
 }
 
-/** this is the power spectrum from Eisinstein & Hu **/
-/** with neutrinos but no BAO  **/
+/** this is the power spectrum from Eisinstein & Hu
+ * with neutrinos but no BAO
+ * **/
 double COSMOLOGY::powerEH(double k,double z){
   CosmoHndl cosmo_old;
   static double zloc=-100;
