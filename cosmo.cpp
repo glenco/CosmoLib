@@ -1,4 +1,4 @@
-/********************************************
+/** ******************************************
 
   cosmo.c calculates some useful comological parameters
 
@@ -44,7 +44,9 @@ COSMOLOGY::COSMOLOGY(){
 
 COSMOLOGY::~COSMOLOGY(){
 }
-
+/** \ingroup cosmolib
+ * \brief Sets cosmology to WMAP 2009 model.  This is done automatically in the constructor.
+ */
 void COSMOLOGY::SetConcordenceCosmology(){
 	// set cosmological parameters to standard WMAP 5r values
 	// Komatsu et al. 2009, ApJ 180, 330
@@ -83,6 +85,9 @@ void COSMOLOGY::SetConcordenceCosmology(){
 	power_normalize(0.812);
 }
 
+/** \ingroup cosmolib
+ * \brief
+ */
 void COSMOLOGY::PrintCosmology(){
 	cout << "h: " << h << "\n";
 	cout << "n: " << n << "\n";
@@ -109,7 +114,9 @@ void COSMOLOGY::PrintCosmology(){
   else cout << "darkenery: "<< darkenergy << " w: " << w << " w1: " << w1 << "\n";
 }
 
-/** see if cosmologies are identical **/
+/** \ingroup cosmolib
+ * \brief see if cosmologies are identical
+ */
 
 int cosmo_compare(COSMOLOGY *cos1, COSMOLOGY *cos2){
 
@@ -118,6 +125,10 @@ int cosmo_compare(COSMOLOGY *cos1, COSMOLOGY *cos2){
 		  *(cos1->Omnu == cos2->Omnu)*(cos1->w == cos2->w)*(cos1->w1 == cos2->w1)
 		  *(cos1->Gamma == cos2->Gamma)*(cos1->Nnu == cos2->Nnu);
 }
+
+/** \ingroup cosmolib
+ * \brief
+ */
 
 void cosmo_copy(CosmoHndl cos1, CosmoHndl cos2){
 	cos1->physical=cos2->physical;
@@ -138,8 +149,9 @@ void cosmo_copy(CosmoHndl cos1, CosmoHndl cos2){
 	cos1->power_normalize(cos2->getSigma8());
 }
 
-/*** The curvature radius in Mpc ***/
-
+/** \ingroup cosmolib
+ * \brief The curvature radius in Mpc
+ */
 double COSMOLOGY::rcurve(){
   if(Omo+Oml != 1.0){
     if(physical) return 3.0e3/(sqrt(fabs(h*h-Omo-Oml)));  /** curviture scale **/
@@ -149,9 +161,10 @@ double COSMOLOGY::rcurve(){
 }
 
 
-/***************************************************************/
-/***** comoving Dyer-Roeder angular size distance for lambda=0 ****/
-/***************************************************************/
+/** \ingroup cosmolib
+ *
+ * \brief comoving Dyer-Roeder angular size distance for lambda=0
+***************************************************************/
 
 double COSMOLOGY::DRradius(double zo,double z,double pfrac){
   double zl,Omr,Omz,Da[2],Ho;
@@ -194,6 +207,9 @@ double COSMOLOGY::DRradius(double zo,double z,double pfrac){
     return 0;
 }
 
+/** \ingroup cosmolib
+ *
+ */
 double COSMOLOGY::DRradius2(double zo,double z){
   double zl,Omr,Omz,Da[2],ds,dl,Ho;
   int nok,nbad;
@@ -267,7 +283,9 @@ double fmaxi(double a,double b){
   return b;
 }
 
-/** linear growth factor normalized to 1 at z=0 **/
+/** \ingroup cosmolib
+ * linear growth factor normalized to 1 at z=0
+ */
 
 double COSMOLOGY::Dgrowth(double z){
   double a,Omot,Omlt,g,go;
@@ -292,8 +310,9 @@ double COSMOLOGY::Dgrowth(double z){
   }
 }
 
-
-/****** derivative of the coordinate distance in units of Ho^-1, x=1+z ****/
+/** \ingroup cosmolib
+ * derivative of the coordinate distance in units of Ho^-1, x=1+z
+ * ****/
 
 double COSMOLOGY::radiusm(double x){
  double temp;
@@ -304,13 +323,16 @@ double COSMOLOGY::radiusm(double x){
   if(temp<=0.0) return -1.0e30;                   // nonphysical values
   return 1.0/sqrt(temp);
 }
-
+/** \ingroup cosmolib
+ *
+ */
 double COSMOLOGY::radiusm_dark(double x){
 	return 1.0 / sqrt(omo*x*x*x+oml*pow(x,3*(1+w+w1))*exp(-3*w1*(x-1)/x)-(omo+oml-1)*x*x);
 }
 
-/****** the coordinate distance in units Mpc  ****/
-
+/** \ingroup cosmolib
+ * \brief The coordinate distance in units Mpc
+ */
 double COSMOLOGY::coorDist(double zo,double z){
 	if(physical){
 		omo=Omo/h/h;
@@ -323,6 +345,12 @@ double COSMOLOGY::coorDist(double zo,double z){
 	if( (w ==-1.0) && (w1 == 0.0) ) return nintegrateDcos(&COSMOLOGY::radiusm,1+zo,1+z,1.0e-9)*3.0e3/h;
 	return nintegrateDcos(&COSMOLOGY::radiusm_dark,1+zo,1+z,1.0e-9)*3.0e3/h;
 }
+
+/** \ingroup cosmolib
+ * \brief The angular size distance in units Mpc
+ *
+ * Converts angles to proper distance NOT comoving distance.
+ */
 
 double COSMOLOGY::angDist(double zo,double z){
   double Rcur;
@@ -342,13 +370,17 @@ double COSMOLOGY::angDist(double zo,double z){
   if((omo+oml)<1.0) return Rcur*sinh(coorDist(zo,z)/Rcur)/(1+z);
   return Rcur*sin(coorDist(zo,z)/Rcur)/(1+z);
 }
+/** \ingroup cosmolib
+ * \brief The luminosity distance in units Mpc
+ */
 
 double COSMOLOGY::lumDist(double zo,double z){
 	return pow(1+z,2)*angDist(zo,z);
 }
 
-/****** angular size distence - R is the curviture radius, rd the coordinate ***/
-
+/** \ingroup cosmolib
+ * \brief
+ */
 double COSMOLOGY::gradius(double R,double rd){
   /*  printf("Omo=%e Oml=%e (Omo+Oml)-1=*/
 
@@ -366,11 +398,11 @@ double COSMOLOGY::gradius(double R,double rd){
 }
 
 
-/***************************************************************/
-/** Press-Schechter mass function in fraction of mean density **/
-/***************************************************************/
+/** \ingroup cosmolib
+* \brief Press-Schechter mass function in fraction of mean density
+**/
 
-double COSMOLOGY::psdfdm(double sig8,double z,double m){
+double COSMOLOGY::psdfdm(double z,double m){
   double dc,Omz,sig,Dg;
 
   if(physical){
@@ -396,11 +428,12 @@ double COSMOLOGY::psdfdm(double sig8,double z,double m){
     /(Dg*sig*sig);
 }
 
-/***************************************************************/
-/** Sheth-Tormen, most be normalized to 1 by calling code **/
-/***************************************************************/
+/** \ingroup cosmolib
+ * *
+ * \brief Sheth-Tormen mass function, most be normalized to 1 by calling code
+ */
 
-double COSMOLOGY::stdfdm(double sig8,double z,double m){
+double COSMOLOGY::stdfdm(double z,double m){
   double dc,Omz,sig,Dg;
 
   if(physical){
@@ -435,7 +468,9 @@ double dsigdM(double m){
 	return dfridrD(Deltao,m,0.1*m,&err);
 }
 
-/** rms top-hat power in CDM model, normalized to sig8 **/ 
+/** \ingroup cosmolib
+** \brief rms top-hat power in CDM model, normalized to sig8
+** **/
 double Deltao(double m){
   double dc;
 

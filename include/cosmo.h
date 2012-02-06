@@ -11,6 +11,10 @@ using namespace std;
 #endif
 
 #ifndef cosmo_declare
+/** \ingroup cosmolib
+ *
+ * \brief The cosmology and all the functions required to calculated quantities based on the cosmology.
+ */
 class COSMOLOGY{
 public:
   double h;
@@ -40,30 +44,20 @@ public:
     double DRradius(double zo,double z,double pfrac);
     double DRradius2(double zo,double z);
     double Dgrowth(double z);
-    double psdfdm(double sig8,double z,double m);
-    double stdfdm(double sig8,double z,double m);
     double coorDist(double zo,double z);
     double angDist(double zo,double z);
     double lumDist(double zo,double z);
     double gradius(double R,double rd);
     double power_normalize(double sigma8);
-    double radiusm(double x);
-    double radiusm_dark(double x);
 
-    double powerEH(double k,double z);
-    double powerEHv2(double k);
-    double npow(double k);
-    double powerloc(double k,double z);
     double power_linear(double k,double z);
     double powerCDMz(double k,double z);
     double powerCDM(double k,double rt);
+    double psdfdm(double z,double m);
+    double stdfdm(double z,double m);
     double De(double rad);
-    double normL(double lgk);
 
     typedef double (COSMOLOGY::*pt2MemFunc)(double);
-
-    double nintegrateDcos(pt2MemFunc func,double a,double b,double tols);
-    double trapzdDcoslocal(pt2MemFunc func, double a, double b, int n);
 
     // accesser functions
     double getSigma8(){return sig8;}
@@ -74,6 +68,17 @@ public:
 private:
     double A;
     double sig8;  /* do not access these normalization outside */
+
+    double powerEH(double k,double z);
+    double powerEHv2(double k);
+    double powerloc(double k,double z);
+    double npow(double k);
+    double normL(double lgk);
+    double radiusm(double x);
+    double radiusm_dark(double x);
+
+    double nintegrateDcos(pt2MemFunc func,double a,double b,double tols);
+    double trapzdDcoslocal(pt2MemFunc func, double a, double b, int n);
 };
 
 typedef COSMOLOGY *CosmoHndl;
