@@ -43,31 +43,31 @@ public:
     /// accesser functions
 
 	/// Hubble paremters in units of 100 km/s/Mpc
-	void sethubble(double ht){ h = ht; TFmdm_set_cosm();}
+	void sethubble(double ht){ h = ht; TFmdm_set_cosm(); power_normalize(sig8);}
 	double gethubble(){return h;}
 
     /// Primordial spectral index
 	void setindex(double nn){ n = nn;}
-	double getindex(){ return n;}
+	double getindex(){ return n; power_normalize(sig8);}
 
     /// Omega matter
-	void setOmega_matter(double Omega_matter){Omo = Omega_matter; TFmdm_set_cosm();}
+	void setOmega_matter(double Omega_matter){Omo = Omega_matter; TFmdm_set_cosm(); power_normalize(sig8);}
 	double getOmega_matter(){return Omo;}
 
     /// Omega lambda
-	void setOmega_lambda(double Omega_lambda){Oml = Omega_lambda; TFmdm_set_cosm();}
+	void setOmega_lambda(double Omega_lambda){Oml = Omega_lambda; TFmdm_set_cosm(); power_normalize(sig8);}
 	double getOmega_lambda(){return Oml;}
 
     /// Omega baryon
-	void setOmega_baryon(double Omega_baryon){Omb = Omega_baryon; TFmdm_set_cosm();}
+	void setOmega_baryon(double Omega_baryon){Omb = Omega_baryon; TFmdm_set_cosm(); power_normalize(sig8);}
 	double getOmega_baryon(){return Omb;}
 
     /// Omega neutrino
-	void setOmega_neutrino(double Omega_neutrino){Omnu = Omega_neutrino; TFmdm_set_cosm();}
+	void setOmega_neutrino(double Omega_neutrino){Omnu = Omega_neutrino; TFmdm_set_cosm(); power_normalize(sig8);}
 	double getOmega_neutrino(){return Omnu;}
 
 	/// Number of neutrino species
-	void setNneutrino(double Nneutrino){Nnu = Nneutrino; TFmdm_set_cosm();}
+	void setNneutrino(double Nneutrino){Nnu = Nneutrino; TFmdm_set_cosm(); power_normalize(sig8);}
 	double getNneutrino(){return Nnu;}
 
    /// Dark energy equation of state parameter p/rho = w + w_1 (1+z)
@@ -77,7 +77,7 @@ public:
 	double getW1(){return w1;}
 
 	/// Running of primordial spectral index, P(k)_primordial \propto pow(k/h,n+dndlnk*log(k))
-	void setdndlnk(double w){dndlnk = w;}
+	void setdndlnk(double w){dndlnk = w; power_normalize(sig8);}
 	double getdndlnk(){return dndlnk;}
 
 	/// Alternative to w for dark energy/ alt. grav. structure evolution
