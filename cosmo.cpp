@@ -40,6 +40,8 @@ static double omo, oml, hh;
 
 COSMOLOGY::COSMOLOGY(){
 	SetConcordenceCosmology();
+	// set parameters for Eisenstein&Hu power spectrum
+	TFmdm_set_cosm();
 }
 
 COSMOLOGY::~COSMOLOGY(){
@@ -53,27 +55,18 @@ void COSMOLOGY::SetConcordenceCosmology(){
 	// does not set power spectrum normalization
 	// which needs to be done separately
 
-	/* default parameterization */
-	//if( (physical != 0)*(physical != 1) ) physical = 0;
-
-	physical = 0;
-
 	Omo=0.1358;
 	Omb=0.02267;
 	h=0.705;
 
-	if(physical==0){ /* use standard parameter set */
-		Omo/=h*h;
-		Omb/=h*h;
-		Oml=1.0-Omo;
-	}else if(physical==1){
-		Oml=(1-Omo/h/h)*h*h;
-	}
+	Omo/=h*h;
+	Omb/=h*h;
+	Oml=1.0-Omo;
 
 	w=-1.0;
 	w1=0.0;
 	n=1.0;
-	Gamma=0.0;
+	//Gamma=0.0;
 	Omnu=0;
 	Nnu=3.0;
 	dndlnk=0.0;
@@ -88,13 +81,13 @@ void COSMOLOGY::SetConcordenceCosmology(){
 /** \ingroup cosmolib
  * \brief
  */
-void COSMOLOGY::PrintCosmology(){
+void COSMOLOGY::PrintCosmology(short physical){
 	cout << "h: " << h << "\n";
 	cout << "n: " << n << "\n";
 	cout << "dndlnk: " << dndlnk << "\n";
 	cout << "A: " << A << "\n";
 	cout << "sig8: " << sig8 << "\n";
-	cout << "Gamma: " << Gamma << "\n";
+	//cout << "Gamma: " << Gamma << "\n";
 
 	if(physical==0){
 		cout << "Omo: " << Omo << "\n";
@@ -104,10 +97,10 @@ void COSMOLOGY::PrintCosmology(){
 		cout << "Nnu: " << Nnu << "\n";
   }
   if(physical==1){
-		cout << "Omo hh: " << Omo << "\n";
-		cout << "Oml hh: " << Oml << "\n";
-		cout << "Omb hh: " << Omb << "\n";
-		cout << "Omnu hh: " << Omnu << "\n";
+		cout << "Omo hh: " << Omo*h*h << "\n";
+		cout << "Oml hh: " << Oml*h*h << "\n";
+		cout << "Omb hh: " << Omb*h*h << "\n";
+		cout << "Omnu hh: " << Omnu*h*h << "\n";
 		cout << "Nnu: " << Nnu << "\n";
   }
   if(darkenergy==2) cout << "darkenery=" << darkenergy << " gamma=" << gamma << "\n";
@@ -120,10 +113,12 @@ void COSMOLOGY::PrintCosmology(){
 
 int cosmo_compare(COSMOLOGY *cos1, COSMOLOGY *cos2){
 
-  return 1-(cos1->h == cos2->h)*(cos1->n == cos2->n)*(cos1->getSigma8() == cos2->getSigma8())
-		  *(cos1->Omo == cos2->Omo)*(cos1->Oml == cos2->Oml)*(cos1->Omb == cos2->Omb)
-		  *(cos1->Omnu == cos2->Omnu)*(cos1->w == cos2->w)*(cos1->w1 == cos2->w1)
-		  *(cos1->Gamma == cos2->Gamma)*(cos1->Nnu == cos2->Nnu);
+  return 1-(cos1->gethubble() == cos2->gethubble())*(cos1->getindex() == cos2->getindex())
+		  *(cos1->getSigma8() == cos2->getSigma8())
+		  *(cos1->getOmega_matter() == cos2->getOmega_matter())*(cos1->getOmega_lambda() == cos2->getOmega_lambda())
+		  *(cos1->getOmega_baryon() == cos2->getOmega_baryon())*(cos1->getOmega_neutrino() == cos2->getOmega_neutrino())
+		  *(cos1->getW() == cos2->getW())*(cos1->getW1() == cos2->getW1())
+		  *(cos1->getNneutrino() == cos2->getNneutrino());
 }
 
 /** \ingroup cosmolib
@@ -131,20 +126,20 @@ int cosmo_compare(COSMOLOGY *cos1, COSMOLOGY *cos2){
  */
 
 void cosmo_copy(CosmoHndl cos1, CosmoHndl cos2){
-	cos1->physical=cos2->physical;
-	cos1->Omo=cos2->Omo;
-	cos1->Oml=cos2->Oml;
-	cos1->Omb=cos2->Omb;
-	cos1->h=cos2->h;
-	cos1->w=cos2->w;
-	cos1->w1=cos2->w1;
-	cos1->n=cos2->n;
-	cos1->Gamma=cos2->Gamma;
-	cos1->Omnu=cos2->Omnu;
-	cos1->Nnu=cos2->Nnu;
-	cos1->dndlnk=cos2->dndlnk;
-	cos1->gamma=cos2->gamma;
-	cos1->darkenergy=cos2->darkenergy;
+
+	//cos1->physical=cos2->physical;
+	cos1->setOmega_matter(cos2->getOmega_matter());
+	cos1->setOmega_lambda(cos2->getOmega_lambda());
+	cos1->setOmega_baryon(cos2->getOmega_baryon());
+	cos1->setOmega_neutrino(cos2->getOmega_neutrino());
+	cos1->setNneutrino(cos2->getNneutrino());
+	cos1->sethubble(cos2->gethubble());
+	cos1->setW(cos2->getW());
+	cos1->setW1(cos2->getW1());
+	cos1->setindex(cos2->getindex());
+	cos1->setdndlnk(cos2->getdndlnk());
+	cos1->setgamma(cos2->getgamma());
+	cos1->setDEtype(cos2->getDEtype());
 
 	cos1->power_normalize(cos2->getSigma8());
 }
@@ -154,7 +149,6 @@ void cosmo_copy(CosmoHndl cos1, CosmoHndl cos2){
  */
 double COSMOLOGY::rcurve(){
   if(Omo+Oml != 1.0){
-    if(physical) return 3.0e3/(sqrt(fabs(h*h-Omo-Oml)));  /** curviture scale **/
     return 3.0e3/(h*sqrt(fabs(1-Omo-Oml)));  /** curviture scale **/
   }
   return 0;
@@ -163,20 +157,15 @@ double COSMOLOGY::rcurve(){
 
 /** \ingroup cosmolib
  *
- * \brief comoving Dyer-Roeder angular size distance for lambda=0
+ * \brief Comoving Dyer-Roeder angular size distance for lambda=0
 ***************************************************************/
 
 double COSMOLOGY::DRradius(double zo,double z,double pfrac){
   double zl,Omr,Omz,Da[2],Ho;
   int nok,nbad;
 
-  if(physical){
-    omo=Omo/h/h;
-    oml=Oml/h/h;
-  }else{
-    omo=Omo;
-    oml=Oml;
-  }
+  omo=Omo;
+  oml=Oml;
 
   Ho=h/3.0e3;
   alph=1.5*(1-pfrac);
@@ -187,18 +176,18 @@ double COSMOLOGY::DRradius(double zo,double z,double pfrac){
         }*/
     zl=1+z;
 
-    if(zo==0 && (oml==0 && alph==0)){
-      if(omo==1.0){
+    if(zo==0 && (Oml==0 && alph==0)){
+      if(Omo==1.0){
 	return 2*( zl*zl-pow(zl,-0.5) )/(zl*5*Ho);
-      }else if(oml==0){
-	Omr=sqrt(1-omo);
-	Omz=sqrt(1+omo*(zl-1));
-	return zl*( (2-5*omo) + Omz*( omo*(3*zl+2)-2 )/(zl*zl) + 1.5*omo*omo*log( (1+Omr)*(Omz-Omr)/( (1-Omr)*(Omz+Omr) ) )/Omr)/(Ho*4*pow(1-omo,2));/**/
+      }else if(Oml==0){
+	Omr=sqrt(1-Omo);
+	Omz=sqrt(1+Omo*(zl-1));
+	return zl*( (2-5*Omo) + Omz*( Omo*(3*zl+2)-2 )/(zl*zl) + 1.5*Omo*Omo*log( (1+Omr)*(Omz-Omr)/( (1-Omr)*(Omz+Omr) ) )/Omr)/(Ho*4*pow(1-Omo,2));/**/
       }
     }else{
-      if((z-zo)<0.001) return (z-zo)/(Ho*(1+zo)*(1+zo)*sqrt(1+omo*zo+oml*(pow(1+zo,-2)-1)) );
+      if((z-zo)<0.001) return (z-zo)/(Ho*(1+zo)*(1+zo)*sqrt(1+Omo*zo+Oml*(pow(1+zo,-2)-1)) );
       Da[0]=0.0;
-      Da[1]=-(1+zo)/(zl*zl*sqrt(1+omo*z+oml*(pow(zl,-2)-1)));
+      Da[1]=-(1+zo)/(zl*zl*sqrt(1+Omo*z+Oml*(pow(zl,-2)-1)));
 
       odeintD(Da-1,2,z,zo,1.0e-6,(z-zo)*0.1,0,&nok,&nbad,ders,bsstepD); 
       /*return (1+z)*Da[0]/Ho;*/
@@ -208,29 +197,25 @@ double COSMOLOGY::DRradius(double zo,double z,double pfrac){
 }
 
 /** \ingroup cosmolib
- *
+ * \brief Comoving Dyer-Roeder angular size distance for lambda=0 and pfrac = 1 (all matter in particles)
  */
 double COSMOLOGY::DRradius2(double zo,double z){
   double zl,Omr,Omz,Da[2],ds,dl,Ho;
   int nok,nbad;
 
-  if(physical){
-    omo=omo/h/h;
-    oml=Oml/h/h;
-  }else{
-    omo=Omo;
-    oml=Oml;
-  }
+  omo=Omo;
+  oml=Oml;
+
 
     Ho=h/3.0e3;
-    /*    if(oml !=0.0){
-        printf("ERROR in DRradius: oml != 0\n");
+    /*    if(Oml !=0.0){
+        printf("ERROR in DRradius: Oml != 0\n");
         return 0.0;
         }*/
     alph=0;
     zl=1+z;
 
-    if(omo==1.0){
+    if(Omo==1.0){
       ds=2*( zl*zl-pow(zl,-0.5) )/(zl*5*Ho);
       if(zo==0.0){ return ds;
       }else{
@@ -240,24 +225,24 @@ double COSMOLOGY::DRradius2(double zo,double z){
  	/*return   ds*(1+zo)-dl*(1+z);*/
       }
       /*        return 2*( zl*zl-pow(zl,-0.5) )/(zl*5*Ho); */
-    }else if(oml==0){
-      Omr=sqrt(1-omo);
-      Omz=sqrt(1+omo*(zl-1));
-      ds= zl*( (2-5*omo) + Omz*( omo*(3*zl+2)-2 )/(zl*zl) + 1.5*omo*omo*log( (1+Omr)*(Omz-Omr)/( (1-Omr)*(Omz+Omr) ) )/Omr)/(Ho*4*pow(1-omo,2));/**/
+    }else if(Oml==0){
+      Omr=sqrt(1-Omo);
+      Omz=sqrt(1+Omo*(zl-1));
+      ds= zl*( (2-5*Omo) + Omz*( Omo*(3*zl+2)-2 )/(zl*zl) + 1.5*Omo*Omo*log( (1+Omr)*(Omz-Omr)/( (1-Omr)*(Omz+Omr) ) )/Omr)/(Ho*4*pow(1-Omo,2));/**/
       if(zo==0.0){ return ds;
       }else{
 	zl=zo+1;
-	dl=zl*( (2-5*omo) + Omz*( omo*(3*zl+2)-2 )/(zl*zl) + 1.5*omo*omo*log( (1+Omr)*(Omz-Omr)/( (1-Omr)*(Omz+Omr) ) )/Omr)/(Ho*4*pow(1-omo,2));/**/
+	dl=zl*( (2-5*Omo) + Omz*( Omo*(3*zl+2)-2 )/(zl*zl) + 1.5*Omo*Omo*log( (1+Omr)*(Omz-Omr)/( (1-Omr)*(Omz+Omr) ) )/Omr)/(Ho*4*pow(1-Omo,2));/**/
  	return   ds-dl*(1+z)/(1+zo);
 	/* 	return   ds*(1+zo)-dl*(1+z); */
 	/*return  (1+zo)*( ds-dl );*/
       }
-	/*        return zl*( (2-5*omo) + Omz*( omo*(3*zl+2)-2 )/(zl*zl) + 1.5*omo*omo*log( (1+Omr)*(Omz-Omr)/( (1-Omr)*(Omz+Omr) ) )/Omr)/(Ho*4*pow(1-omo,2));*/
+	/*        return zl*( (2-5*Omo) + Omz*( Omo*(3*zl+2)-2 )/(zl*zl) + 1.5*Omo*Omo*log( (1+Omr)*(Omz-Omr)/( (1-Omr)*(Omz+Omr) ) )/Omr)/(Ho*4*pow(1-Omo,2));*/
 
     }else{
-      if((z-zo)<0.001) return (z-zo)/(Ho*(1+zo)*(1+zo)*sqrt(1+omo*zo+oml*(pow(1+zo,-2)-1)) );
+      if((z-zo)<0.001) return (z-zo)/(Ho*(1+zo)*(1+zo)*sqrt(1+Omo*zo+Oml*(pow(1+zo,-2)-1)) );
       Da[0]=0.0;
-      Da[1]=-1./(zl*zl*sqrt(1+omo*z+oml*(pow(zl,-2)-1)));
+      Da[1]=-1./(zl*zl*sqrt(1+Omo*z+Oml*(pow(zl,-2)-1)));
 
       odeintD(Da-1,2,z,zo,1.0e-6,(z-zo)*0.1,0,&nok,&nbad,ders,bsstepD); 
       /*return (1+z)*Da[0]/Ho;*/
@@ -284,27 +269,19 @@ double fmaxi(double a,double b){
 }
 
 /** \ingroup cosmolib
- * linear growth factor normalized to 1 at z=0
+ * \brief linear growth factor normalized to 1 at z=0
  */
 
 double COSMOLOGY::Dgrowth(double z){
   double a,Omot,Omlt,g,go;
 
-  if(physical){
-    omo=Omo/h/h;
-    oml=Oml/h/h;
-  }else{
-    omo=Omo;
-    oml=Oml;
-  }
-
   a=1./(1+z);
-  if(omo==1 && oml==0){
+  if(Omo==1 && Oml==0){
 	  return a;
   }else{
-	  go=2.5*omo/( pow(omo,4.0/7.0)-oml+(1+0.5*omo)*(1+oml/70) );
-	  Omot=omo/(omo+oml*a*a*a-a*(omo+oml-1));
-	  Omlt=a*a*a*oml*Omot/omo;
+	  go=2.5*Omo/( pow(Omo,4.0/7.0)-Oml+(1+0.5*Omo)*(1+Oml/70) );
+	  Omot=Omo/(Omo+Oml*a*a*a-a*(Omo+Oml-1));
+	  Omlt=a*a*a*Oml*Omot/Omo;
 	  g=2.5*Omot/( pow(Omot,4.0/7.0)-Omlt+(1+0.5*Omot)*(1+Omlt/70) );
 	  return a*g/go;
   }
@@ -319,28 +296,21 @@ double COSMOLOGY::radiusm(double x){
   /*printf("->Omo=%f ->Oml=%e x=%e\n",->Omo,->Oml,x);*/
   /*  if( ->Omo==1.0) return 2.0*(1-1/sqrt(x)); */
 
-  temp=omo*x*x*x+oml-(omo+oml-1)*x*x;
+  temp=Omo*x*x*x+Oml-(Omo+Oml-1)*x*x;
   if(temp<=0.0) return -1.0e30;                   // nonphysical values
   return 1.0/sqrt(temp);
 }
 /** \ingroup cosmolib
- *
+ *  Same as radiusm, but incorporates dark energy through w and w1.
  */
 double COSMOLOGY::radiusm_dark(double x){
-	return 1.0 / sqrt(omo*x*x*x+oml*pow(x,3*(1+w+w1))*exp(-3*w1*(x-1)/x)-(omo+oml-1)*x*x);
+	return 1.0 / sqrt(Omo*x*x*x+Oml*pow(x,3*(1+w+w1))*exp(-3*w1*(x-1)/x)-(Omo+Oml-1)*x*x);
 }
 
 /** \ingroup cosmolib
  * \brief The coordinate distance in units Mpc
  */
 double COSMOLOGY::coorDist(double zo,double z){
-	if(physical){
-		omo=Omo/h/h;
-		oml=Oml/h/h;
-	}else{
-		omo=Omo;
-		oml=Oml;
-	}
 
 	if( (w ==-1.0) && (w1 == 0.0) ) return nintegrateDcos(&COSMOLOGY::radiusm,1+zo,1+z,1.0e-9)*3.0e3/h;
 	return nintegrateDcos(&COSMOLOGY::radiusm_dark,1+zo,1+z,1.0e-9)*3.0e3/h;
@@ -355,45 +325,28 @@ double COSMOLOGY::coorDist(double zo,double z){
 double COSMOLOGY::angDist(double zo,double z){
   double Rcur;
 
-  if(physical){
-    omo=Omo/h/h;
-    oml=Oml/h/h;
-  }else{
-    omo=Omo;
-    oml=Oml;
-  }
-
-  if(omo+oml==1) return coorDist(zo,z)/(1+z);
+  if(Omo+Oml==1) return coorDist(zo,z)/(1+z);
    /** curviture scale **/
 
-  Rcur=3.0e3/(h*sqrt(fabs(1-omo-oml)));
-  if((omo+oml)<1.0) return Rcur*sinh(coorDist(zo,z)/Rcur)/(1+z);
+  Rcur=3.0e3/(h*sqrt(fabs(1-Omo-Oml)));
+  if((Omo+Oml)<1.0) return Rcur*sinh(coorDist(zo,z)/Rcur)/(1+z);
   return Rcur*sin(coorDist(zo,z)/Rcur)/(1+z);
 }
 /** \ingroup cosmolib
  * \brief The luminosity distance in units Mpc
  */
-
 double COSMOLOGY::lumDist(double zo,double z){
 	return pow(1+z,2)*angDist(zo,z);
 }
 
 /** \ingroup cosmolib
- * \brief
+ * \brief Incorporates curvature for angular size distance
  */
 double COSMOLOGY::gradius(double R,double rd){
   /*  printf("Omo=%e Oml=%e (Omo+Oml)-1=*/
 
-  if(physical){
-    omo=Omo/h/h;
-    oml=Oml/h/h;
-  }else{
-    omo=Omo;
-    oml=Oml;
-  }
-
-  if( fabs(omo+oml-1) < 1.0e-4) return rd;
-  if((omo+oml)<1.0) return R*sinh(rd/R);
+  if( fabs(Omo+Oml-1) < 1.0e-4) return rd;
+  if((Omo+Oml)<1.0) return R*sinh(rd/R);
   return R*sin(rd/R);
 }
 
@@ -405,23 +358,17 @@ double COSMOLOGY::gradius(double R,double rd){
 double COSMOLOGY::psdfdm(double z,double m){
   double dc,Omz,sig,Dg;
 
-  if(physical){
-    omo=Omo/h/h;
-    oml=Oml/h/h;
-  }else{
-    omo=Omo;
-    oml=Oml;
-  }
-
+  omo=Omo;
+  oml=Oml;
   hh = h;
 
   Dg=Dgrowth(z);
   sig=sig8*Deltao(m);
-  Omz=omo*pow(1+z,3)/( omo*pow(1+z,3)+(1-omo-oml)*pow(1+z,2)+oml );
+  Omz=Omo*pow(1+z,3)/( Omo*pow(1+z,3)+(1-Omo-Oml)*pow(1+z,2)+Oml );
 
   dc=1.68647;
-  if(omo<1 && oml==0) dc*=pow(Omz,0.0185);
-  if(omo+oml==1) dc*=pow(Omz,0.0055);
+  if(Omo<1 && Oml==0) dc*=pow(Omz,0.0185);
+  if(Omo+Oml==1) dc*=pow(Omz,0.0055);
 
   /*printf("dc=%e dsigdM=%e sig=%e m=%e D=%e\n",dc,dsigdM(m),sig,m,Dg);*/
   return -0.797885*dc*sig8*dsigdM(m)*exp(-0.5*pow(dc/(Dg*sig),2) )
@@ -436,23 +383,17 @@ double COSMOLOGY::psdfdm(double z,double m){
 double COSMOLOGY::stdfdm(double z,double m){
   double dc,Omz,sig,Dg;
 
-  if(physical){
-    omo=Omo/h/h;
-    oml=Oml/h/h;
-  }else{
-    omo=Omo;
-    oml=Oml;
-  }
-
+  omo=Omo;
+  oml=Oml;
   hh = h;
 
   Dg=Dgrowth(z);
   sig=sig8*Deltao(m);
-  Omz=omo*pow(1+z,3)/( omo*pow(1+z,3)+(1-omo-oml)*pow(1+z,2)+oml );
+  Omz=Omo*pow(1+z,3)/( Omo*pow(1+z,3)+(1-Omo-Oml)*pow(1+z,2)+Oml );
 
   dc=1.68647;
-  if(omo<1 && oml==0) dc*=pow(Omz,0.0185);
-  if(omo+oml==1) dc*=pow(Omz,0.0055);
+  if(Omo<1 && Oml==0) dc*=pow(Omz,0.0185);
+  if(Omo+Oml==1) dc*=pow(Omz,0.0055);
 
   /*return psdfdm(sig8,z,m)*( 1+0.9009*pow(Dg*sig/dc,-0.6) )
    *exp(0.1465*pow(dc/(Dg*sig),2) );*/
@@ -468,8 +409,8 @@ double dsigdM(double m){
 	return dfridrD(Deltao,m,0.1*m,&err);
 }
 
-/** \ingroup cosmolib
-** \brief rms top-hat power in CDM model, normalized to sig8
+/*
+**  rms top-hat power in CDM model, normalized to sig8
 ** **/
 double Deltao(double m){
   double dc;

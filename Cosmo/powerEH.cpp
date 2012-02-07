@@ -51,36 +51,9 @@ static double sqrarg;
 
 /* ------------------------- Global Variables ------------------------ */
 
-/* The following are set in TFmdm_set_cosm() */
-static double   alpha_gamma,	/* sqrt(alpha_nu) */
-	alpha_nu,	/* The small-scale suppression */
-	beta_c,		/* The correction to the log in the small-scale */
-	num_degen_hdm,	/* Number of degenerate massive neutrino species */
-	f_baryon,	/* Baryon fraction */
-	f_bnu,		/* Baryon + Massive Neutrino fraction */
-	f_cb,		/* Baryon + CDM fraction */
-	f_cdm,		/* CDM fraction */
-	f_hdm,		/* Massive Neutrino fraction */
-	growth_k0,	/* D_1(z) -- the growth function as k->0 */
-	growth_to_z0,	/* D_1(z)/D_1(0) -- the growth relative to z=0 */
-	hhubble,	/* Need to pass Hubble constant to TFmdm_onek_hmpc() */
-	k_equality,	/* The comoving wave number of the horizon at equality*/
-	obhh,		/* Omega_baryon * hubble^2 */
-	omega_curv,	/* = 1 - omega_matter - omega_lambda */
-	omega_lambda_z, /* Omega_lambda at the given redshift */
-	omega_matter_z,	/* Omega_matter at the given redshift */
-	omhh,		/* Omega_matter * hubble^2 */
-	onhh,		/* Omega_hdm * hubble^2 */
-	p_c,		/* The correction to the exponent before drag epoch */
-	p_cb,		/* The correction to the exponent after drag epoch */
-	sound_horizon_fit,  /* The sound horizon at the drag epoch */
-	theta_cmb,	/* The temperature of the CMB, in units of 2.7 K */
-	y_drag,		/* Ratio of z_equality to z_drag */
-	z_drag,		/* Redshift of the drag epoch */
-	z_equality;	/* Redshift of matter-radiation equality */
-
 /* The following are set in TFmdm_onek_mpc() */
-static double	gamma_eff,	/* Effective \Gamma */
+static double
+	gamma_eff,	/* Effective \Gamma */
 	growth_cb,	/* Growth factor for CDM+Baryon perturbations */
 	growth_cbnu,	/* Growth factor for CDM+Baryon+Neutrino pert. */
 	max_fs_correction,  /* Correction near maximal free streaming */
@@ -99,9 +72,39 @@ static double   tf_cb,		/* The transfer function for density-weighted
 
 /* By default, these functions return tf_cb */
 
+// This sets the redshift dependent parameters so that this can be done separately
+//short TFmdm_set_cosm_change_z(double omega_matter, double omega_lambda, double redshift){
+short COSMOLOGY::TFmdm_set_cosm_change_z(double redshift){
+	double omega_denom;
+	short qwarn = 0;
+	struct EHparameters *ehparam = ehparam;
+
+	if (redshift<=-1.0) {
+		fprintf(stderr,"TFmdm_set_cosm(): Redshift < -1 is illegal.\n");
+		/*exit(1);*/
+	} else if (redshift>99.0) {
+		fprintf(stderr,
+		  "TFmdm_set_cosm(): Large redshift entered.  TF may be inaccurate.\n");
+		qwarn = 1;
+	}
+
+	// the below are dependent on redshift
+	omega_denom = Oml+SQR(1.0+redshift)*(omega_curv + Omo*(1.0+redshift));
+	omega_lambda_z = Oml/omega_denom;
+	omega_matter_z = Omo*SQR(1.0+redshift)*(1.0+redshift)/omega_denom;
+	growth_k0 = z_equality/(1.0+redshift)*2.5*omega_matter_z/
+			(pow(omega_matter_z,4.0/7.0)-omega_lambda_z+
+		    (1.0+omega_matter_z/2.0)*(1.0+omega_lambda_z/70.0));
+	growth_to_z0 = z_equality*2.5*Omo/(pow(Omo,4.0/7.0)
+		    -Oml + (1.0+Omo/2.0)*(1.0+Oml/70.0));
+	growth_to_z0 = growth_k0/growth_to_z0;
+
+	return qwarn;
+}
 /* ------------------------- TFmdm_set_cosm() ------------------------ */
-int TFmdm_set_cosm(double omega_matter, double omega_baryon, double omega_hdm,
-	double degen_hdm, double omega_lambda, double hubble, double redshift)
+//int TFmdm_set_cosm(double omega_matter, double omega_baryon, double omega_hdm,
+//	double degen_hdm, double omega_lambda, double hubble)
+short COSMOLOGY::TFmdm_set_cosm()
 /* This routine takes cosmological parameters and a redshift and sets up
 all the internal scalar quantities needed to compute the transfer function. */
 /* INPUT: omega_matter -- Density of CDM, baryons, and massive neutrinos,
@@ -115,9 +118,8 @@ all the internal scalar quantities needed to compute the transfer function. */
 /* OUTPUT: Returns 0 if all is well, 1 if a warning was issued.  Otherwise,
 	sets many global variables for use in TFmdm_onek_mpc() */
 {
-    double z_drag_b1, z_drag_b2, omega_denom;
-    int qwarn;
-    qwarn = 0;
+    double z_drag_b1, z_drag_b2;
+    int qwarn = 0;
 
   //  printf("omega_matter=%f omega_baryon=%f omega_hdm=%f \n"
   //  		,omega_matter,omega_baryon,omega_hdm);
@@ -127,45 +129,38 @@ all the internal scalar quantities needed to compute the transfer function. */
     theta_cmb = 2.728/2.7;	/* Assuming T_cmb = 2.728 K */
 
     /* Look for strange input */
-    if (omega_baryon<0.0) {
+    if (Omb<0.0) {
 	fprintf(stderr,
 	  "TFmdm_set_cosm(): Negative omega_baryon set to trace amount.\n");
 	qwarn = 1;
     }
-    if (omega_hdm<0.0) {
+    if (Omnu<0.0) {
 	fprintf(stderr,
 	  "TFmdm_set_cosm(): Negative omega_hdm set to trace amount.\n");
 	qwarn = 1;
     }
-    if (hubble<=0.0) {
+    if (h<=0.0) {
 	fprintf(stderr,"TFmdm_set_cosm(): Negative Hubble constant illegal.\n");
 	//exit(1);  /* Can't recover */
-    } else if (hubble>2.0) {
+    } else if (h>2.0) {
 	fprintf(stderr,"TFmdm_set_cosm(): Hubble constant should be in units of 100 km/s/Mpc.\n");
 	qwarn = 1;
     }
-    if (redshift<=-1.0) {
-	fprintf(stderr,"TFmdm_set_cosm(): Redshift < -1 is illegal.\n");
-	/*exit(1);*/
-    } else if (redshift>99.0) {
-	fprintf(stderr,
-	  "TFmdm_set_cosm(): Large redshift entered.  TF may be inaccurate.\n");
-	qwarn = 1;
-    }
-    if (degen_hdm<=0.0) degen_hdm=1;
-    num_degen_hdm = (double) degen_hdm;
+
+    if (Nnu<=0.0) Nnu=1;
+    num_degen_hdm = (double) Nnu;
  	/* Have to save this for TFmdm_onek_mpc() */
     /* This routine would crash if baryons or neutrinos were zero, 
 	so don't allow that */
-    if (omega_baryon<=0) omega_baryon=1e-5;
-    if (omega_hdm<=0) omega_hdm=1e-5;
+    if (Omb<=0) Omb=1e-5;
+    if (Omnu<=0) Omnu=1e-5;
 
-    omega_curv = 1.0-omega_matter-omega_lambda;
-    omhh = omega_matter*SQR(hubble);
-    obhh = omega_baryon*SQR(hubble);
-    onhh = omega_hdm*SQR(hubble);
-    f_baryon = omega_baryon/omega_matter;
-    f_hdm = omega_hdm/omega_matter;
+    omega_curv = 1.0-Omo-Oml;
+    omhh = Omo*SQR(h);
+    obhh = Omb*SQR(h);
+    onhh = Omnu*SQR(h);
+    f_baryon = Omb/Omo;
+    f_hdm = Omnu/Omo;
     f_cdm = 1.0-f_baryon-f_hdm;
     f_cb = f_cdm+f_baryon;
     f_bnu = f_baryon+f_hdm;
@@ -187,17 +182,6 @@ all the internal scalar quantities needed to compute the transfer function. */
     p_c = 0.25*(5.0-sqrt(1+24.0*f_cdm));
     p_cb = 0.25*(5.0-sqrt(1+24.0*f_cb));
 
-    omega_denom = omega_lambda+SQR(1.0+redshift)*(omega_curv+
-			omega_matter*(1.0+redshift));
-    omega_lambda_z = omega_lambda/omega_denom;
-    omega_matter_z = omega_matter*SQR(1.0+redshift)*(1.0+redshift)/omega_denom;
-    growth_k0 = z_equality/(1.0+redshift)*2.5*omega_matter_z/
-	    (pow(omega_matter_z,4.0/7.0)-omega_lambda_z+
-	    (1.0+omega_matter_z/2.0)*(1.0+omega_lambda_z/70.0));
-    growth_to_z0 = z_equality*2.5*omega_matter/(pow(omega_matter,4.0/7.0)
-	    -omega_lambda + (1.0+omega_matter/2.0)*(1.0+omega_lambda/70.0));
-    growth_to_z0 = growth_k0/growth_to_z0;	
-    
     /* Compute small-scale suppression */
     alpha_nu = f_cdm/f_cb*(5.0-2.*(p_c+p_cb))/(5.-4.*p_cb)*
 	pow(1+y_drag,p_cb-p_c)*
@@ -207,13 +191,13 @@ all the internal scalar quantities needed to compute the transfer function. */
     alpha_gamma = sqrt(alpha_nu);
     beta_c = 1/(1-0.949*f_bnu);
     /* Done setting scalar variables */
-    hhubble = hubble;	/* Need to pass Hubble constant to TFmdm_onek_hmpc() */
-    return qwarn;
+
+   return qwarn;
 }
 
 /* ---------------------------- TFmdm_onek_mpc() ---------------------- */
 
-double TFmdm_onek_mpc(double kk)
+double COSMOLOGY::TFmdm_onek_mpc(double kk)
 /* Given a wavenumber in Mpc^-1, return the transfer function for the
 cosmology held in the global variables. */
 /* Input: kk -- Wavenumber in Mpc^-1 */
@@ -269,7 +253,7 @@ cosmology held in the global variables. */
 
 /* ---------------------------- TFmdm_onek_hmpc() ---------------------- */
 
-double TFmdm_onek_hmpc(double kk)
+double COSMOLOGY::TFmdm_onek_hmpc(double kk)
 /* Given a wavenumber in h Mpc^-1, return the transfer function for the
 cosmology held in the global variables. */
 /* Input: kk -- Wavenumber in h Mpc^-1 */
@@ -280,7 +264,7 @@ cosmology held in the global variables. */
 			CDM + Baryon + Massive Neutrino perturbations. */
 /* The function returns growth_cb */
 {
-    return TFmdm_onek_mpc(kk*hhubble);
+    return TFmdm_onek_mpc(kk*h);
 }
 
 #undef SQR(a)
