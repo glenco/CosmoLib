@@ -1,14 +1,16 @@
-/** ******************************************
-  powerCDM.c calculates the nonlinear P(k,z)/a(r)^2
-    example of how to use is in testpower.c
-  *******************************************/
 #include <math.h>
 #include <nrD.h>
 #include <cosmo.h>
 
 static double omo, oml, hh;
 
-double COSMOLOGY::powerCDMz(double k,double z){
+/** \ingroup cosmolib
+ * \brief Calculates the nonlinear P(k,z)/a(r)^2
+*/
+double COSMOLOGY::powerCDMz(
+		double k    /// scale in the Fourier space
+		,double z   /// redshift
+		){
 
   double kn=0.0,kl,powL,powNL,nin;
   double knl,knh,kll,klh,g,a,Omot,Omlt,AA,B,aa,b,V,go;
@@ -79,7 +81,6 @@ double COSMOLOGY::powerCDMz(double k,double z){
 }
 
 /* double powerCDM(double k,double rt){ */
-
 /*   double kn=0.0,kl,powL,powNL,nin; */
 /*   double knl,knh,kll,klh,g,a,Omot,Omlt,AA,B,aa,b,V,go; */
 /*   double powerloc(double,double),De(double),npow(double); */
@@ -150,8 +151,9 @@ double COSMOLOGY::powerCDMz(double k,double z){
 /* } */
 
 
-/** the scale factor, a, as a function of radius in Mpc **/
-
+/** \ingroup cosmolib 
+ * \brief The scale factor, a = 1/(1+z), as a function of radius in Mpc
+ */
 double COSMOLOGY::De(double rad){
   double a[1];
   int nok,nbad;
@@ -183,6 +185,9 @@ void dir(double r,double a[],double dadr[]){
   dadr[1] = -hh*sqrt( a[1]*(omo+oml*pow(a[1],3)+(omo+oml-1.0)*a[1]) )/3.0e3;
 }
 
+/** \ingroup cosmolib
+ * \brief Logorithmic slope of the power spectrum
+ */
 double COSMOLOGY::npow(double k){
   double qt, omo, oml;
 
@@ -193,7 +198,6 @@ double COSMOLOGY::npow(double k){
     omo=Omo;
     oml=Oml;
   }
-
   /* return -1;*/
   /*  qt = k*exp(Omb+Omb/Omo)/(Omo*h*h);  */
 
@@ -204,7 +208,9 @@ double COSMOLOGY::npow(double k){
     -0.5*qt*(3.89+qt*(5.1842e2+qt*(4.8831e2+8.1088e3*qt)))/( 1+qt*(3.89+qt*(2.5921e2+qt*(1.6277e2+2.0272e3*qt))) );
 }
 
-/** linear power spectrum P(k,z)/a^2 */
+/** \ingroup cosmolib
+ * \brief Linear power spectrum P(k,z)/a^2
+ */
 double COSMOLOGY::power_linear(double k,double z){
 
   if(z==0.0) return powerloc(k,0);
@@ -223,27 +229,30 @@ double COSMOLOGY::power_linear(double k,double z){
   /*return g*g*powerloc(k,z)/go/go;*/
 }
 
-/** linear power spectrum without growth factor
-**   growth factor should be normalized to 1 at z=0
-**   **/
+/** \ingroup cosmolib
+ * \brief The linear power spectrum without growth factor
+ * growth factor should be normalized to 1 at z=0
+ */
 double COSMOLOGY::powerloc(double k,double z){
   //double qt,ans;
   //double powerEH(double,double);
   //double powerEHv2(double);
-
-//  return powerEHv2(k);
+  //return powerEHv2(k);
   return powerEH(k,z);
 }
 
+/** \ingroup cosmolib
+ * \brief Set the linear normalization for the power spectrum.
+ *
+ * This function keeps the internal normalization parameters in sync.  The normalization
+ * should not be changed in any other way.
+ */
 double COSMOLOGY::power_normalize(double sigma8){
   double powfactor;
-
   sig8=sigma8;
   A=1.0;
-
   powfactor=9*nintegrateDcos(&COSMOLOGY::normL,log(1.0e-3),log(1.0e4),1.0e-9)/(2*pi*pi);
-  A=sigma8*sigma8/powfactor;                        /* linear normalization */
-
+  A=sigma8*sigma8/powfactor;
   return powfactor;
 }
 
@@ -258,21 +267,18 @@ double COSMOLOGY::normL(double lgk){
   return k*k*k*powerEH(k,0)*win*win;
 }
 
-/** this is the power spectrum from Eisinstein & Hu
- * with neutrinos but no BAO
- * **/
+/** \ingroup cosmolib
+ * \brief The power spectrum from Eisinstein & Hu with neutrinos but no BAO
+ */
 double COSMOLOGY::powerEH(double k,double z){
   CosmoHndl cosmo_old;
   static double zloc=-100;
   double Trans;
-
   /*PrintCosmology(cosmo_old);*/
   /*  PrintCosmology(cosmo_old);*/
   /*printf("compare = %i\n",cosmo_compare(cosmo_old,cosmo));*/
-
-  /** remove this after tests **/
-  /** if( zin < 10) z=7;  **/
-
+  /* remove this after tests */
+  /* if( zin < 10) z=7;*/
   /*
   if( z != zloc){
     if(physical) {
@@ -305,7 +311,6 @@ double COSMOLOGY::powerEH(double k,double z){
 
     cosmo_copy(cosmo_old,this);
   }*/
-
   if(physical) {
     TFmdm_set_cosm((Omo/h/h)
 		     ,(Omb/h/h)
@@ -322,8 +327,10 @@ double COSMOLOGY::powerEH(double k,double z){
   return A*pow(k/h,n+dndlnk*log(k))*Trans*Trans/pow(h/3.0e3,3);
 }
 
-/** this is the power spectrum from Eisinstein & Hu **/
-/** with BAO bA*ut no neutrinos  **/
+/** \ingroup comolib
+ * \brief This is the power spectrum from Eisinstein & Hu 
+ * with BAO but no neutrinos  
+ */
 double COSMOLOGY::powerEHv2(double k){
   CosmoHndl cosmo_old;
   double Trans;

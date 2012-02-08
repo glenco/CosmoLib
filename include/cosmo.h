@@ -1,5 +1,6 @@
-
 #include <iostream>
+#include <vector>
+
 using namespace std;
 
 #ifndef pi
@@ -11,6 +12,10 @@ using namespace std;
 #endif
 
 #ifndef cosmo_declare
+/** \ingroup cosmolib
+ *
+ * \brief The cosmology and all the functions required to calculated quantities based on the cosmology.
+ */
 class COSMOLOGY{
 public:
   double h;
@@ -25,7 +30,6 @@ public:
   double Gamma;
   double dndlnk;
   double gamma;   
-
   short physical; /* if physical =1 all Omega are Omega*h^2 */
   short darkenergy; /* if 2 gamma parameterization is used for dark energy */
 
@@ -37,11 +41,14 @@ public:
     void SetConcordenceCosmology();
     void PrintCosmology();
     double rcurve();
+    double Omegam(double z);
     double DRradius(double zo,double z,double pfrac);
     double DRradius2(double zo,double z);
     double Dgrowth(double z);
-    double psdfdm(double sig8,double z,double m);
-    double stdfdm(double sig8,double z,double m);
+    double psdfdm(double sig8,double z,double m,int caseunit=0);
+    double stdfdm(double sig8,double z,double m,int caseunit=0);
+    double numberDensity(double sig8,double m,double z,double a, int t);
+    double number (double sig8,double m,double z1,double z2,int t);
     double coorDist(double zo,double z);
     double angDist(double zo,double z);
     double lumDist(double zo,double z);
@@ -49,7 +56,8 @@ public:
     double power_normalize(double sigma8);
     double radiusm(double x);
     double radiusm_dark(double x);
-
+    double Variance(double m);
+    double DeltaV(double z,int caseunit=0);
     double powerEH(double k,double z);
     double powerEHv2(double k);
     double npow(double k);
@@ -59,7 +67,10 @@ public:
     double powerCDM(double k,double rt);
     double De(double rad);
     double normL(double lgk);
-
+    double getZfromDeltaC(double dc);
+    double eH(double a);
+    double time(double z);
+    double getTimefromDeltaC(double z);
     typedef double (COSMOLOGY::*pt2MemFunc)(double);
 
     double nintegrateDcos(pt2MemFunc func,double a,double b,double tols);
@@ -72,8 +83,13 @@ public:
     ~COSMOLOGY();
 
 private:
+    int nbin;  // number of points when binning to interpolate
     double A;
-    double sig8;  /* do not access these normalization outside */
+    double sig8;  // do not access these normalization outside
+    std:: vector<double> vDeltaCz,vlz,vt;
+    double DpropDz(double z);
+    double dsigdM(double m);
+    double timeEarly(double a);
 };
 
 typedef COSMOLOGY *CosmoHndl;
