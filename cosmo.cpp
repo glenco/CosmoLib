@@ -42,6 +42,7 @@ static double omo, oml, hh;
 
 COSMOLOGY::COSMOLOGY(){
 	SetConcordenceCosmology();
+
 	// allocate step and weight for gauleg integration
 	xf=new float[ni];
 	wf=new float[ni];
@@ -57,6 +58,7 @@ COSMOLOGY::COSMOLOGY(){
 	  vDeltaCz.push_back(dc/Dgrowth(z));
 	  vt.push_back(time(z));
 	}
+
 }
 
 COSMOLOGY::~COSMOLOGY(){
@@ -89,9 +91,12 @@ void COSMOLOGY::SetConcordenceCosmology(){
 	gamma=0.55;
 
 	darkenergy=1;
+
 	/* if 2 gamma parameterization is used for dark energy */
 	/* if 1 w,w_1 parameterization is used for dark energy */
+
 	// set parameters for Eisenstein&Hu power spectrum
+
 	TFmdm_set_cosm();
 	power_normalize(0.812);
 }
@@ -330,7 +335,7 @@ double COSMOLOGY::radiusm_dark(double x){
 }
 
 /** \ingroup cosmolib
- * \brief The coordinate distance in units Mpc
+ * \brief The coordinate distance in units Mpc.  This is the radial distance found by integrating 1/H(z).
  */
 double COSMOLOGY::coorDist(double zo,double z){
 	if( (w ==-1.0) && (w1 == 0.0) ) return nintegrateDcos(&COSMOLOGY::radiusm,1+zo,1+z,1.0e-9)*3.0e3/h;
@@ -413,8 +418,10 @@ double COSMOLOGY::psdfdm(
 }
 
 /** \ingroup cosmolib
-  \brief Sheth-Tormen mass function in unit of logarithmic mass bin and mean density
-*/
+<<<<<<< local
+ * \brief Sheth-Tormen mass function, most be normalized to 1 by calling code
+ */
+
 double COSMOLOGY::stdfdm(
 		double z      /// redshift
 		,double m      /// mass

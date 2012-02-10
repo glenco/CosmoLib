@@ -78,7 +78,6 @@ double COSMOLOGY::powerCDMz(
   return 19.739*powNL/(k*k*k*a*a);
 }
 
-
 /** \ingroup cosmolib 
  * \brief The scale factor, a = 1/(1+z), as a function of radius in Mpc
  */

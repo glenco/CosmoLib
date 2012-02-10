@@ -16,6 +16,12 @@ using namespace std;
 /** \ingroup cosmolib
  *
  * \brief The cosmology and all the functions required to calculated quantities based on the cosmology.
+ *
+ * This class is used to store the cosmological parameters, calculate cosmological distances, calculate
+ * the power spectrum of density fluctuations and the mass function of halos.
+ *
+ * As set now, there are no baryon acoustic oscillations in the power spectrum, but this can be changed
+ * at the expense of not including neutrinos.
  */
 class COSMOLOGY{
 public:
@@ -50,31 +56,31 @@ public:
 
     /// accesser functions:
 
-	/// Hubble paremters in units of 100 km/s/Mpc
+	/// Hubble paremters in units of 100 km/s/Mpc, renormalizes P(k) to keep sig8 fixed
 	void sethubble(double ht){ h = ht; TFmdm_set_cosm(); power_normalize(sig8);}
 	double gethubble(){return h;}
 
-    /// Primordial spectral index
+    /// Primordial spectral index, renormalizes P(k) to keep sig8 fixed
 	void setindex(double nn){ n = nn;}
 	double getindex(){ return n; power_normalize(sig8);}
 
-    /// Omega matter
+    /// Omega matter, renormalizes P(k) to keep sig8 fixed
 	void setOmega_matter(double Omega_matter){Omo = Omega_matter; TFmdm_set_cosm(); power_normalize(sig8);}
 	double getOmega_matter(){return Omo;}
 
-    /// Omega lambda
+    /// Omega lambda, renormalizes P(k) to keep sig8 fixed
 	void setOmega_lambda(double Omega_lambda){Oml = Omega_lambda; TFmdm_set_cosm(); power_normalize(sig8);}
 	double getOmega_lambda(){return Oml;}
 
-    /// Omega baryon
+    /// Omega baryon, renormalizes P(k) to keep sig8 fixed
 	void setOmega_baryon(double Omega_baryon){Omb = Omega_baryon; TFmdm_set_cosm(); power_normalize(sig8);}
 	double getOmega_baryon(){return Omb;}
 
-    /// Omega neutrino
+    /// Omega neutrino, renormalizes P(k) to keep sig8 fixed
 	void setOmega_neutrino(double Omega_neutrino){Omnu = Omega_neutrino; TFmdm_set_cosm(); power_normalize(sig8);}
 	double getOmega_neutrino(){return Omnu;}
 
-	/// Number of neutrino species
+	/// Number of neutrino species, renormalizes P(k) to keep sig8 fixed
 	void setNneutrino(double Nneutrino){Nnu = Nneutrino; TFmdm_set_cosm(); power_normalize(sig8);}
 	double getNneutrino(){return Nnu;}
 
@@ -84,7 +90,7 @@ public:
 	void setW1(double ww){w1 = ww;}
 	double getW1(){return w1;}
 
-	/// Running of primordial spectral index, P(k)_primordial \propto pow(k/h,n+dndlnk*log(k))
+	/// Running of primordial spectral index, P(k)_primordial \propto pow(k/h,n+dndlnk*log(k)), renormalizes P(k) to keep sig8 fixed
 	void setdndlnk(double w){dndlnk = w; power_normalize(sig8);}
 	double getdndlnk(){return dndlnk;}
 
@@ -130,7 +136,9 @@ private:
   // 2 gamma parameterization is used for dark energy
   short darkenergy;
 
-/* table for growth parameter */
+  typedef double (COSMOLOGY::*pt2MemFunc)(double);
+
+  /* table for growth parameter */
     double *a;
     double *growth;
     int Ntable;
