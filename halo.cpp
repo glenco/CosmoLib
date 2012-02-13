@@ -18,7 +18,11 @@ HALO::HALO (
 		,double redshift   /// redshift
 		)
 : co(cos),m(mass), z(redshift){
-	Omz=co->Omegam(redshift);
+	Set_Parameters();
+}
+
+void HALO::Set_Parameters(){
+	Omz=co->Omegam(z);
 	Omo=co->getOmega_matter();
 	Oml=co->getOmega_lambda();
 	sigma2M=co->Variance(m);
@@ -28,6 +32,15 @@ HALO::HALO (
 }
 
 HALO::~HALO () {}
+
+/**
+ * Reset halo mass and redshift
+ */
+void HALO::reset(double mr,double zr){
+	m = mr;
+	z = zr;
+	Set_Parameters();
+}
 
 /** \ingroup cosmolib
  * \brief Virial radius of the halo in Mpc/h

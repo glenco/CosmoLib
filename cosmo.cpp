@@ -46,7 +46,7 @@ COSMOLOGY::COSMOLOGY(){
 	xf=new float[ni];
 	wf=new float[ni];
 	gauleg(0.,1.,xf,wf,ni);
-	// contruct table of log(1+z), time, and \delta_c for interpolation
+	// construct table of log(1+z), time, and \delta_c for interpolation
 	fill_linear(vlz,ni,0.,1.7);
 	double dc;
 	for(int i=0;i<ni;i++){
@@ -477,10 +477,10 @@ double COSMOLOGY::numberDensity(double m, double z, double a, int t){
 
 /** \ingroup cosmolib
  * \brief Number of haloes with mass larger than m (in solar masses/h) between
- * redshifts z1 and z2 on the full sky. The dummy argument t specifies which type of
- * mass function is to be used, PS or ST
+ * redshifts z1 and z2 per square degree
+ * The dummy argument t specifies which type of mass function is to be used, PS or ST
  */
-double COSMOLOGY::number (double m, double z1, double z2, int t){
+double COSMOLOGY::number (double m, double z1, double z2,int t){
   double n=0.0;
   for (int i=1;i<ni;i++){
     double x=(z2-z1)*xf[i]+z1;
@@ -490,7 +490,7 @@ double COSMOLOGY::number (double m, double z1, double z2, int t){
     double c=numberDensity(m,x,0.0,t);
     n+=wf[i]*v*c;
   }
-  return n*(z2-z1)*2.7e10; // Hubble Volume
+  return n*(z2-z1)*2.7e10/41253; // Hubble Volume
 }
 
 /** \ingroup cosmolib

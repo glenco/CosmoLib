@@ -21,6 +21,7 @@ public:
     double getConcentration(int caseunit=0);
     double getFormationTime(double f=0.5);
     double getFormationRedshift(double f=0.5);
+    void reset(double,double);
     virtual ~HALO ();
 protected:
     COSMOLOGY *co;   // cosmological model
@@ -31,7 +32,9 @@ protected:
     double Omz,Omo,Oml;  // matter density parameter at redshift z and at z=0
     double sigma2M;   // the mass variance S(m)
     double deltac0;  // spherical collapse overdensity
+private:
+    void Set_Parameters();
 };
-
+typedef HALO *HaloHndl;
 
 #endif /* HALO_H_ */
