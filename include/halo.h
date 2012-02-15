@@ -35,6 +35,6 @@ protected:
 private:
     void Set_Parameters();
 };
-typedef HALO *HaloHndl;
+typedef HALO *inCosmoHaloHndl;
 
 #endif /* HALO_H_ */

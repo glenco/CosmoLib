@@ -57,4 +57,13 @@ int locate (const std::vector<T> &v, const T x)
     return jl;
 }
 
+double getY(std:: vector<double> x, std:: vector<double> y,double xi);
+
+double arctanh(double x);
+
+double fmini(double a,double b);
+
+double fmaxi(double a,double b);
+
+
 #endif /* UTILITIES_H_ */
