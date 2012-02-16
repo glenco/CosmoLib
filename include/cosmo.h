@@ -136,8 +136,6 @@ private:
   // 2 gamma parameterization is used for dark energy
   short darkenergy;
 
-  typedef double (COSMOLOGY::*pt2MemFunc)(double);
-
   /* table for growth parameter */
     double *a;
     double *growth;
@@ -157,6 +155,8 @@ private:
     double DpropDz(double z);
     double dsigdM(double m);
     double timeEarly(double a);
+
+    typedef double (COSMOLOGY::*pt2MemFunc)(double);
 
     double nintegrateDcos(pt2MemFunc func,double a,double b,double tols);
     double trapzdDcoslocal(pt2MemFunc func, double a, double b, int n);
