@@ -12,7 +12,9 @@
 #include <math.h>
 #include <cosmo.h>
 #include <utilities.h>
-
+/** \ingroup cosmolib
+ * \brief Class for calculating the properties of dark matter halos.
+ */
 class HALO{
 public:
     HALO (COSMOLOGY *co, double mass, double redshift);

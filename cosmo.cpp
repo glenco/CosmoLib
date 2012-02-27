@@ -2,21 +2,6 @@
 
   cosmo.cpp calculates some useful comological parameters
 
-to run:
-
-struct cosmology{
-  double h;
-  double n;
-  double A;
-  double Omo;
-  double Oml;
-  double Omb;
-  double w;
-  double w1;
-  double Gamma;
-};
-
-
 *******************************************
 *******************************************/
 #include <math.h>
@@ -182,12 +167,12 @@ double COSMOLOGY::rcurve(){
 
 double COSMOLOGY::DpropDz(double z){
 	double a=1.0/(1.0+z);
-	return a*radiusm_dark(1/a);
+	return a*drdz_dark(1/a);
 }
 
 
 /** \ingroup cosmolib
- * \brief Dark matter density parameter at redshift z
+ * \brief Matter density parameter at redshift z
  */
 double COSMOLOGY::Omegam(double z){
 	return Omo*pow(1+z,3)/( Omo*pow(1+z,3)+(1-Omo-Oml)*pow(1+z,2)+Oml );
@@ -313,11 +298,17 @@ double COSMOLOGY::Dgrowth(double z){
 	  return a*g/go;
   }
 }
+/** \ingroup cosmolib
+ * \brief Critical density in M_sun/Mpc^3
+ */
+double COSMOLOGY::rho_crit(double z){
+	return CRITD2*h*h*( Omo*pow(1+z,3)+Oml-(Omo+Oml-1)*pow(1+z,2) );
+}
 
 /** \ingroup cosmolib
- * \brief Derivative of the coordinate distance in units of Ho^-1, x=1+z
+ * \brief The derivative of the comoving radial distance with respect to redshift in units of Ho^-1, x=1+z
  */
-double COSMOLOGY::radiusm(double x){
+double COSMOLOGY::drdz(double x){
  double temp;
   /*printf("->Omo=%f ->Oml=%e x=%e\n",->Omo,->Oml,x);*/
   /*  if( ->Omo==1.0) return 2.0*(1-1/sqrt(x)); */
@@ -328,9 +319,9 @@ double COSMOLOGY::radiusm(double x){
 }
 
 /** \ingroup cosmolib
- * \brief Same as radiusm, but incorporates dark energy through w and w1.
+ * \brief Same as drdz, but incorporates dark energy through w and w1.
  */
-double COSMOLOGY::radiusm_dark(double x){
+double COSMOLOGY::drdz_dark(double x){
 	return 1.0 / sqrt(Omo*x*x*x+Oml*pow(x,3*(1+w+w1))*exp(-3*w1*(x-1)/x)-(Omo+Oml-1)*x*x);
 }
 
@@ -338,8 +329,8 @@ double COSMOLOGY::radiusm_dark(double x){
  * \brief The coordinate distance in units Mpc.  This is the radial distance found by integrating 1/H(z).
  */
 double COSMOLOGY::coorDist(double zo,double z){
-	if( (w ==-1.0) && (w1 == 0.0) ) return nintegrateDcos(&COSMOLOGY::radiusm,1+zo,1+z,1.0e-9)*3.0e3/h;
-	return nintegrateDcos(&COSMOLOGY::radiusm_dark,1+zo,1+z,1.0e-9)*3.0e3/h;
+	if( (w ==-1.0) && (w1 == 0.0) ) return nintegrateDcos(&COSMOLOGY::drdz,1+zo,1+z,1.0e-9)*3.0e3/h;
+	return nintegrateDcos(&COSMOLOGY::drdz_dark,1+zo,1+z,1.0e-9)*3.0e3/h;
 }
 
 /** \ingroup cosmolib
@@ -418,7 +409,6 @@ double COSMOLOGY::psdfdm(
 }
 
 /** \ingroup cosmolib
-<<<<<<< local
  * \brief Sheth-Tormen mass function, most be normalized to 1 by calling code
  */
 
@@ -464,7 +454,7 @@ double COSMOLOGY::stdfdm(
  * times m^a is integrated. If a is omitted, a default of zero is assumed. The dummy
  * argument t specifies which type of mass function is to be used, PS or ST.
  */
-double COSMOLOGY::numberDensity(double m, double z, double a, int t){
+double COSMOLOGY::haloNumberDensity(double m, double z, double a, int t){
 	double n=0.0;
 	for (int i=1;i<ni;i++){
 		double y,y1;
@@ -485,25 +475,27 @@ double COSMOLOGY::numberDensity(double m, double z, double a, int t){
 /** \ingroup cosmolib
  * \brief Number of haloes with mass larger than m (in solar masses/h) between
  * redshifts z1 and z2 per square degree
- * The dummy argument t specifies which type of mass function is to be used, PS or ST
+ * The flag t specifies which type of mass function is to be used, PS or ST
  */
-double COSMOLOGY::number (double m, double z1, double z2,int t){
+double COSMOLOGY::haloNumberDensityOnSky (double m, double z1, double z2,int t){
   double n=0.0;
   for (int i=1;i<ni;i++){
     double x=(z2-z1)*xf[i]+z1;
     double d=angDist(0.0,x)/3.0e3*h;
     double f=1.0+x;
     double v=4.0*pi*d*d*DpropDz(x)*f*f*f;
-    double c=numberDensity(m,x,0.0,t);
+    double c=haloNumberDensity(m,x,0.0,t);
     n+=wf[i]*v*c;
   }
   return n*(z2-z1)*2.7e10/41253; // Hubble Volume
 }
 
 /** \ingroup cosmolib
- * \brief Mass variance \f$ S(m)=\sigma^2(m) \f$
+ * \brief Mass variance \f$ S(m)=\sigma^2(m) \f$.  This uses a fitting
+ * formula for the CDM model which might not be perfectly accurate.  See
+ * TopHatVarianceR() for an alternative.
  */
-double COSMOLOGY::Variance(double m){
+double COSMOLOGY::TopHatVariance(double m){
 	hh=h;
 	omo=Omo;
 	oml=Oml;
@@ -523,7 +515,7 @@ double COSMOLOGY::dsigdM(double m){
 /** \ingroup cosmolib
  * \brief Virial overdensity
  */
-double COSMOLOGY:: DeltaV(
+double COSMOLOGY:: DeltaVir(
 		double z         /// redshift
 		,int caseunit    /// by default uses the Brayan and Norman fit, if equal to 1 uses the fit by Felix Stšhr
 		){
@@ -619,7 +611,7 @@ double COSMOLOGY::time(double z){
 		double n=0;
 		for (int i=1;i<ni;i++){
 			double x = e+(a-e)*xf[i];
-			double y = 1./x*radiusm_dark(1/x);
+			double y = 1./x*drdz_dark(1/x);
 			n+=wf[i]*y;
 		}
 		return (n*(a-e)+timeEarly(e))*CfactorT;
@@ -630,9 +622,9 @@ double COSMOLOGY::time(double z){
 }
 
 /** \ingroup cosmolib
- * \brief \f$ \sigma(m) \f$: the rms top-hat power in CDM model, normalized to sig8
+ * \brief \f$ \sigma(m) \f$: the rms top-hat power in standard CDM model, normalized to sig8
  *
- * Warning! Uses global variables omo,oml and hh.
+ * Warning! Uses global variables omo,oml and hh. Not perfectly accurate.
  */
 double Deltao(double m){
   double dc;

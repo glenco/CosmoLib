@@ -142,7 +142,6 @@ double COSMOLOGY::power_linear(double k,double z){
 double COSMOLOGY::powerloc(double k,double z){
 
 //  return powerEHv2(k);
-
   return powerEH(k,z);
 }
 /** \ingroup cosmolib
@@ -155,6 +154,8 @@ double COSMOLOGY::power_normalize(double sigma8){
   double powfactor;
   sig8=sigma8;
   A=1.0;
+  Rtophat = 8;
+  ztmp = 0;
   powfactor=9*nintegrateDcos(&COSMOLOGY::normL,log(1.0e-3),log(1.0e4),1.0e-9)/(2*pi*pi);
   A=sigma8*sigma8/powfactor;
   return powfactor;
@@ -164,11 +165,35 @@ double COSMOLOGY::normL(double lgk){
   double R,win,k;
 
   k=exp(lgk);
-  R=k*8/h;
+  R=k*Rtophat/h;
   if(R<=1.0e-4){ win = (1-R*R/10)/3; 
   }else{win=(sin(R)/R - cos(R))/(R*R);}
 
-  return k*k*k*powerEH(k,0)*win*win;
+  return k*k*k*powerloc(k,ztmp)*win*win;
+}
+/** \ingroup cosmolib
+ * \brief Variance within a spherical top-hat filter of size R (Mpc), \f$ S(R)=\sigma^2(R) \f$, at redshift z.
+ *
+ * The variance is found through directly integrating linear power spectrum.
+ */
+double COSMOLOGY::TopHatVarianceR(double R,double z){
+	double ans;
+
+	Rtophat = R;
+	ztmp = z;
+
+	ans = 9*nintegrateDcos(&COSMOLOGY::normL,log(1.0e-3),log(1.0e4),1.0e-9)/(2*pi*pi);
+	return pow(Dgrowth(z)*(1+z),2)*ans;
+}
+/** \ingroup cosmolib
+ * \brief Variance within a spherical top-hat filter at mass scale M at redshift z.
+ *
+ * The variance is found through directly integrating linear power spectrum.
+ */
+double COSMOLOGY::TopHatVarianceM(double M,double z){
+	double R = pow(M/rho_crit(0)/Omo,1./3.);
+
+	return TopHatVarianceR(R,z);
 }
 
 /** \ingroup cosmolib

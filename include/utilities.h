@@ -9,7 +9,7 @@
 #define UTILITIES_H_
 #include <vector>
 #include <math.h>
-/**
+/** \ingroup Utill
  * Fills a vector with equidistant points from [min, max].
  */
 template <class T>
@@ -19,7 +19,7 @@ void fill_linear ( std::vector<T> &v, size_t n, T min, T max ){
     v[i] = min + (max - min) * T (i)/T (n-1);
 }
 
-/**
+/** \ingroup Utill
  * Fills a vector with logarithmically equidistant points from [min, max].
  */
 template <class T>
@@ -29,7 +29,7 @@ void fill_logarithmic ( std::vector<T> &v, size_t n, T min, T max ){
     v[i] = exp ( log (min) + ( log (max) - log (min) ) * T (i)/T (n-1) );
 }
 
-/**
+/** \ingroup Utill
  * Locates the element of the given vector which, together with the following
  * element, brackets the given number. If x is smaller than the smallest entry or
  * larger than the largest, the result is either -1 or n.
@@ -55,6 +55,17 @@ int locate (const std::vector<T> &v, const T x)
     return n-2;
   else
     return jl;
+}
+
+/** \ingroup Utill
+ * \brief Template function that waps values of inputs
+ */
+template <class T>
+void swap (T a,T b){
+	T tmp;
+	tmp = a;
+	a = b;
+	b = tmp;
 }
 
 double getY(std:: vector<double> x, std:: vector<double> y,double xi);

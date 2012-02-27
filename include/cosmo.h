@@ -28,33 +28,41 @@ public:
 
     void SetConcordenceCosmology();
     void PrintCosmology(short physical = 0);
+
+    // Lengths
     double rcurve();
-    double DRradius(double zo,double z,double pfrac);
-    double DRradius2(double zo,double z);
-    double Dgrowth(double z);
     double coorDist(double zo,double z);
     double angDist(double zo,double z);
     double lumDist(double zo,double z);
+    double DRradius(double zo,double z,double pfrac);
+    double DRradius2(double zo,double z);
+
+	double De(double rad);
+    double Omegam(double z);
+    double rho_crit(double z);
+    double gradius(double R,double rd);
+    double drdz(double x);
+    double drdz_dark(double x);
+    double DeltaVir(double z,int caseunit=0);
+    double time(double z);
+
+    // Stuff having to do with the power spectrum
     double power_normalize(double sigma8);
     double power_linear(double k,double z);
+    double Dgrowth(double z);
     double powerCDMz(double k,double z);
     double psdfdm(double z,double m,int caseunit=0);
 	double stdfdm(double z,double m,int caseunit=0);
-	double numberDensity(double m,double z,double a, int t);
-	double number (double m,double z1,double z2,int t);
-	double De(double rad);
-    double Omegam(double z);
-    double gradius(double R,double rd);
-    double radiusm(double x);
-    double radiusm_dark(double x);
-    double Variance(double m);
-    double DeltaV(double z,int caseunit=0);
-    double getZfromDeltaC(double dc);
-    double eH(double a);
-    double time(double z);
-    double getTimefromDeltaC(double z);
+	double haloNumberDensity(double m,double z,double a, int t);
+	double haloNumberDensityOnSky (double m,double z1,double z2,int t);
+	double TopHatVariance(double m);
+	double TopHatVarianceR(double R,double z);
+	double TopHatVarianceM(double M,double z);
 
-    /// accesser functions:
+	double getTimefromDeltaC(double dc);
+	double getZfromDeltaC(double dc);
+
+	/// accesser functions:
 
 	/// Hubble paremters in units of 100 km/s/Mpc, renormalizes P(k) to keep sig8 fixed
 	void sethubble(double ht){ h = ht; TFmdm_set_cosm(); power_normalize(sig8);}
@@ -112,7 +120,7 @@ private:
   double h;
     /// Primordial spectral index
   double n;
-    /// Omega matter
+    /// Omega matter, dark matter + baryons
   double Omo;
     /// Omega lambda
   double Oml;
@@ -144,6 +152,9 @@ private:
     double A;
     double sig8;  /* do not access these normalization outside */
 
+    double Rtophat;
+	double ztmp;
+
     double powerEH(double k,double z);
     double powerEHv2(double k);
     double powerloc(double k,double z);
@@ -170,15 +181,16 @@ private:
     // The parameters used in Eisenstein & Hu power spectrum
 
 
-    	double alpha_gamma;	/* sqrt(alpha_nu) */
+        double f_baryon;	/* Baryon fraction */
+        double f_bnu;		/* Baryon + Massive Neutrino fraction */
+        double f_cb;		/* Baryon + CDM fraction */
+        double f_cdm;		/* CDM fraction */
+        double f_hdm;		/* Massive Neutrino fraction */
+
+		double alpha_gamma;	/* sqrt(alpha_nu) */
     	double alpha_nu;	/* The small-scale suppression */
     	double beta_c;		/* The correction to the log in the small-scale */
     	double num_degen_hdm;	/* Number of degenerate massive neutrino species */
-    	double f_baryon;	/* Baryon fraction */
-    	double f_bnu;		/* Baryon + Massive Neutrino fraction */
-    	double f_cb;		/* Baryon + CDM fraction */
-    	double f_cdm;		/* CDM fraction */
-    	double f_hdm;		/* Massive Neutrino fraction */
     	double growth_k0;	/* D_1(z) -- the growth function as k->0 */
     	double growth_to_z0;	/* D_1(z)/D_1(0) -- the growth relative to z=0 */
     	double k_equality;	/* The comoving wave number of the horizon at equality*/
