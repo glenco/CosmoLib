@@ -21,7 +21,7 @@
 int kmax,kount;
 double *xp,**yp,dxsav;
 float *xf,*wf;
-int ni=513;
+int ni=32;
 static double alph;  /* DR-distance parameter */
 static double omo, oml, hh;
 
