@@ -45,6 +45,7 @@ public:
     double drdz_dark(double x);
     double DeltaVir(double z,int caseunit=0);
     double time(double z);
+    double nonlinMass(double z);
 
     // Stuff having to do with the power spectrum
     double power_normalize(double sigma8);
@@ -53,7 +54,8 @@ public:
     double powerCDMz(double k,double z);
     double psdfdm(double z,double m,int caseunit=0);
 	double stdfdm(double z,double m,int caseunit=0);
-	double haloNumberDensity(double m,double z,double a, int t);
+	double powerlawdfdm(double z,double m,double alpha,int caseunit=0);
+	double haloNumberDensity(double m,double z,double a, int t,double alpha=1./6.);
 	double haloNumberDensityOnSky (double m,double z1,double z2,int t);
 	double TopHatVariance(double m);
 	double TopHatVarianceR(double R,double z);
