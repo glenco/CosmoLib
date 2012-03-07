@@ -310,8 +310,6 @@ double COSMOLOGY::rho_crit(double z){
  */
 double COSMOLOGY::drdz(double x){
  double temp;
-  /*printf("->Omo=%f ->Oml=%e x=%e\n",->Omo,->Oml,x);*/
-  /*  if( ->Omo==1.0) return 2.0*(1-1/sqrt(x)); */
 
   temp=Omo*x*x*x+Oml-(Omo+Oml-1)*x*x;
   if(temp<=0.0) return -1.0e30;                   // nonphysical values
@@ -359,9 +357,8 @@ double COSMOLOGY::lumDist(double zo,double z){
 }
 
 /** \ingroup cosmolib
- * \brief Incorporates curvature for angular size distance
+ * \brief Incorporates curvature for angular size distance.
  */
-
 double COSMOLOGY::gradius(
 		double R    /// the curvature radius
 		,double rd  /// the coordinate
