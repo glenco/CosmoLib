@@ -9,6 +9,7 @@
 #define UTILITIES_H_
 #include <vector>
 #include <math.h>
+
 /** \ingroup Utill
  * Fills a vector with equidistant points from [min, max].
  */

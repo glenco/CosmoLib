@@ -21,7 +21,7 @@
 int kmax,kount;
 double *xp,**yp,dxsav;
 float *xf,*wf;
-int ni=513;
+int ni=32;
 static double alph;  /* DR-distance parameter */
 static double omo, oml, hh;
 
@@ -406,7 +406,7 @@ double COSMOLOGY::psdfdm(
 }
 
 /** \ingroup cosmolib
- * \brief Sheth-Tormen mass function, most be normalized to 1 by calling code
+ * \brief Sheth-Tormen mass function
  */
 
 double COSMOLOGY::stdfdm(
@@ -446,18 +446,44 @@ double COSMOLOGY::stdfdm(
 }
 
 /** \ingroup cosmolib
+ *  \brief Power-law mass function
+ */
+
+double COSMOLOGY::powerlawdfdm(
+		double z          /// redshift
+		,double m         /// mass
+		,double alpha     /// slope (almost 1/6 for LCDM and cluster-size haloes)
+		,int caseunit     /// if equal to 1 return the number density per unit mass
+		){
+	double mstar = nonlinMass(z);
+	double mr = m/mstar;
+	double alpha0 = 1./3.;
+	switch (caseunit){
+		case 1:
+			return Omo*CRITD2*0.6*alpha0/2.*sqrt(2/M_PI)*pow(mr,alpha)*exp(-0.5*pow(mr*pow((1+z),3./2.),alpha0*1.3))/m/m;
+			break;
+		default:
+			return 0.6*alpha0/2.*sqrt(2/M_PI)*pow(mr,alpha)*exp(-0.5*pow(mr*pow((1+z),3./2.),alpha0*1.3))/m/m;
+	}
+}
+
+/** \ingroup cosmolib
  * \brief The cumulative comoving number density of haloes with mass larger than m
  * (in solar masses/h) at redshift z; if the dummy argument a is given, the mass function
  * times m^a is integrated. If a is omitted, a default of zero is assumed. The dummy
- * argument t specifies which type of mass function is to be used, PS or ST.
+ * argument t specifies which type of mass function is to be used, 0 PS, 1 ST or 2 power-law
+ * (in this case also the slope alpha can be set as an additional parameter)
  */
-double COSMOLOGY::haloNumberDensity(double m, double z, double a, int t){
+double COSMOLOGY::haloNumberDensity(double m, double z, double a, int t,double alpha){
 	double n=0.0;
 	for (int i=1;i<ni;i++){
 		double y,y1;
 		switch (t){
 		    case 1: // Sheth-Tormen
 		    	y1=log(stdfdm(z,m/xf[i],1));
+		    	break;
+		    case 2: // power-law mass function
+		    	y1=log(powerlawdfdm(z,m/xf[i],alpha,1));
 		    	break;
 		    default: // Press-Schechter
 		    	y1=log(psdfdm(z,m/xf[i],1));
@@ -484,7 +510,7 @@ double COSMOLOGY::haloNumberDensityOnSky (double m, double z1, double z2,int t){
     double c=haloNumberDensity(m,x,0.0,t);
     n+=wf[i]*v*c;
   }
-  return n*(z2-z1)*2.7e10/41253; // Hubble Volume
+  return n*(z2-z1)*2.7e10/41253.; // Hubble Volume
 }
 
 /** \ingroup cosmolib
@@ -617,6 +643,38 @@ double COSMOLOGY::time(double z){
 		return CfactorT*timeEarly(a);
 	}
 }
+
+double COSMOLOGY::nonlinMass(double z){
+	  double Omz=Omegam(z);
+	  double dc;
+	  if(Omo<1 && Oml==0) dc=1.68647*pow(Omz,0.0185);
+	  if(Omo+Oml==1) dc=1.68647*pow(Omz,0.0055);
+	  double g = Dgrowth(z);
+	  double lm[3]={2.0,6.5,15.0};
+	  double s[3];
+	  for (;;){
+		for (size_t i=0;i<3;i++)
+	      s[i]=TopHatVariance(pow(10.,lm[i] ));
+	    if (*std::max_element(s,s+3)<dc/g)
+	      for (size_t i=0;i<3;i++) lm[i]*=0.5;
+	    else if (*std::min_element(s,s+3)>dc/g)
+	      for (size_t i=0;i<3;i++) lm[i]*=2.0;
+	    else
+	    {
+	      int i=0;
+	      if (s[1]>=dc/g) i=1;
+	      if (fabs(lm[2]-lm[0])<0.0001) break;
+	      double lml=lm[i];
+	      double lmu=lm[i+1];
+	      lm[0]=lml;
+	      lm[1]=0.5*(lml+lmu);
+	      lm[2]=lmu;
+	    }
+	  }
+	  double lm0 = (lm[0]+lm[1]+lm[2])/3.0;
+	  return pow(10.,lm0);
+}
+
 
 /** \ingroup cosmolib
  * \brief \f$ \sigma(m) \f$: the rms top-hat power in standard CDM model, normalized to sig8
