@@ -247,6 +247,9 @@ double dsigdM(double m);
 double f4(double u);
 double Deltao(double m);
 
+/* in nfw.c */
+double funcforconcentration(double cons);
+
 /* in powerEHv2.c */
 void TFset_parameters(double omega0hh, double f_baryon, double Tcmb);
 double TFfit_onek(double k, double *tf_baryon, double *tf_cdm);
