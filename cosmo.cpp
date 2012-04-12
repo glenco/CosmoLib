@@ -498,7 +498,7 @@ double COSMOLOGY::haloNumberDensity(double m, double z, double a, int t,double a
 /** \ingroup cosmolib
  * \brief Number of haloes with mass larger than m (in solar masses/h) between
  * redshifts z1 and z2 per square degree
- * The flag t specifies which type of mass function is to be used, PS or ST
+ * The flag t specifies which type of mass function is to be used, 0 PS or 1 ST
  */
 double COSMOLOGY::haloNumberDensityOnSky (double m, double z1, double z2,int t){
   double n=0.0;
@@ -692,6 +692,11 @@ double Deltao(double m){
 
 double f4(double u){
   return 8.6594e-12*pow(u,0.67)*pow( 1+pow( 3.5*pow(u,-0.1) +1.628e9*pow(u,-0.63),0.255) ,3.92157);
+}
+
+/// The radius to which a halo must shrink to be 200 times as dense as the average density of the universe.
+double COSMOLOGY::R200(double z,double mass){
+	return pow(3*mass/800/pi/rho_crit(z),1.0/3.);
 }
 
 /***************************************************************/

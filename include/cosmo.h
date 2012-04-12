@@ -11,6 +11,10 @@ using namespace std;
 #define Grav 4.7788e-20
 #endif
 
+#ifndef lightspeed
+#define lightspeed 2.99792458e5
+#endif
+
 #ifndef cosmo_declare
 
 /** \ingroup cosmolib
@@ -37,7 +41,7 @@ public:
     double DRradius(double zo,double z,double pfrac);
     double DRradius2(double zo,double z);
 
-	double De(double rad);
+	double scalefactor(double rad);
     double Omegam(double z);
     double rho_crit(double z);
     double gradius(double R,double rd);
@@ -63,6 +67,8 @@ public:
 
 	double getTimefromDeltaC(double dc);
 	double getZfromDeltaC(double dc);
+
+	double R200(double z,double mass);
 
 	/// accesser functions:
 
@@ -113,8 +119,19 @@ public:
 	short getDEtype(){return darkenergy;}
     double getSigma8(){return sig8;}
 
+
+    void dzdangDist(double D,double z[],double dzdD[]);
+
     COSMOLOGY();
     ~COSMOLOGY();
+
+    // methods for NFW profile
+    double NFW_V200(double M200,double R200);
+    double NFW_Vmax(double cons,double M200,double R200);
+    double NFW_Vr(double x,double cons,double M200,double R200);
+    double NFW_deltac(double cons);
+    double NFW_Concentration(double Vmax,double M200,double R200);
+    double NFW_rho(double cons,double x);
 
 private:
 

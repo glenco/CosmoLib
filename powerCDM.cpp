@@ -82,7 +82,7 @@ double COSMOLOGY::powerCDMz(
  * \brief The scale factor, a = 1/(1+z), as a function of radius in Mpc
  */
 
-double COSMOLOGY::De(double rad){
+double COSMOLOGY::scalefactor(double rad){
   double a[1];
   int nok,nbad;
   void dir(double,double [],double []);
@@ -107,6 +107,11 @@ double COSMOLOGY::De(double rad){
 void dir(double r,double a[],double dadr[]){
   dadr[1] = -hh*sqrt( a[1]*(omo+oml*pow(a[1],3)+(omo+oml-1.0)*a[1]) )/3.0e3;
 }
+
+
+//void COSMOLOGY::dzdangDist(double D,double z[],double dzdD[]){
+//	dzdD[1] = (1+z[1])/( drdz(1+z[1]) - angDist(0,z[1]) );
+//}
 
 /** \ingroup cosmolib
  * \brief Logorithmic slope of the power spectrum
