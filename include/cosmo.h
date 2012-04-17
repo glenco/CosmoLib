@@ -1,8 +1,6 @@
 #include <iostream>
 #include <vector>
 
-using namespace std;
-
 #ifndef pi
 #define pi  3.141593
 #endif
