@@ -49,6 +49,8 @@ COSMOLOGY::COSMOLOGY(){
 }
 
 COSMOLOGY::~COSMOLOGY(){
+	delete[] xf;
+	delete[] wf;
 }
 
 /** \ingroup cosmolib
