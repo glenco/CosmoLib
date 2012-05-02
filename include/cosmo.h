@@ -162,8 +162,8 @@ private:
   short darkenergy;
 
   /* table for growth parameter */
-    auto_ptr<double> *aa;
-    auto_ptr<double> *growth;
+    std::auto_ptr<double> *aa;
+    std::auto_ptr<double> *growth;
     int Ntable;
 
     double A;
