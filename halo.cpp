@@ -43,11 +43,11 @@ void HALO::reset(double mr,double zr){
 }
 
 /** \ingroup cosmolib
- * \brief Virial radius of the halo in Mpc/h
+ * \brief Virial radius of the halo in Mpc
  */
 double HALO:: getRvir(int caseunit){
 	double d=co->DeltaVir(z,caseunit)*Omo*CRITD2/Omz;
-	return pow( 3*m/(4*M_PI*d), 0.3333 )/(1+z);
+	return co->gethubble()*pow( 3*m/(4*M_PI*d), 0.3333 )/(1+z);
 }
 
 /** \ingroup cosmolib

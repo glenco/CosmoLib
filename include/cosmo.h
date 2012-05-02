@@ -1,8 +1,6 @@
 #include <iostream>
 #include <vector>
 
-using namespace std;
-
 #ifndef pi
 #define pi  3.141593
 #endif
@@ -81,11 +79,11 @@ public:
 	double getindex(){ return n; power_normalize(sig8);}
 
     /// Omega matter, renormalizes P(k) to keep sig8 fixed
-	void setOmega_matter(double Omega_matter,bool FLAT = false){Omo = Omega_matter; if(FLAT) Oml = Omo -1 ; TFmdm_set_cosm(); power_normalize(sig8);}
+	void setOmega_matter(double Omega_matter,bool FLAT = false){Omo = Omega_matter; if(FLAT) Oml = 1-Omo ; TFmdm_set_cosm(); power_normalize(sig8);}
 	double getOmega_matter(){return Omo;}
 
     /// Omega lambda, renormalizes P(k) to keep sig8 fixed
-	void setOmega_lambda(double Omega_lambda,bool FLAT = false){Oml = Omega_lambda;  if(FLAT) Oml = Omo -1 ; TFmdm_set_cosm(); power_normalize(sig8);}
+	void setOmega_lambda(double Omega_lambda,bool FLAT = false){Oml = Omega_lambda;  if(FLAT) Oml = 1-Omo ; TFmdm_set_cosm(); power_normalize(sig8);}
 	double getOmega_lambda(){return Oml;}
 
     /// Omega baryon, renormalizes P(k) to keep sig8 fixed
@@ -246,6 +244,9 @@ double fmaxi(double a,double b);
 double dsigdM(double m);
 double f4(double u);
 double Deltao(double m);
+
+/* in nfw.c */
+double funcforconcentration(double cons);
 
 /* in powerEHv2.c */
 void TFset_parameters(double omega0hh, double f_baryon, double Tcmb);

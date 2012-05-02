@@ -16,6 +16,8 @@
 #include <nrD.h>
 #include <cosmo.h>
 
+using namespace std;
+
 double vg;
 
 /// Circular velocity at R200 in km/s

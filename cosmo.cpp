@@ -25,6 +25,8 @@ int ni=32;
 static double alph;  /* DR-distance parameter */
 static double omo, oml, hh;
 
+using namespace std;
+
 COSMOLOGY::COSMOLOGY(){
 	SetConcordenceCosmology();
 
@@ -47,6 +49,8 @@ COSMOLOGY::COSMOLOGY(){
 }
 
 COSMOLOGY::~COSMOLOGY(){
+	delete[] xf;
+	delete[] wf;
 }
 
 /** \ingroup cosmolib
@@ -704,7 +708,7 @@ double COSMOLOGY::R200(double z,double mass){
 /***************************************************************/
 double COSMOLOGY::nintegrateDcos(pt2MemFunc func, double a,double b,double tols)
 {
-   void polintD(double xa[], double ya[], int n, double x, double *y, double *dy);
+   //void polintD(double xa[], double ya[], int n, double x, double *y, double *dy);
    //double trapzdDcoslocal(double (*func)(double), double a, double b, int n);
    void nrerror(char error_text[]);
    double ss,dss;
