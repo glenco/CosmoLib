@@ -620,7 +620,7 @@ double COSMOLOGY::getTimefromDeltaC(double dc){
 }
 
 double COSMOLOGY::timeEarly(double a){
-	double aEqual=8.3696e-05/Omo;
+	double aEqual=8.3696e-05/Omo; // set by hand
 	double r=aEqual/a;
 	return 2.0/3.0*a*sqrt(a)/sqrt(Omo)*((1-2*r)*sqrt(1+r)+2*r*sqrt(r));
 }

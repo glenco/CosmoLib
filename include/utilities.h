@@ -59,7 +59,7 @@ int locate (const std::vector<T> &v, const T x)
 }
 
 /** \ingroup Utill
- * \brief Template function that waps values of inputs
+ * \brief Template function that maps values of inputs
  */
 template <class T>
 void swap (T a,T b){
