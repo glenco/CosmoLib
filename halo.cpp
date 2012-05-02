@@ -89,7 +89,7 @@ double HALO:: getFormationTime(double f){
  * if 2 the concentration according to Giocoli et al. 2012 is returned
  * is returned
  */
-double HALO:: getConcentration(int caseunit){
+double HALO:: getConcentration(int caseunit,double alpha0){
 		double w=0.029;
 		double mu=0.097;
 		double alpha=-110.001;
@@ -97,7 +97,7 @@ double HALO:: getConcentration(int caseunit){
 		double gamma=16.885;
 		double a,b,logc;
 		double t004,t05,t0;
-
+		double h0,hz;
 		switch (caseunit){
 	    	case (1): // Munoz-Cuartas et al. 2011
 	    		a = w*z-mu;
@@ -110,10 +110,17 @@ double HALO:: getConcentration(int caseunit){
 			  t05=getFormationTime(0.5);
 			  t0=co->time(z);
 			  return 0.45*(4.23+pow(t0/t004,1.15)+pow(t0/t05,2.3));
- 	    	  default: // Zhao et al. 2009
-	    		  t004=getFormationTime(0.04);
-	    		  t0=co->time(z);
-	    		  return 4*pow(1+pow(t0/3.75/t004,8.4),1./8.);
+			  break;
+	    	case (3): // power-law c-m relation
+				alpha0 = alpha0/(1+z);
+	    		h0 = co->gethubble();
+	    		hz = h0/co->drdz(1+z);
+	    		return 10.*pow(m/1.e+12,alpha0)*pow(h0/hz,2./3.);
+	    		break;
+ 	    	default: // Zhao et al. 2009
+			  t004=getFormationTime(0.04);
+			  t0=co->time(z);
+			  return 4*pow(1+pow(t0/3.75/t004,8.4),1./8.);
 		}
 
 		return 0;
