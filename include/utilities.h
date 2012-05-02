@@ -69,7 +69,7 @@ void swap (T a,T b){
 	b = tmp;
 }
 
-double getY(std:: vector<double> x, std:: vector<double> y,double xi);
+double InterpolateYvec(std:: vector<double> x, std:: vector<double> y,double xi);
 
 double arctanh(double x);
 

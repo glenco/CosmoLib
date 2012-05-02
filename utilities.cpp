@@ -24,7 +24,7 @@ double fmaxi(double a,double b){
  * Interpolate (cubic interpolation) the value of a function
  * \f$ y=y(x) \f$ given xi
  */
-double getY(std:: vector<double> x, std:: vector<double> y,double xi){
+double InterpolateYvec(std:: vector<double> x, std:: vector<double> y,double xi){
 	int n=x.size();
 	if(x[n-1]>x[0]){
 		if(xi>x[n-1]) return y[n-1];
