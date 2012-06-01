@@ -126,6 +126,24 @@ double HALO:: getConcentration(int caseunit,double alpha0){
 		return 0;
 }
 
+/** \ingroup cosmolib
+ * \brief The halo total mass density in haloes with mass larger than m is returned,
+ * if the integer 1 is given total mass density in haloes rescaled to the background is returned
+ * two more parameter can be set,
+ *   the first that define the halo mass function to use
+ *       0 Press-Shechter
+ *       1 Sheth-Tormen
+ *       2 Power-law
+ *  the second set the slope of the power-law mass function
+ */
+double HALO :: totalMassDensityinHalos(int caseunit,int t,double alpha){
+  switch (caseunit){
+	    	case (1):
+	    		return co->haloNumberDensity(m,z,1,t,alpha)/(CRITD2*co->Omegam(0.));
+	    		break;
+	    	default:
+	    		return co->haloNumberDensity(m,z,1,t,alpha);
+  }
 
-
+}
 

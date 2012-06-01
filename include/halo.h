@@ -23,6 +23,8 @@ public:
     double getConcentration(int caseunit=0,double alpha0=-0.1);
     double getFormationTime(double f=0.5);
     double getFormationRedshift(double f=0.5);
+    double totalMassDensityinHalos(int caseunit=0,int t=0,double alpha=1./6.);
+
     void reset(double,double);
     virtual ~HALO ();
 protected:

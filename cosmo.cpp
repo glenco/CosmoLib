@@ -21,7 +21,7 @@
 int kmax,kount;
 double *xp,**yp,dxsav;
 float *xf,*wf;
-int ni=32;
+int ni=64;
 static double alph;  /* DR-distance parameter */
 static double omo, oml, hh;
 
@@ -480,23 +480,27 @@ double COSMOLOGY::powerlawdfdm(
  */
 double COSMOLOGY::haloNumberDensity(double m, double z, double a, int t,double alpha){
 	double n=0.0;
+	double lm1 = log(m);
+	double lm2 = 2.3*100.; // upper limit in natural log: I think 10^100 M_sun/h should be enough
 	for (int i=1;i<ni;i++){
+		double lx=(lm2-lm1)*xf[i]+lm1;
+		double x = exp(lx);
 		double y,y1;
 		switch (t){
-		    case 1: // Sheth-Tormen
-		    	y1=log(stdfdm(z,m/xf[i],1));
-		    	break;
-		    case 2: // power-law mass function
-		    	y1=log(powerlawdfdm(z,m/xf[i],alpha,1));
-		    	break;
-		    default: // Press-Schechter
-		    	y1=log(psdfdm(z,m/xf[i],1));
-		    	break;
-	    }
-		y=exp(y1+(a+1.0)*log(m)-(a+2.0)*log(xf[i]));
+			case 1: // Sheth-Tormen
+				y1=log(stdfdm(z,x,1));
+				break;
+			case 2: // power-law mass function
+				y1=log(powerlawdfdm(z,x,alpha,1));
+				break;
+			default: // Press-Schechter
+				y1=log(psdfdm(z,x,1));
+				break;
+		}
+		y = exp(y1+(a+1.0)*lx);
 		n+=wf[i]*y;
 	}
-	return n;
+	return n*(lm2-lm1);
 }
 
 /** \ingroup cosmolib
