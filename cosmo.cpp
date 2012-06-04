@@ -319,12 +319,18 @@ double COSMOLOGY::drdz(double x){
   if(temp<=0.0) return -1.0e30;                   // nonphysical values
   return 1.0/sqrt(temp);
 }
+double COSMOLOGY::adrdz(double x){
+  return drdz(x)/x;
+}
 
 /** \ingroup cosmolib
  * \brief Same as drdz, but incorporates dark energy through w and w1.
  */
 double COSMOLOGY::drdz_dark(double x){
 	return 1.0 / sqrt(Omo*x*x*x+Oml*pow(x,3*(1+w+w1))*exp(-3*w1*(x-1)/x)-(Omo+Oml-1)*x*x);
+}
+double COSMOLOGY::adrdz_dark(double x){
+  return drdz_dark(x)/x;
 }
 
 /** \ingroup cosmolib
@@ -333,6 +339,14 @@ double COSMOLOGY::drdz_dark(double x){
 double COSMOLOGY::coorDist(double zo,double z){
 	if( (w ==-1.0) && (w1 == 0.0) ) return nintegrateDcos(&COSMOLOGY::drdz,1+zo,1+z,1.0e-9)*3.0e3/h;
 	return nintegrateDcos(&COSMOLOGY::drdz_dark,1+zo,1+z,1.0e-9)*3.0e3/h;
+}
+
+/** \ingroup cosmolib
+ * \brief Non-comoving radial distance in units Mpc.  This is coorDist only integrated with the scale factor a=1/(1+z).
+ */
+double COSMOLOGY::radDist(double zo,double z){
+	if( (w ==-1.0) && (w1 == 0.0) ) return nintegrateDcos(&COSMOLOGY::adrdz,1+zo,1+z,1.0e-9)*3.0e3/h;
+	return nintegrateDcos(&COSMOLOGY::adrdz_dark,1+zo,1+z,1.0e-9)*3.0e3/h;
 }
 
 /** \ingroup cosmolib
@@ -478,7 +492,13 @@ double COSMOLOGY::powerlawdfdm(
  * argument t specifies which type of mass function is to be used, 0 PS, 1 ST or 2 power-law
  * (in this case also the slope alpha can be set as an additional parameter)
  */
-double COSMOLOGY::haloNumberDensity(double m, double z, double a, int t,double alpha){
+double COSMOLOGY::haloNumberDensity(
+		double m      /// minimum mass of halos
+		, double z    /// redshift
+		, double a    /// moment of mass function that is wanted
+		, int t       /// mass function type: 0 Press-Schecter, 1 Sheth-Torman, 2 power-law
+		,double alpha /// exponent of power law if t==2
+		){
 	double n=0.0;
 	double lm1 = log(m);
 	double lm2 = 2.3*100.; // upper limit in natural log: I think 10^100 M_sun/h should be enough

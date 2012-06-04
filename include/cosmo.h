@@ -34,6 +34,7 @@ public:
     // Lengths
     double rcurve();
     double coorDist(double zo,double z);
+    double radDist(double zo,double z);
     double angDist(double zo,double z);
     double lumDist(double zo,double z);
     double DRradius(double zo,double z,double pfrac);
@@ -44,7 +45,9 @@ public:
     double rho_crit(double z);
     double gradius(double R,double rd);
     double drdz(double x);
+    double adrdz(double x);
     double drdz_dark(double x);
+    double adrdz_dark(double x);
     double DeltaVir(double z,int caseunit=0);
     double time(double z);
     double nonlinMass(double z);

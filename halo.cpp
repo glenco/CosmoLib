@@ -45,7 +45,9 @@ void HALO::reset(double mr,double zr){
 /** \ingroup cosmolib
  * \brief Virial radius of the halo in Mpc
  */
-double HALO:: getRvir(int caseunit){
+double HALO:: getRvir(
+		int caseunit    /// by default uses the Brayan and Norman fit, if equal to 1 uses the fit by Felix and Stšhr
+		){
 	double d=co->DeltaVir(z,caseunit)*Omo*CRITD2/Omz;
 	return co->gethubble()*pow( 3*m/(4*M_PI*d), 0.3333 )/(1+z);
 }
@@ -89,7 +91,10 @@ double HALO:: getFormationTime(double f){
  * if 2 the concentration according to Giocoli et al. 2012 is returned
  * is returned
  */
-double HALO:: getConcentration(int caseunit,double alpha0){
+double HALO:: getConcentration(
+		int caseunit     /// set relation used - (0) Zhao et al. 2009, (1) Munoz-Cuartas et al. 2011 (2) Giocoli et al. 2012 (3) power-law c-m relation
+		,double alpha0   /// power-law slope if caseunit == 3
+		){
 		double w=0.029;
 		double mu=0.097;
 		double alpha=-110.001;
@@ -131,12 +136,14 @@ double HALO:: getConcentration(int caseunit,double alpha0){
  * if the integer 1 is given total mass density in haloes rescaled to the background is returned
  * two more parameter can be set,
  *   the first that define the halo mass function to use
- *       0 Press-Shechter
- *       1 Sheth-Tormen
- *       2 Power-law
+ *
  *  the second set the slope of the power-law mass function
  */
-double HALO :: totalMassDensityinHalos(int caseunit,int t,double alpha){
+double HALO :: totalMassDensityinHalos(
+		int caseunit   /// if == 1, gives fraction of current average density, otherwise density in Msun/Mpc^3
+		,int t	       /// choice of mass function, 0 Press-Shechter, 1 Sheth-Tormen, 2 Power-law
+		,double alpha  /// slope of power law if t==2
+		){
   switch (caseunit){
 	    	case (1):
 	    		return co->haloNumberDensity(m,z,1,t,alpha)/(CRITD2*co->Omegam(0.));
