@@ -27,6 +27,43 @@ static double omo, oml, hh;
 
 using namespace std;
 
+COSMOLOGY::COSMOLOGY(double omegam,double omegal,double hh, double ww) :
+	Omo(omegam), Oml(omegal), h(hh), w(ww){
+	n=1.0;
+	//Gamma=0.0;
+	Omnu=0;
+	Nnu=3.0;
+	dndlnk=0.0;
+	gamma=0.55;
+
+	darkenergy=1;
+
+	/* if 2 gamma parameterization is used for dark energy */
+	/* if 1 w,w_1 parameterization is used for dark energy */
+
+	// set parameters for Eisenstein&Hu power spectrum
+
+	TFmdm_set_cosm();
+	power_normalize(0.812);
+
+	// allocate step and weight for gauleg integration
+	xf=new float[ni];
+	wf=new float[ni];
+	gauleg(0.,1.,xf,wf,ni);
+	// construct table of log(1+z), time, and \delta_c for interpolation
+	fill_linear(vlz,ni,0.,1.7);
+	double dc;
+	for(int i=0;i<ni;i++){
+	  double z = -1. + pow(10.,vlz[i]);
+	  double Omz=Omegam(z);
+	  if(Omo<1 && Oml==0) dc=1.68647*pow(Omz,0.0185);
+	  if(Omo+Oml==1) dc=1.68647*pow(Omz,0.0055);
+	  vDeltaCz.push_back(dc/Dgrowth(z));
+	  vt.push_back(time(z));
+	}
+
+}
+
 COSMOLOGY::COSMOLOGY(){
 	SetConcordenceCosmology();
 

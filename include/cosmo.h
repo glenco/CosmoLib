@@ -124,6 +124,7 @@ public:
     void dzdangDist(double D,double z[],double dzdD[]);
 
     COSMOLOGY();
+    COSMOLOGY(double omegam,double omegal,double h, double w);
     ~COSMOLOGY();
 
     // methods for NFW profile
