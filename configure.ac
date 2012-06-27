@@ -3,7 +3,7 @@
 
 AC_PREREQ(2.61)
 AC_INIT([CosmoLib], [1.0], [margie.petkova@gmail.com])
-AM_INIT_AUTOMAKE([1.10 no-define foreign])
+AM_INIT_AUTOMAKE([1.10])
 AC_CONFIG_HEADER([config.h])
 
 # Checks for programs.
@@ -27,9 +27,9 @@ AC_CHECK_FUNCS([pow sqrt])
 # Get the NR include path
 AC_ARG_WITH(nr,AS_HELP_STRING([--with-nr]
         ,[location of nr])
-        ,[NR_DIR="$withval"]
-        ,[NR_DIR=""])
-AC_SUBST(NR_DIR)
+        ,[NRINCL="-I$withval/include"]
+        ,[AC_MSG_ERROR([Need to specify the NR path])])
+AC_SUBST(NRINCL)
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT

@@ -698,7 +698,7 @@ am__fastdepCC_FALSE
 CPP
 GREP
 EGREP
-NR_DIR
+NRINCL
 LIBOBJS
 LTLIBOBJS'
 ac_subst_files=''
@@ -2081,6 +2081,15 @@ fi
  PACKAGE='cosmolib'
  VERSION='1.0'
 
+
+cat >>confdefs.h <<_ACEOF
+#define PACKAGE "$PACKAGE"
+_ACEOF
+
+
+cat >>confdefs.h <<_ACEOF
+#define VERSION "$VERSION"
+_ACEOF
 
 # Some tools Automake needs.
 
@@ -5026,10 +5035,12 @@ done
 
 # Check whether --with-nr was given.
 if test "${with_nr+set}" = set; then
-  withval=$with_nr; NR_DIR="$withval"
+  withval=$with_nr; NRINCL="-I$withval/include"
 
 else
-  NR_DIR=""
+  { { echo "$as_me:$LINENO: error: Need to specify the NR path" >&5
+echo "$as_me: error: Need to specify the NR path" >&2;}
+   { (exit 1); exit 1; }; }
 fi
 
 
@@ -5769,7 +5780,7 @@ am__fastdepCC_FALSE!$am__fastdepCC_FALSE$ac_delim
 CPP!$CPP$ac_delim
 GREP!$GREP$ac_delim
 EGREP!$EGREP$ac_delim
-NR_DIR!$NR_DIR$ac_delim
+NRINCL!$NRINCL$ac_delim
 LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
