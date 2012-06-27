@@ -1,5 +1,5 @@
 INCL = -I./include/ \
-	-I../NR/include
+	-I$(NR_DIR)/include
 
 OUT = libCosmoLib.a
 
@@ -30,12 +30,9 @@ CLEAR = clear
 .cpp.o:
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(OUT): $(OBJ)
+all: $(OBJ)
 	ar rcs $(OUT) $(OBJ)
 
 clean:
 	$(RM) $(OBJ) $(OUT) *~
 
-help:
-	$(CLEAR)	
-	@echo 
