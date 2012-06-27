@@ -1,5 +1,7 @@
 #include <iostream>
 #include <vector>
+#include <memory>
+#include <cstdlib>
 
 #ifndef pi
 #define pi  3.141593

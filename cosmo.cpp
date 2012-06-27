@@ -10,6 +10,7 @@
 #include <nrutil.h>
 #include <cosmo.h>
 #include <utilities.h>
+#include <algorithm>
 
 #define JMAX 34
 #define JMAXP (JMAX+1)
@@ -720,9 +721,9 @@ double COSMOLOGY::nonlinMass(double z){
 	  for (;;){
 		for (size_t i=0;i<3;i++)
 	      s[i]=TopHatVariance(pow(10.,lm[i] ));
-	    if (*std::max_element(s,s+3)<dc/g)
+	    if (*max_element(s,s+3)<dc/g)
 	      for (size_t i=0;i<3;i++) lm[i]*=0.5;
-	    else if (*std::min_element(s,s+3)>dc/g)
+	    else if (*min_element(s,s+3)>dc/g)
 	      for (size_t i=0;i<3;i++) lm[i]*=2.0;
 	    else
 	    {
