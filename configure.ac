@@ -24,22 +24,12 @@ AC_TYPE_SIZE_T
 # Checks for library functions.
 AC_CHECK_FUNCS([pow sqrt])
 
-# Get the NR lib include path
-dnl Check for trang.
-nr=yes
-AC_ARG_WITH(nr,
-AS_HELP_STRING([--with-nr=PATH],
-	       [Specify the command to run the trang schema converter]),
-[
-    nr="$withval"
-])
-if test "$nr" = "yes"; then
-    AC_PATH_PROG(NR_DIR, nr, none)
-else
-    NR_DIR="$nr"
-    AC_SUBST(NR_DIR)
-fi
-
+# Get the NR include path
+AC_ARG_WITH(nr,AS_HELP_STRING([--with-nr]
+        ,[location of nr])
+        ,[NR_DIR="$withval"]
+        ,[NR_DIR=""])
+AC_SUBST(NR_DIR)
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
