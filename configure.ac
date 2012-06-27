@@ -3,7 +3,7 @@
 
 AC_PREREQ(2.61)
 AC_INIT([CosmoLib], [1.0], [margie.petkova@gmail.com])
-AM_INIT_AUTOMAKE([1.10])
+AM_INIT_AUTOMAKE()
 AC_CONFIG_HEADER([config.h])
 
 # Checks for programs.
