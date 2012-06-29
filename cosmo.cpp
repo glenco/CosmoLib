@@ -573,7 +573,7 @@ double COSMOLOGY::haloNumberDensityOnSky (double m, double z1, double z2,int t){
     double d=angDist(0.0,x)/3.0e3*h;
     double f=1.0+x;
     double v=4.0*pi*d*d*DpropDz(x)*f*f*f;
-    double c=haloNumberDensity(m,x,0.0,t);
+    double c=haloNumberDensity(m,x,0.0,t,0.16667);
     n+=wf[i]*v*c;
   }
   return n*(z2-z1)*2.7e10/41253.; // Hubble Volume
