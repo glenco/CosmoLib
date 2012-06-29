@@ -1,3 +1,5 @@
+NR_DIR = /Users/mpetkova/Code/NR
+
 INCL = -I./include/ \
 	-I$(NR_DIR)/include
 
