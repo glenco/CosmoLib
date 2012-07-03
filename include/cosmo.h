@@ -62,8 +62,8 @@ public:
     double psdfdm(double z,double m,int caseunit=0);
 	double stdfdm(double z,double m,int caseunit=0);
 	double powerlawdfdm(double z,double m,double alpha,int caseunit=0);
-	double haloNumberDensity(double m,double z,double a, int t,double alpha=1./6.);
-	double haloNumberDensityOnSky (double m,double z1,double z2,int t);
+	double haloNumberDensity(double m,double z,double a, int t,double alpha);
+	double haloNumberDensityOnSky (double m,double z1,double z2,int t,double alpha);
 	double TopHatVariance(double m);
 	double TopHatVarianceR(double R,double z);
 	double TopHatVarianceM(double M,double z);

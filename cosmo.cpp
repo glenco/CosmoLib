@@ -566,14 +566,14 @@ double COSMOLOGY::haloNumberDensity(
  * redshifts z1 and z2 per square degree
  * The flag t specifies which type of mass function is to be used, 0 PS or 1 ST
  */
-double COSMOLOGY::haloNumberDensityOnSky (double m, double z1, double z2,int t){
+double COSMOLOGY::haloNumberDensityOnSky (double m, double z1, double z2,int t, double alpha){
   double n=0.0;
   for (int i=1;i<ni;i++){
     double x=(z2-z1)*xf[i]+z1;
     double d=angDist(0.0,x)/3.0e3*h;
     double f=1.0+x;
     double v=4.0*pi*d*d*DpropDz(x)*f*f*f;
-    double c=haloNumberDensity(m,x,0.0,t,0.16667);
+    double c=haloNumberDensity(m,x,0.0,t,alpha);
     n+=wf[i]*v*c;
   }
   return n*(z2-z1)*2.7e10/41253.; // Hubble Volume
