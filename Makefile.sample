@@ -1,4 +1,4 @@
-NR_DIR = /Users/mpetkova/Code/NR
+NR_DIR = /Users/cgiocoli/Dropbox/Astro/Codes/EclipseWorkspace/NR
 
 INCL = -I./include/ \
 	-I$(NR_DIR)/include

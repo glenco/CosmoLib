@@ -21,8 +21,9 @@
 
 int kmax,kount;
 double *xp,**yp,dxsav;
-float *xf,*wf;
-int ni=64;
+int const ni=64;
+//float *xf,*wf;
+float xf[ni],wf[ni];
 static double alph;  /* DR-distance parameter */
 static double omo, oml, hh;
 
@@ -48,8 +49,8 @@ COSMOLOGY::COSMOLOGY(double omegam,double omegal,double hh, double ww) :
 	power_normalize(0.812);
 
 	// allocate step and weight for gauleg integration
-	xf=new float[ni];
-	wf=new float[ni];
+	// xf=new float[ni];
+	// wf=new float[ni];
 	gauleg(0.,1.,xf,wf,ni);
 	// construct table of log(1+z), time, and \delta_c for interpolation
 	fill_linear(vlz,ni,0.,1.7);
@@ -69,8 +70,8 @@ COSMOLOGY::COSMOLOGY(){
 	SetConcordenceCosmology();
 
 	// allocate step and weight for gauleg integration
-	xf=new float[ni];
-	wf=new float[ni];
+	// xf=new float[ni];
+	// wf=new float[ni];
 	gauleg(0.,1.,xf,wf,ni);
 	// construct table of log(1+z), time, and \delta_c for interpolation
 	fill_linear(vlz,ni,0.,1.7);
@@ -87,8 +88,8 @@ COSMOLOGY::COSMOLOGY(){
 }
 
 COSMOLOGY::~COSMOLOGY(){
-	delete[] xf;
-	delete[] wf;
+  // delete[] xf;
+  // delete[] wf;
 }
 
 /** \ingroup cosmolib
@@ -758,6 +759,45 @@ double Deltao(double m){
 
 double f4(double u){
   return 8.6594e-12*pow(u,0.67)*pow( 1+pow( 3.5*pow(u,-0.1) +1.628e9*pow(u,-0.63),0.255) ,3.92157);
+}
+
+/** \ingroup cosmolib
+ * \brief Halo bias, uses formalism by Mo-White
+ * by default it gives the halo bias by Mo-White
+ * t=1 returns the Sheth-Tormen 99 while
+ * setting t=2 the Sheth-Mo-Tormen 2001 bias
+ */
+double COSMOLOGY::bias (double m, double z, int t){
+  double dc,Omz,sig,Dg;
+
+  omo=Omo;
+  oml=Oml;
+  hh = h;
+  
+  Dg=Dgrowth(z);
+  sig=sig8*Deltao(m);
+
+  Omz=Omegam(z);
+
+  dc=1.68647;
+  if(Omo<1 && Oml==0) dc*=pow(Omz,0.0185);
+  if(Omo+Oml==1) dc*=pow(Omz,0.0055);
+
+  double nu2 = pow(dc/Dg/sig,2);
+  double nu = dc/Dg/sig;
+  
+  switch (t){
+  case 1: // Sheth-Tormen 99
+    return 1+((0.707*nu2-1)/dc)+(2*0.3/dc)/(1 + pow(0.707*nu2,0.3));
+    break;
+  case 2: // Sheth-Mo-Tormen 2001
+    return 1+1/sqrt(0.707)/dc*(sqrt(0.707)*(0.707*nu*nu)+sqrt(0.707)*0.5*pow(0.707*nu*nu,0.4)
+			       - pow(0.707*nu*nu,0.6)/
+			       (pow(0.707*nu*nu,0.6) + 0.5*(1.-0.6)*(1-0.6/2.)));
+    break;
+  default: // Mo-White
+    return 1+(nu2-1)/dc;
+  }
 }
 
 /// The radius to which a halo must shrink to be 200 times as dense as the average density of the universe.

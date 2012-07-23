@@ -42,7 +42,7 @@ public:
     double DRradius(double zo,double z,double pfrac);
     double DRradius2(double zo,double z);
 
-	double scalefactor(double rad);
+    double scalefactor(double rad);
     double Omegam(double z);
     double rho_crit(double z);
     double gradius(double R,double rd);
@@ -53,15 +53,15 @@ public:
     double DeltaVir(double z,int caseunit=0);
     double time(double z);
     double nonlinMass(double z);
-
     // Stuff having to do with the power spectrum
     double power_normalize(double sigma8);
     double power_linear(double k,double z);
     double Dgrowth(double z);
     double powerCDMz(double k,double z);
     double psdfdm(double z,double m,int caseunit=0);
-	double stdfdm(double z,double m,int caseunit=0);
-	double powerlawdfdm(double z,double m,double alpha,int caseunit=0);
+    double bias (double m, double z, int t=0);
+    double stdfdm(double z,double m,int caseunit=0);
+    double powerlawdfdm(double z,double m,double alpha,int caseunit=0);
 	double haloNumberDensity(double m,double z,double a, int t,double alpha);
 	double haloNumberDensityOnSky (double m,double z1,double z2,int t,double alpha);
 	double TopHatVariance(double m);
