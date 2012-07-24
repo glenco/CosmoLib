@@ -543,10 +543,11 @@ double COSMOLOGY::haloNumberDensity(
 	double n=0.0;
 	double lm1 = log(m);
 	double lm2 = 2.3*100.; // upper limit in natural log: I think 10^100 M_sun/h should be enough
-	for (int i=1;i<ni;i++){
-		double lx=(lm2-lm1)*xf[i]+lm1;
-		double x = exp(lx);
-		double y,y1;
+	double lx,x,y,y1;
+
+	for (int i=0;i<ni;i++){
+		lx=(lm2-lm1)*xf[i]+lm1;
+		x = exp(lx);
 		switch (t){
 			case 1: // Sheth-Tormen
 				y1=log(stdfdm(z,x,1));
@@ -571,13 +572,15 @@ double COSMOLOGY::haloNumberDensity(
  */
 double COSMOLOGY::haloNumberDensityOnSky (double m, double z1, double z2,int t, double alpha){
   double n=0.0;
-  for (int i=1;i<ni;i++){
-    double x=(z2-z1)*xf[i]+z1;
-    double d=angDist(0.0,x)/3.0e3*h;
-    double f=1.0+x;
-    double v=4.0*pi*d*d*DpropDz(x)*f*f*f;
-    double c=haloNumberDensity(m,x,0.0,t,alpha);
-    n+=wf[i]*v*c;
+  double x,d,f,v,c;
+
+   for (int i=0;i<ni;i++){
+	   x=(z2-z1)*xf[i]+z1;
+	   d=angDist(0.0,x)/3.0e3*h;
+	   f=1.0+x;
+	   v=4.0*pi*d*d*DpropDz(x)*f*f*f;
+	   c=haloNumberDensity(m,x,0.0,t,alpha);
+	   n+=wf[i]*v*c;
   }
   return n*(z2-z1)*2.7e10/41253.; // Hubble Volume
 }
@@ -700,10 +703,10 @@ double COSMOLOGY::time(double z){
 	double aEqual=8.3696e-05/Omo;  // equality
 	double e=5.*aEqual;
 	if(a>=e){
-		double n=0;
-		for (int i=1;i<ni;i++){
-			double x = e+(a-e)*xf[i];
-			double y = 1./x*drdz_dark(1/x);
+		double n=0,x,y;
+		for (int i=0;i<ni;i++){
+			x = e+(a-e)*xf[i];
+			y = 1./x*drdz_dark(1/x);
 			n+=wf[i]*y;
 		}
 		return (n*(a-e)+timeEarly(e))*CfactorT;
