@@ -59,7 +59,7 @@ public:
     double Dgrowth(double z);
     double powerCDMz(double k,double z);
     double psdfdm(double z,double m,int caseunit=0);
-    double bias (double m, double z, int t=0);
+    double halo_bias (double m, double z, int t=0);
     double stdfdm(double z,double m,int caseunit=0);
     double powerlawdfdm(double z,double m,double alpha,int caseunit=0);
 	double haloNumberDensity(double m,double z,double a, int t,double alpha);
@@ -194,6 +194,9 @@ private:
 
     double nintegrateDcos(pt2MemFunc func,double a,double b,double tols);
     double trapzdDcoslocal(pt2MemFunc func, double a, double b, int n);
+
+    int ni;
+    float *xf,*wf;
 
     /* in powerEH.c */
     short TFmdm_set_cosm_change_z(double redshift);

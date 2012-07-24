@@ -21,9 +21,9 @@
 
 int kmax,kount;
 double *xp,**yp,dxsav;
-int const ni=64;
+//int const ni=64;
 //float *xf,*wf;
-float xf[ni],wf[ni];
+//float xf[ni],wf[ni];
 static double alph;  /* DR-distance parameter */
 static double omo, oml, hh;
 
@@ -49,9 +49,10 @@ COSMOLOGY::COSMOLOGY(double omegam,double omegal,double hh, double ww) :
 	power_normalize(0.812);
 
 	// allocate step and weight for gauleg integration
-	// xf=new float[ni];
-	// wf=new float[ni];
-	gauleg(0.,1.,xf,wf,ni);
+	ni = 64;
+	xf=new float[ni];
+	wf=new float[ni];
+	gauleg(0.,1.,xf-1,wf-1,ni);
 	// construct table of log(1+z), time, and \delta_c for interpolation
 	fill_linear(vlz,ni,0.,1.7);
 	double dc;
@@ -70,9 +71,10 @@ COSMOLOGY::COSMOLOGY(){
 	SetConcordenceCosmology();
 
 	// allocate step and weight for gauleg integration
-	// xf=new float[ni];
-	// wf=new float[ni];
-	gauleg(0.,1.,xf,wf,ni);
+	ni = 64;
+	xf=new float[ni];
+	wf=new float[ni];
+	gauleg(0.,1.,xf-1,wf-1,ni);
 	// construct table of log(1+z), time, and \delta_c for interpolation
 	fill_linear(vlz,ni,0.,1.7);
 	double dc;
@@ -88,8 +90,8 @@ COSMOLOGY::COSMOLOGY(){
 }
 
 COSMOLOGY::~COSMOLOGY(){
-  // delete[] xf;
-  // delete[] wf;
+  delete[] xf;
+  delete[] wf;
 }
 
 /** \ingroup cosmolib
@@ -763,11 +765,12 @@ double f4(double u){
 
 /** \ingroup cosmolib
  * \brief Halo bias, uses formalism by Mo-White
+ *
  * by default it gives the halo bias by Mo-White
  * t=1 returns the Sheth-Tormen 99 while
  * setting t=2 the Sheth-Mo-Tormen 2001 bias
  */
-double COSMOLOGY::bias (double m, double z, int t){
+double COSMOLOGY::halo_bias (double m, double z, int t){
   double dc,Omz,sig,Dg;
 
   omo=Omo;
