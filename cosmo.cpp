@@ -357,7 +357,7 @@ double COSMOLOGY::drdz(double x){
  double temp;
 
   temp=Omo*x*x*x+Oml-(Omo+Oml-1)*x*x;
-  if(temp<=0.0) return -1.0e30;                   // nonphysical values
+  if(temp<=0.0) return -1.0e30;                   // non-physical values
   return 1.0/sqrt(temp);
 }
 double COSMOLOGY::adrdz(double x){
@@ -540,6 +540,7 @@ double COSMOLOGY::haloNumberDensity(
 		, int t       /// mass function type: 0 Press-Schecter, 1 Sheth-Torman, 2 power-law
 		,double alpha /// exponent of power law if t==2
 		){
+
 	double n=0.0;
 	double lm1 = log(m);
 	double lm2 = 2.3*100.; // upper limit in natural log: I think 10^100 M_sun/h should be enough
@@ -773,7 +774,11 @@ double f4(double u){
  * t=1 returns the Sheth-Tormen 99 while
  * setting t=2 the Sheth-Mo-Tormen 2001 bias
  */
-double COSMOLOGY::halo_bias (double m, double z, int t){
+double COSMOLOGY::halo_bias (
+		double m       /// halo mass in solar masses
+		,double z      /// redshift
+		,int t         /// (0) Mo & White bias (1) Sheth-Tormen 99 (2) Sheth-Mo-Tormen 2001
+		){
   double dc,Omz,sig,Dg;
 
   omo=Omo;
@@ -816,8 +821,6 @@ double COSMOLOGY::R200(double z,double mass){
 /***************************************************************/
 double COSMOLOGY::nintegrateDcos(pt2MemFunc func, double a,double b,double tols)
 {
-   //void polintD(double xa[], double ya[], int n, double x, double *y, double *dy);
-   //double trapzdDcoslocal(double (*func)(double), double a, double b, int n);
    void nrerror(char error_text[]);
    double ss,dss;
    double s2[JMAXP],h2[JMAXP+1];
