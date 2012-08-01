@@ -10,6 +10,7 @@
 
 #include <vector>
 #include <math.h>
+#include <algorithm>
 
 /** \ingroup Utill
  * Fills a vector with equidistant points from [min, max].
@@ -78,5 +79,6 @@ double fmini(double a,double b);
 
 double fmaxi(double a,double b);
 
+double median(std:: vector<double> vec); 
 
 #endif /* UTILITIES_H_ */
