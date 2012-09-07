@@ -582,9 +582,6 @@ double COSMOLOGY::haloNumberDensityOnSky (double m, double z1, double z2,int t, 
  * TopHatVarianceR() for an alternative.
  */
 double COSMOLOGY::TopHatVariance(double m){
-	h_static=h;
-	Omo_static=Omo;
-	Oml_static=Oml;
 	double v = sig8*Deltao(m);
 	return v*v;
 }
@@ -893,4 +890,5 @@ double COSMOLOGY::dfridrDcos(pt2MemFunc func, double x, double b, double *err)
 	free_dmatrix(a,1,NTAB,1,NTAB);
 	return ans;
 }
+
 
