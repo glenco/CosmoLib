@@ -21,16 +21,13 @@
 
 int kmax,kount;
 double *xp,**yp,dxsav;
-//int const ni=64;
-//float *xf,*wf;
-//float xf[ni],wf[ni];
-static double alph;  /* DR-distance parameter */
-static double omo, oml, hh;
+static double alph_static;  /* DR-distance parameter */
+static double Omo_static, Oml_static, h_static;
 
 using namespace std;
 
-COSMOLOGY::COSMOLOGY(double omegam,double omegal,double hh, double ww) :
-	Omo(omegam), Oml(omegal), h(hh), w(ww){
+COSMOLOGY::COSMOLOGY(double omegam,double omegal,double hubble, double ww) :
+	Omo(omegam), Oml(omegal), h(hubble), w(ww){
 	n=1.0;
 	//Gamma=0.0;
 	Omnu=0;
@@ -230,19 +227,19 @@ double COSMOLOGY::DRradius(double zo,double z,double pfrac){
   double zl,Omr,Omz,Da[2],Ho;
   int nok,nbad;
 
-  omo=Omo;
-  oml=Oml;
+  Omo_static=Omo;
+  Oml_static=Oml;
 
   Ho=h/3.0e3;
-  alph=1.5*(1-pfrac);
+  alph_static=1.5*(1-pfrac);
 
-    /*    if(oml !=0.0){
-        printf("ERROR in DRradius: oml != 0\n");
+    /*    if(Oml_static !=0.0){
+        printf("ERROR in DRradius: Oml_static != 0\n");
         return 0.0;
         }*/
     zl=1+z;
 
-    if(zo==0 && (Oml==0 && alph==0)){
+    if(zo==0 && (Oml==0 && alph_static==0)){
       if(Omo==1.0){
 	return 2*( zl*zl-pow(zl,-0.5) )/(zl*5*Ho);
 
@@ -270,15 +267,15 @@ double COSMOLOGY::DRradius2(double zo,double z){
   double zl,Omr,Omz,Da[2],ds,dl,Ho;
   int nok,nbad;
 
-  omo=Omo;
-  oml=Oml;
+  Omo_static=Omo;
+  Oml_static=Oml;
 
     Ho=h/3.0e3;
     /*    if(Oml !=0.0){
         printf("ERROR in DRradius: Oml != 0\n");
         return 0.0;
         }*/
-    alph=0;
+    alph_static=0;
     zl=1+z;
 
     if(Omo==1.0){
@@ -322,7 +319,7 @@ double COSMOLOGY::DRradius2(double zo,double z){
 
 void ders(double z,double Da[],double dDdz[]){
   dDdz[1]=Da[2];
-  dDdz[2]=-3*Da[2]/(1+z) - (0.5*(omo-2*oml*pow(1+z,-3))*Da[2]+alph*omo*Da[1]/(1+z) )/(1+z*omo+(pow(1+z,-2)-1)*oml);
+  dDdz[2]=-3*Da[2]/(1+z) - (0.5*(Omo_static-2*Oml_static*pow(1+z,-3))*Da[2]+alph_static*Omo_static*Da[1]/(1+z) )/(1+z*Omo_static+(pow(1+z,-2)-1)*Oml_static);
 }
 
 /** \ingroup cosmolib
@@ -440,10 +437,6 @@ double COSMOLOGY::psdfdm(
 
   double dc,Omz,sig,Dg;
 
-  omo=Omo;
-  oml=Oml;
-  hh = h;
-
   Dg=Dgrowth(z);
   sig=sig8*Deltao(m);
 
@@ -457,7 +450,7 @@ double COSMOLOGY::psdfdm(
   double nu = pow(dc/Dg/sig,2);
   switch (caseunit){
     	  case 1:
-    		  return -(sig8*dsigdM(m))/sig*(sqrt(2/M_PI)*sqrt(nu)*exp(-0.5*nu))/m*omo*CRITD2;
+    		  return -(sig8*dsigdM(m))/sig*(sqrt(2/M_PI)*sqrt(nu)*exp(-0.5*nu))/m*Omo*CRITD2;
     		  break;
     	  default:
     		  return -(sig8*dsigdM(m))/sig*(sqrt(2/M_PI)*sqrt(nu)*exp(-0.5*nu));
@@ -475,9 +468,6 @@ double COSMOLOGY::stdfdm(
 		){
 
   double dc,Omz,sig,Dg;
-  omo=Omo;
-  oml=Oml;
-  hh = h;
 
   Dg=Dgrowth(z);
   sig=sig8*Deltao(m);
@@ -497,7 +487,7 @@ double COSMOLOGY::stdfdm(
   double nu = aST*pow(dc/Dg/sig,2);
   switch (caseunit){
   	  case 1:
-  		  return -(sig8*dsigdM(m))/sig*(AST*(1+1/pow(nu,pST))*sqrt(nu/2)*exp(-0.5*nu))/m*omo*CRITD2;
+  		  return -(sig8*dsigdM(m))/sig*(AST*(1+1/pow(nu,pST))*sqrt(nu/2)*exp(-0.5*nu))/m*Omo*CRITD2;
   		  break;
   	  default:
   		  return -(sig8*dsigdM(m))/sig*(AST*(1+1/pow(nu,pST))*sqrt(nu/2)*exp(-0.5*nu));
@@ -592,9 +582,9 @@ double COSMOLOGY::haloNumberDensityOnSky (double m, double z1, double z2,int t, 
  * TopHatVarianceR() for an alternative.
  */
 double COSMOLOGY::TopHatVariance(double m){
-	hh=h;
-	omo=Omo;
-	oml=Oml;
+	h_static=h;
+	Omo_static=Omo;
+	Oml_static=Oml;
 	double v = sig8*Deltao(m);
 	return v*v;
 }
@@ -605,7 +595,7 @@ double COSMOLOGY::TopHatVariance(double m){
  */
 double COSMOLOGY::dsigdM(double m){
 	double err;
-	return dfridrD(Deltao,m,0.1*m,&err);
+	return dfridrDcos(&COSMOLOGY::Deltao,m,0.1*m,&err);
 }
 
 /** \ingroup cosmolib
@@ -752,15 +742,29 @@ double COSMOLOGY::nonlinMass(double z){
 /** \ingroup cosmolib
  * \brief \f$ \sigma(m) \f$: the rms top-hat power in standard CDM model, normalized to sig8
  *
- * Warning! Uses global variables omo,oml and hh. Not perfectly accurate.
- */
+ * Warning! Uses global variables Omo_static,Oml_static and h_static. Not perfectly accurate.
+ *
 double Deltao(double m){
   double dc;
   dc=1.68647;
-  if(omo<1 && oml==0) dc*=pow(omo,0.0185);
-  if(omo+oml==1) dc*=pow(omo,0.0055);
+  if(Omo_static<1 && Oml_static==0) dc*=pow(Omo_static,0.0185);
+  if(Omo_static+Oml_static==1) dc*=pow(Omo_static,0.0055);
+  //return dc*pow(m/1.0e10,-0.25);
+  return f4(6.005e14*pow(h_static*Omo_static,3))/f4(m*h_static*h_static*h_static*h_static*Omo_static*Omo_static);
+}
+
+*/
+/** \ingroup cosmolib
+ * \brief \f$ \sigma(m) \f$: the rms top-hat power in standard CDM model, normalized to sig8
+ *
+ */
+double COSMOLOGY::Deltao(double m){
+  double dc;
+  dc=1.68647;
+  if(Omo<1 && Oml==0) dc*=pow(Omo,0.0185);
+  if(Omo+Oml==1) dc*=pow(Omo,0.0055);
   /*  return dc*pow(m/1.0e10,-0.25); */
-  return f4(6.005e14*pow(hh*omo,3))/f4(m*hh*hh*hh*hh*omo*omo);
+  return f4(6.005e14*pow(h*Omo,3))/f4(m*h*h*h*h*Omo*Omo);
 }
 
 double f4(double u){
@@ -780,10 +784,6 @@ double COSMOLOGY::halo_bias (
 		,int t         /// (0) Mo & White bias (1) Sheth-Tormen 99 (2) Sheth-Mo-Tormen 2001
 		){
   double dc,Omz,sig,Dg;
-
-  omo=Omo;
-  oml=Oml;
-  hh = h;
   
   Dg=Dgrowth(z);
   sig=sig8*Deltao(m);
@@ -821,7 +821,6 @@ double COSMOLOGY::R200(double z,double mass){
 /***************************************************************/
 double COSMOLOGY::nintegrateDcos(pt2MemFunc func, double a,double b,double tols)
 {
-   void nrerror(char error_text[]);
    double ss,dss;
    double s2[JMAXP],h2[JMAXP+1];
    int j;
@@ -844,7 +843,8 @@ double COSMOLOGY::nintegrateDcos(pt2MemFunc func, double a,double b,double tols)
 double COSMOLOGY::trapzdDcoslocal(pt2MemFunc func, double a, double b, int n)
 {
    double x,tnm,del;
-   static double s2,sum2;
+   ///TODO: BEN Why were s2 ans sum2 static? Is this going to cause any problems?
+   double s2,sum2;
    int it,j;
 
    if (n == 1) {
@@ -859,3 +859,38 @@ double COSMOLOGY::trapzdDcoslocal(pt2MemFunc func, double a, double b, int n)
 	return s2;
    }
 }
+
+double COSMOLOGY::dfridrDcos(pt2MemFunc func, double x, double b, double *err)
+{
+	double CON = 1.4;
+	double CON2 = (CON*CON);
+	double BIG = 1.0e30;
+	long NTAB = 10;
+	double SAFE = 2.0;
+	int i,j;
+	double errt,fac,bb,**a,ans;
+
+	if (b == 0.0) cout << "b must be nonzero in dfridr." << endl;
+	a=dmatrix(1,NTAB,1,NTAB);
+	bb=b;
+	a[1][1]=((this->*func)(x+bb)-(this->*func)(x-bb))/(2.0*bb);
+	*err=BIG;
+	for (i=2;i<=NTAB;i++) {
+		bb /= CON;
+		a[1][i]=((this->*func)(x+bb)-(this->*func)(x-bb))/(2.0*bb);
+		fac=CON2;
+		for (j=2;j<=i;j++) {
+			a[j][i]=(a[j-1][i]*fac-a[j-1][i-1])/(fac-1.0);
+			fac=CON2*fac;
+			errt=FMAX(fabs(a[j][i]-a[j-1][i]),fabs(a[j][i]-a[j-1][i-1]));
+			if (errt <= *err) {
+				*err=errt;
+				ans=a[j][i];
+			}
+		}
+		if (fabs(a[i][i]-a[i-1][i-1]) >= SAFE*(*err)) break;
+	}
+	free_dmatrix(a,1,NTAB,1,NTAB);
+	return ans;
+}
+
