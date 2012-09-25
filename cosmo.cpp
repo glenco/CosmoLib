@@ -87,6 +87,7 @@ COSMOLOGY::COSMOLOGY(){
 }
 
 COSMOLOGY::~COSMOLOGY(){
+  std::cout << "deleting cosmology" << std::endl;
   delete[] xf;
   delete[] wf;
 }
@@ -821,10 +822,11 @@ double COSMOLOGY::nintegrateDcos(pt2MemFunc func, double a,double b,double tols)
    double ss,dss;
    double s2[JMAXP],h2[JMAXP+1];
    int j;
+   double ss2=0, ssum2=0;
 
    h2[1]=1.0;
    for (j=1;j<=JMAX;j++) {
-	s2[j]=trapzdDcoslocal(func,a,b,j);
+     s2[j]=trapzdDcoslocal(func,a,b,j,&ss2,&ssum2);
 	if (j>=K) {
 	   polintD(&h2[j-K],&s2[j-K],K,0.0,&ss,&dss);
 	   if(fabs(dss) <= tols*fabs(ss)) return ss;
@@ -837,23 +839,23 @@ double COSMOLOGY::nintegrateDcos(pt2MemFunc func, double a,double b,double tols)
    return 0.0;
 }
 
-double COSMOLOGY::trapzdDcoslocal(pt2MemFunc func, double a, double b, int n)
+double COSMOLOGY::trapzdDcoslocal(pt2MemFunc func, double a, double b, int n, double *s2, double *sum2)
 {
    double x,tnm,del;
    ///TODO: BEN Why were s2 ans sum2 static? Is this going to cause any problems?
-   double s2,sum2;
+   ///double s2,sum2;
    int it,j;
 
    if (n == 1) {
-	return (s2=0.5*(b-a)*( (this->*func)(a) +(this->*func)(b) ));
+	return (*s2=0.5*(b-a)*( (this->*func)(a) +(this->*func)(b) ));
    } else {
 	for (it=1,j=1;j<n-1;j++) it <<= 1;
 	tnm=it;
 	del=(b-a)/tnm;
 	x=a+0.5*del;
-	for (sum2=0.0,j=1;j<=it;j++,x+=del) sum2 += (this->*func)(x);
-	s2=0.5*(s2+(b-a)*sum2/tnm);
-	return s2;
+	for (*sum2=0.0,j=1;j<=it;j++,x+=del) *sum2 += (this->*func)(x);
+	*s2=0.5*(*s2+(b-a)*(*sum2)/tnm);
+	return *s2;
    }
 }
 

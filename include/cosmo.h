@@ -194,7 +194,7 @@ private:
     typedef double (COSMOLOGY::*pt2MemFunc)(double);
 
     double nintegrateDcos(pt2MemFunc func,double a,double b,double tols);
-    double trapzdDcoslocal(pt2MemFunc func, double a, double b, int n);
+    double trapzdDcoslocal(pt2MemFunc func, double a, double b, int n, double *s2, double *sum2);
     double dfridrDcos(pt2MemFunc func, double x, double h, double *err);
 
     int ni;
