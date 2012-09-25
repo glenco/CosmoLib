@@ -1,4 +1,4 @@
-NR_DIR = /Users/cgiocoli/Dropbox/Astro/Codes/EclipseWorkspace/NR
+NR_DIR = ../NR
 
 INCL = -I./include/ \
 	-I$(NR_DIR)/include
