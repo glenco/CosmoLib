@@ -1,6 +1,7 @@
 #include <math.h>
 #include <nrD.h>
 #include <cosmo.h>
+#include <assert.h>
 
 static double omo, oml, hh;
 
@@ -88,6 +89,8 @@ double COSMOLOGY::scalefactor(double rad){
   void dir(double,double [],double []);
   double omo,oml;
 
+  assert(w == -1);
+  assert(w1 == 0.0);
   omo=Omo;
   oml=Oml;
 
@@ -100,6 +103,10 @@ double COSMOLOGY::scalefactor(double rad){
   if(rad<1.0e1*h){ return 1.0 - h*rad/3.0e3;
   }else{
 	  odeintD(a-1,1,0.0,rad,1.0e-6,rad/5,rad/1000,&nok,&nbad,dir,bsstepD);
+  }
+  if(a[0] < 100){
+	  std::cout << "COSMOLOGY::scalefactor() should be updated to do high redshift!" << std::endl;
+	  exit(1);
   }
   return a[0];
 }
