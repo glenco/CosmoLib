@@ -12,6 +12,8 @@
 #include <math.h>
 #include <algorithm>
 
+const double nXbin=64.;
+
 /** \ingroup Utill
  * Fills a vector with equidistant points from [min, max].
  */
