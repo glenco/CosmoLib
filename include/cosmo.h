@@ -137,6 +137,8 @@ public:
     double NFW_Concentration(double Vmax,double M200,double R200);
     double NFW_rho(double cons,double x);
 
+    double totalMassDensityinHalos(int t,double alpha,double m_min,double z,double z1,double z2);
+
 private:
 
 	/// Hubble paremters in units of 100 km/s/Mpc

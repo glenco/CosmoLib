@@ -558,6 +558,19 @@ double COSMOLOGY::haloNumberDensity(
 }
 
 /** \ingroup cosmolib
+ * \brief The halo total surface mass density in haloes with mass larger than m_min
+ */
+double COSMOLOGY::totalMassDensityinHalos(
+		int t	       /// choice of mass function, 0 Press-Shechter, 1 Sheth-Tormen, 2 Power-law
+		,double alpha  /// slope of power law if t==2
+		,double m_min
+		,double z
+		,double z1
+		,double z2){
+		return haloNumberDensity(m_min,z,1,t,alpha)*h*h*pow(1+(z1+z2)/2,3)*Omo*angDist(z1,z2);
+}
+
+/** \ingroup cosmolib
  * \brief Number of haloes with mass larger than m (in solar masses/h) between
  * redshifts z1 and z2 per square degree
  * The flag t specifies which type of mass function is to be used, 0 PS or 1 ST
@@ -842,8 +855,6 @@ double COSMOLOGY::nintegrateDcos(pt2MemFunc func, double a,double b,double tols)
 double COSMOLOGY::trapzdDcoslocal(pt2MemFunc func, double a, double b, int n, double *s2, double *sum2)
 {
    double x,tnm,del;
-   ///TODO: BEN Why were s2 ans sum2 static? Is this going to cause any problems?
-   ///double s2,sum2;
    int it,j;
 
    if (n == 1) {
