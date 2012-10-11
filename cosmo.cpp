@@ -18,6 +18,7 @@
 #define NRANSI
 #define CRITD 2.49783e18    /* critical density / Ho^2 solar/Mpc */
 #define CRITD2 2.7752543e11 /* critical density / h^2 M_sun/Mpc^3 */
+#define Hubble_length 3.0e3 /* Mpc/h */
 
 int kmax,kount;
 double *xp,**yp,dxsav;
@@ -202,7 +203,7 @@ void cosmo_copy(CosmoHndl cos1, CosmoHndl cos2){
 
 double COSMOLOGY::rcurve(){
   if(Omo+Oml != 1.0){
-    return 3.0e3/(h*sqrt(fabs(1-Omo-Oml)));  /** curviture scale **/
+    return Hubble_length/(h*sqrt(fabs(1-Omo-Oml)));  /** curviture scale **/
   }
   return 0;
 }
@@ -231,7 +232,7 @@ double COSMOLOGY::DRradius(double zo,double z,double pfrac){
   Omo_static=Omo;
   Oml_static=Oml;
 
-  Ho=h/3.0e3;
+  Ho=h/Hubble_length;
   alph_static=1.5*(1-pfrac);
 
     /*    if(Oml_static !=0.0){
@@ -271,7 +272,7 @@ double COSMOLOGY::DRradius2(double zo,double z){
   Omo_static=Omo;
   Oml_static=Oml;
 
-    Ho=h/3.0e3;
+    Ho=h/Hubble_length;
     /*    if(Oml !=0.0){
         printf("ERROR in DRradius: Oml != 0\n");
         return 0.0;
@@ -376,16 +377,16 @@ double COSMOLOGY::adrdz_dark(double x){
  * \brief The coordinate distance in units Mpc.  This is the radial distance found by integrating 1/H(z).
  */
 double COSMOLOGY::coorDist(double zo,double z){
-	if( (w ==-1.0) && (w1 == 0.0) ) return nintegrateDcos(&COSMOLOGY::drdz,1+zo,1+z,1.0e-9)*3.0e3/h;
-	return nintegrateDcos(&COSMOLOGY::drdz_dark,1+zo,1+z,1.0e-9)*3.0e3/h;
+	if( (w ==-1.0) && (w1 == 0.0) ) return nintegrateDcos(&COSMOLOGY::drdz,1+zo,1+z,1.0e-9)*Hubble_length/h;
+	return nintegrateDcos(&COSMOLOGY::drdz_dark,1+zo,1+z,1.0e-9)*Hubble_length/h;
 }
 
 /** \ingroup cosmolib
  * \brief Non-comoving radial distance in units Mpc.  This is coorDist only integrated with the scale factor a=1/(1+z).
  */
 double COSMOLOGY::radDist(double zo,double z){
-	if( (w ==-1.0) && (w1 == 0.0) ) return nintegrateDcos(&COSMOLOGY::adrdz,1+zo,1+z,1.0e-9)*3.0e3/h;
-	return nintegrateDcos(&COSMOLOGY::adrdz_dark,1+zo,1+z,1.0e-9)*3.0e3/h;
+	if( (w ==-1.0) && (w1 == 0.0) ) return nintegrateDcos(&COSMOLOGY::adrdz,1+zo,1+z,1.0e-9)*Hubble_length/h;
+	return nintegrateDcos(&COSMOLOGY::adrdz_dark,1+zo,1+z,1.0e-9)*Hubble_length/h;
 }
 
 /** \ingroup cosmolib
@@ -400,7 +401,7 @@ double COSMOLOGY::angDist(double zo,double z){
   if(Omo+Oml==1) return coorDist(zo,z)/(1+z);
    /** curviture scale **/
 
-  Rcur=3.0e3/(h*sqrt(fabs(1-Omo-Oml)));
+  Rcur=Hubble_length/(h*sqrt(fabs(1-Omo-Oml)));
   if((Omo+Oml)<1.0) return Rcur*sinh(coorDist(zo,z)/Rcur)/(1+z);
 
   return Rcur*sin(coorDist(zo,z)/Rcur)/(1+z);
@@ -557,6 +558,65 @@ double COSMOLOGY::haloNumberDensity(
 	return n*(lm2-lm1);
 }
 
+double COSMOLOGY::haloMassDensity(
+		double m      /// minimum mass of halos
+		, double z    /// redshift
+		, double a    /// moment of mass function that is wanted
+		, int t       /// mass function type: 0 Press-Schecter, 1 Sheth-Torman, 2 power-law
+		,double alpha /// exponent of power law if t==2
+		){
+
+	double n=0.0;
+	double lm1 = log(m);
+	double lm2 = 2.3*100.; // upper limit in natural log: I think 10^100 M_sun/h should be enough
+	double lx,x,y,y1;
+
+	for (int i=0;i<ni;i++){
+		lx=(lm2-lm1)*xf[i]+lm1;
+		x = exp(lx);
+		switch (t){
+			case 1: // Sheth-Tormen
+				y1=log(stdfdm(z,x,1));
+				break;
+			case 2: // power-law mass function
+				y1=log(powerlawdfdm(z,x,alpha,1));
+				break;
+			default: // Press-Schechter
+				y1=log(psdfdm(z,x,1));
+				break;
+		}
+		y = x*exp(y1+(a+1.0)*lx);
+		n+=wf[i]*y;
+	}
+	return n*(lm2-lm1);
+}
+/** \ingroup cosmolib
+ * \brief The halo total surface mass density in haloes with mass larger than m_min
+ */
+double COSMOLOGY::totalMassDensityinHalos(
+		int t	       /// choice of mass function, 0 Press-Shechter, 1 Sheth-Tormen, 2 Power-law
+		,double alpha  /// slope of power law if t==2
+		,double m
+		,double z
+		,double z1
+		,double z2){
+  double n=0.0;
+  double x,d,f,v,c;
+  
+  for (int i=0;i<ni;i++){
+    x=(z2-z1)*xf[i]+z1;
+    d=angDist(0.0,x)/Hubble_length*h;
+    f=1.0+x;
+    v=4.0*pi*d*d*DpropDz(x)*f*f*f;
+    c=haloMassDensity(m,x,0.0,t,alpha);
+    n+=wf[i]*v*c;
+  }
+
+  double A = 4.0*pi*pow(angDist(0,z),2);
+
+  return n*(z2-z1)*pow(Hubble_length,3)/A; //Mpc^-2
+}
+
 /** \ingroup cosmolib
  * \brief Number of haloes with mass larger than m (in solar masses/h) between
  * redshifts z1 and z2 per square degree
@@ -568,13 +628,13 @@ double COSMOLOGY::haloNumberDensityOnSky (double m, double z1, double z2,int t, 
 
    for (int i=0;i<ni;i++){
 	   x=(z2-z1)*xf[i]+z1;
-	   d=angDist(0.0,x)/3.0e3*h;
+	   d=angDist(0.0,x)/Hubble_length*h;
 	   f=1.0+x;
 	   v=4.0*pi*d*d*DpropDz(x)*f*f*f;
 	   c=haloNumberDensity(m,x,0.0,t,alpha);
 	   n+=wf[i]*v*c;
   }
-  return n*(z2-z1)*2.7e10/41253.; // Hubble Volume
+   return n*(z2-z1)*pow(Hubble_length,3)/41253.;
 }
 
 /** \ingroup cosmolib
@@ -842,8 +902,6 @@ double COSMOLOGY::nintegrateDcos(pt2MemFunc func, double a,double b,double tols)
 double COSMOLOGY::trapzdDcoslocal(pt2MemFunc func, double a, double b, int n, double *s2, double *sum2)
 {
    double x,tnm,del;
-   ///TODO: BEN Why were s2 ans sum2 static? Is this going to cause any problems?
-   ///double s2,sum2;
    int it,j;
 
    if (n == 1) {
