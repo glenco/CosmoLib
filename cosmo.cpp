@@ -558,38 +558,6 @@ double COSMOLOGY::haloNumberDensity(
 	return n*(lm2-lm1);
 }
 
-double COSMOLOGY::haloMassDensity(
-		double m      /// minimum mass of halos
-		, double z    /// redshift
-		, double a    /// moment of mass function that is wanted
-		, int t       /// mass function type: 0 Press-Schecter, 1 Sheth-Torman, 2 power-law
-		,double alpha /// exponent of power law if t==2
-		){
-
-	double n=0.0;
-	double lm1 = log(m);
-	double lm2 = 2.3*100.; // upper limit in natural log: I think 10^100 M_sun/h should be enough
-	double lx,x,y,y1;
-
-	for (int i=0;i<ni;i++){
-		lx=(lm2-lm1)*xf[i]+lm1;
-		x = exp(lx);
-		switch (t){
-			case 1: // Sheth-Tormen
-				y1=log(stdfdm(z,x,1));
-				break;
-			case 2: // power-law mass function
-				y1=log(powerlawdfdm(z,x,alpha,1));
-				break;
-			default: // Press-Schechter
-				y1=log(psdfdm(z,x,1));
-				break;
-		}
-		y = x*exp(y1+(a+1.0)*lx);
-		n+=wf[i]*y;
-	}
-	return n*(lm2-lm1);
-}
 /** \ingroup cosmolib
  * \brief The halo total surface mass density in haloes with mass larger than m_min
  */
