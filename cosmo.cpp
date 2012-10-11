@@ -596,25 +596,11 @@ double COSMOLOGY::haloMassDensity(
 double COSMOLOGY::totalMassDensityinHalos(
 		int t	       /// choice of mass function, 0 Press-Shechter, 1 Sheth-Tormen, 2 Power-law
 		,double alpha  /// slope of power law if t==2
-		,double m
+		,double m_min
 		,double z
 		,double z1
 		,double z2){
-  double n=0.0;
-  double x,d,f,v,c;
-  
-  for (int i=0;i<ni;i++){
-    x=(z2-z1)*xf[i]+z1;
-    d=angDist(0.0,x)/Hubble_length*h;
-    f=1.0+x;
-    v=4.0*pi*d*d*DpropDz(x)*f*f*f;
-    c=haloMassDensity(m,x,0.0,t,alpha);
-    n+=wf[i]*v*c;
-  }
-
-  double A = 4.0*pi*pow(angDist(0,z),2);
-
-  return n*(z2-z1)*pow(Hubble_length,3)/A; //Mpc^-2
+  return haloNumberDensity(m_min,z,1,t,alpha)*h*h*pow(1+z,3)*angDist(z1,z2);
 }
 
 /** \ingroup cosmolib
