@@ -352,6 +352,13 @@ double COSMOLOGY::rho_crit(double z){
 /** \ingroup cosmolib
  * \brief The derivative of the comoving radial distance with respect to redshift in units of Ho^-1, x=1+z
  */
+double COSMOLOGY::drdz_empty(double x){
+ double temp;
+
+  temp=Oml;
+  if(temp<=0.0) return -1.0e30;                   // non-physical values
+  return 1.0/sqrt(temp);
+}
 double COSMOLOGY::drdz(double x){
  double temp;
 
@@ -379,6 +386,10 @@ double COSMOLOGY::adrdz_dark(double x){
 double COSMOLOGY::coorDist(double zo,double z){
 	if( (w ==-1.0) && (w1 == 0.0) ) return nintegrateDcos(&COSMOLOGY::drdz,1+zo,1+z,1.0e-9)*Hubble_length/h;
 	return nintegrateDcos(&COSMOLOGY::drdz_dark,1+zo,1+z,1.0e-9)*Hubble_length/h;
+}
+
+double COSMOLOGY::emptyDist(double zo,double z){
+  return nintegrateDcos(&COSMOLOGY::drdz_empty,1+zo,1+z,1.0e-9)*Hubble_length/h;
 }
 
 /** \ingroup cosmolib

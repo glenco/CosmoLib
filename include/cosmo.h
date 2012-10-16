@@ -35,6 +35,7 @@ public:
 
     // Lengths
     double rcurve();
+    double emptyDist(double zo,double z);
     double coorDist(double zo,double z);
     double radDist(double zo,double z);
     double angDist(double zo,double z);
@@ -46,6 +47,7 @@ public:
     double Omegam(double z);
     double rho_crit(double z);
     double gradius(double R,double rd);
+    double drdz_empty(double x);
     double drdz(double x);
     double adrdz(double x);
     double drdz_dark(double x);
