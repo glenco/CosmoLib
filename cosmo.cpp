@@ -571,6 +571,8 @@ double COSMOLOGY::haloNumberDensity(
 
 /** \ingroup cosmolib
  * \brief The halo total surface mass density in haloes with mass larger than m_min
+ * in the redshift bin [z1,z2] and projected to redhisft z
+ * in solar mass / Mpc^2
  */
 double COSMOLOGY::totalMassDensityinHalos(
 		int t	       /// choice of mass function, 0 Press-Shechter, 1 Sheth-Tormen, 2 Power-law
@@ -579,7 +581,23 @@ double COSMOLOGY::totalMassDensityinHalos(
 		,double z
 		,double z1
 		,double z2){
-  return haloNumberDensity(m_min,z,1,t,alpha)*h*h*pow(1+z,3)*angDist(z1,z2);
+  double n=0.0;
+  double x,d,f,v,c;
+
+   for (int i=0;i<ni;i++){
+	   x=(z2-z1)*xf[i]+z1;
+	   d=angDist(0.0,x)/Hubble_length*h;
+	   f=1.0+x;
+	   v=4.0*pi*d*d*DpropDz(x)*f*f*f;
+	   c=haloNumberDensity(m_min,x,1,t,alpha);
+	   n+=wf[i]*v*c;
+  }
+
+   double DL = angDist(0,z)*pi/180.;
+   
+   return n*(z2-z1)*pow(Hubble_length,3)/41253./DL/DL;
+
+  //return haloNumberDensity(m_min,z,1,t,alpha)*h*h*pow(1+z,3)*angDist(z1,z2);
 }
 
 /** \ingroup cosmolib
