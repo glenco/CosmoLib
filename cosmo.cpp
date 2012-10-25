@@ -88,7 +88,7 @@ COSMOLOGY::COSMOLOGY(){
 }
 
 COSMOLOGY::~COSMOLOGY(){
-  std::cout << "deleting cosmology" << std::endl;
+  // std::cout << "deleting cosmology" << std::endl;
   delete[] xf;
   delete[] wf;
 }
@@ -502,6 +502,10 @@ double COSMOLOGY::stdfdm(
   	  case 1:
   		  return -(sig8*dsigdM(m))/sig*(AST*(1+1/pow(nu,pST))*sqrt(nu/2)*exp(-0.5*nu))/m*Omo*CRITD2;
   		  break;
+  	  case 2:
+  	          nu = m*sqrt(aST);
+  	          return AST*(1.+1./pow(nu,pST))*sqrt(nu/2.)*exp(-0.5*nu)/sqrt(M_PI);
+  		  break;
   	  default:
   		  return -(sig8*dsigdM(m))/sig*(AST*(1+1/pow(nu,pST))*sqrt(nu/2)*exp(-0.5*nu));
   }
@@ -730,7 +734,7 @@ double COSMOLOGY::timeEarly(double a){
  */
 double COSMOLOGY::time(double z){
 	double CfactorT = 0.102271;
-    CfactorT = 1/(h*CfactorT);
+        CfactorT = 1/(h*CfactorT);
 	double a=1/(z+1.);
 	double aEqual=8.3696e-05/Omo;  // equality
 	double e=5.*aEqual;

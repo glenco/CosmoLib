@@ -46,17 +46,17 @@ void HALO::reset(double mr,double zr){
  * \brief Virial radius of the halo in Mpc
  */
 double HALO:: getRvir(
-		int caseunit    /// by default uses the Brayan and Norman fit, if equal to 1 uses the fit by Felix and Stšhr
+		int caseunit    /// by default uses the Brayan and Norman fit, if equal to 1 uses the fit by Felix and Stoer
 		){
 	double d=co->DeltaVir(z,caseunit)*Omo*CRITD2/Omz;
-	return co->gethubble()*pow( 3*m/(4*M_PI*d), 0.3333 )/(1+z);
+	return pow( 3*m/(4*M_PI*d), 0.3333 )/(1+z)/co->gethubble();
 }
 
 /** \ingroup cosmolib
  * \brief Radius at which the enclosed density reach 200 times the critical value
  */
 double HALO:: getR200(){
-	return 1.63e-5*pow( m*Omz/Omo, 0.3333 )/( 1.0+z );
+        return 1.63e-5*pow( m*Omz/Omo, 0.3333 )/( 1.0+z )/co->gethubble();
 }
 
 /** \ingroup cosmolib
@@ -117,7 +117,7 @@ double HALO:: getConcentration(
 			  return 0.45*(4.23+pow(t0/t004,1.15)+pow(t0/t05,2.3));
 			  break;
 	    	case (3): // power-law c-m relation
-				alpha0 = alpha0/(1+z);
+		        alpha0 = alpha0/(1+z);
 	    		h0 = co->gethubble();
 	    		hz = h0/co->drdz(1+z);
 	    		return 10.*pow(m/1.e+12,alpha0)*pow(h0/hz,2./3.);
