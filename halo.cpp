@@ -6,9 +6,6 @@
  */
 #include <halo.h>
 
-#define CRITD 2.49783e18    /* critical density / Ho^2 solar/Mpc */
-#define CRITD2 2.7752543e11 /* critical density / h^2 M_sun/Mpc^3 */
-
  /** \ingroup cosmolib
   * \brief Constructor initializing a NFW-halo
   */
@@ -46,17 +43,18 @@ void HALO::reset(double mr,double zr){
  * \brief Virial radius of the halo in Mpc
  */
 double HALO:: getRvir(
-		int caseunit    /// by default uses the Brayan and Norman fit, if equal to 1 uses the fit by Felix and Stoer
-		){
-	double d=co->DeltaVir(z,caseunit)*Omo*CRITD2/Omz;
-	return pow( 3*m/(4*M_PI*d), 0.3333 )/(1+z)/co->gethubble();
+		      int caseunit    /// by default uses the Brayan and Norman fit, if equal to 1 uses the fit by Felix and Stoer
+		      ){
+  double d=co->DeltaVir(z,caseunit)*co->rho_crit(z);
+  return pow( 3*m/(4*M_PI*d), 0.3333 )/(1+z);
 }
 
 /** \ingroup cosmolib
- * \brief Radius at which the enclosed density reach 200 times the critical value
+ * \brief Radius in Mpc at which the enclosed density reach 200 times the critical value
  */
 double HALO:: getR200(){
-        return 1.63e-5*pow( m*Omz/Omo, 0.3333 )/( 1.0+z )/co->gethubble();
+  double d=200.0*co->rho_crit(z);
+  return pow( 3*m/(4*M_PI*d), 0.3333 )/(1+z);
 }
 
 /** \ingroup cosmolib
@@ -130,27 +128,3 @@ double HALO:: getConcentration(
 
 		return 0;
 }
-
-/** \ingroup cosmolib
- * \brief The halo total mass density in haloes with mass larger than m is returned,
- * if the integer 1 is given total mass density in haloes rescaled to the background is returned
- * two more parameter can be set,
- *   the first that define the halo mass function to use
- *
- *  the second set the slope of the power-law mass function
- */
-double HALO :: totalMassDensityinHalos(
-		int caseunit   /// if == 1, gives fraction of current average density, otherwise density in Msun/Mpc^3
-		,int t	       /// choice of mass function, 0 Press-Shechter, 1 Sheth-Tormen, 2 Power-law
-		,double alpha  /// slope of power law if t==2
-		){
-  switch (caseunit){
-	    	case (1):
-	    		return co->haloNumberDensity(m,z,1,t,alpha)/(CRITD2*co->Omegam(0.));
-	    		break;
-	    	default:
-	    		return co->haloNumberDensity(m,z,1,t,alpha);
-  }
-
-}
-

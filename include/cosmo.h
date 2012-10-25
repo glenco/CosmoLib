@@ -15,6 +15,9 @@
 #define lightspeed 2.99792458e5
 #endif
 
+#define CRITD 2.49783e18    /* critical density / Ho^2 solar/Mpc */
+#define CRITD2 2.7752543e11 /* critical density / h^2 M_sun/Mpc^3 */
+
 #ifndef cosmo_declare
 
 /** \ingroup cosmolib

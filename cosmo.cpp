@@ -16,8 +16,6 @@
 #define JMAXP (JMAX+1)
 #define K 6
 #define NRANSI
-#define CRITD 2.49783e18    /* critical density / Ho^2 solar/Mpc */
-#define CRITD2 2.7752543e11 /* critical density / h^2 M_sun/Mpc^3 */
 #define Hubble_length 3.0e3 /* Mpc/h */
 
 int kmax,kount;
@@ -352,13 +350,7 @@ double COSMOLOGY::rho_crit(double z){
 /** \ingroup cosmolib
  * \brief The derivative of the comoving radial distance with respect to redshift in units of Ho^-1, x=1+z
  */
-double COSMOLOGY::drdz_empty(double x){
- double temp;
 
-  temp=Oml;
-  if(temp<=0.0) return -1.0e30;                   // non-physical values
-  return 1.0/sqrt(temp);
-}
 double COSMOLOGY::drdz(double x){
  double temp;
 
@@ -386,10 +378,6 @@ double COSMOLOGY::adrdz_dark(double x){
 double COSMOLOGY::coorDist(double zo,double z){
 	if( (w ==-1.0) && (w1 == 0.0) ) return nintegrateDcos(&COSMOLOGY::drdz,1+zo,1+z,1.0e-9)*Hubble_length/h;
 	return nintegrateDcos(&COSMOLOGY::drdz_dark,1+zo,1+z,1.0e-9)*Hubble_length/h;
-}
-
-double COSMOLOGY::emptyDist(double zo,double z){
-  return nintegrateDcos(&COSMOLOGY::drdz_empty,1+zo,1+z,1.0e-9)*Hubble_length/h;
 }
 
 /** \ingroup cosmolib
@@ -463,7 +451,7 @@ double COSMOLOGY::psdfdm(
   double nu = pow(dc/Dg/sig,2);
   switch (caseunit){
     	  case 1:
-    		  return -(sig8*dsigdM(m))/sig*(sqrt(2/M_PI)*sqrt(nu)*exp(-0.5*nu))/m*Omo*CRITD2;
+	    return -Omo*rho_crit(0)*(sig8*dsigdM(m))/sig*(sqrt(2/M_PI)*sqrt(nu)*exp(-0.5*nu))/m;
     		  break;
     	  default:
     		  return -(sig8*dsigdM(m))/sig*(sqrt(2/M_PI)*sqrt(nu)*exp(-0.5*nu));
@@ -500,7 +488,7 @@ double COSMOLOGY::stdfdm(
   double nu = aST*pow(dc/Dg/sig,2);
   switch (caseunit){
   	  case 1:
-  		  return -(sig8*dsigdM(m))/sig*(AST*(1+1/pow(nu,pST))*sqrt(nu/2)*exp(-0.5*nu))/m*Omo*CRITD2;
+  		  return -Omo*rho_crit(0)*(sig8*dsigdM(m))/sig*(AST*(1+1/pow(nu,pST))*sqrt(nu/2)*exp(-0.5*nu))/m;
   		  break;
   	  case 2:
   	          nu = m*sqrt(aST);
@@ -526,7 +514,7 @@ double COSMOLOGY::powerlawdfdm(
 	double alpha0 = 1./3.;
 	switch (caseunit){
 		case 1:
-			return Omo*CRITD2*0.6*alpha0/2.*sqrt(2/M_PI)*pow(mr,alpha)*exp(-0.5*pow(mr*pow((1+z),3./2.),alpha0*1.3))/m/m;
+			return Omo*rho_crit(0)*0.6*alpha0/2.*sqrt(2/M_PI)*pow(mr,alpha)*exp(-0.5*pow(mr*pow((1+z),3./2.),alpha0*1.3))/m/m;
 			break;
 		default:
 			return 0.6*alpha0/2.*sqrt(2/M_PI)*pow(mr,alpha)*exp(-0.5*pow(mr*pow((1+z),3./2.),alpha0*1.3))/m/m;
