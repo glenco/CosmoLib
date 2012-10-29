@@ -105,6 +105,12 @@ double HALO:: getConcentration(
 	    	case (1): // Munoz-Cuartas et al. 2011
 	    		a = w*z-mu;
 	    		b=alpha/(z+gamma)+beta/(z+gamma)/(z+gamma);
+	    		logc=a*log10(m*co->gethubble())+b;
+	    		return pow(10.,logc);
+	    		break;
+	    	case (-1): // Munoz-Cuartas et al. 2011, as the previous but M is assumet in M/h
+	    		a = w*z-mu;
+	    		b=alpha/(z+gamma)+beta/(z+gamma)/(z+gamma);
 	    		logc=a*log10(m)+b;
 	    		return pow(10.,logc);
 	    		break;
@@ -115,6 +121,12 @@ double HALO:: getConcentration(
 			  return 0.45*(4.23+pow(t0/t004,1.15)+pow(t0/t05,2.3));
 			  break;
 	    	case (3): // power-law c-m relation
+		        alpha0 = alpha0/(1+z);
+	    		h0 = co->gethubble();
+	    		hz = h0/co->drdz(1+z);
+	    		return 10.*pow(m*h0/1.e+12,alpha0)*pow(h0/hz,2./3.);
+	    		break;
+	    	case (-3): // power-law c-m relation, as the previous but M is assumed in M/h
 		        alpha0 = alpha0/(1+z);
 	    		h0 = co->gethubble();
 	    		hz = h0/co->drdz(1+z);
