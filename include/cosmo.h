@@ -76,8 +76,6 @@ public:
 
     double getTimefromDeltaC(double dc);
     double getZfromDeltaC(double dc);
-
-    double R200(double z,double mass);
     
     /// accesser functions:
 

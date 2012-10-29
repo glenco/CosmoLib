@@ -344,7 +344,7 @@ double COSMOLOGY::Dgrowth(double z){
  * \brief Critical density in M_sun/Mpc^3
  */
 double COSMOLOGY::rho_crit(double z){
-	return CRITD2*h*h*( Omo*pow(1+z,3)+Oml-(Omo+Oml-1)*pow(1+z,2) );
+  return CRITD2*h*h*( Omo*pow(1+z,3)+Oml-(Omo+Oml-1)*pow(1+z,2) )/pow(1+z,3);
 }
 
 /** \ingroup cosmolib
@@ -451,7 +451,7 @@ double COSMOLOGY::psdfdm(
   double nu = pow(dc/Dg/sig,2);
   switch (caseunit){
     	  case 1:
-	    return -Omo*rho_crit(0)*(sig8*dsigdM(m))/sig*(sqrt(2/M_PI)*sqrt(nu)*exp(-0.5*nu))/m;
+	    return -Omo*rho_crit(0)/h/h*(sig8*dsigdM(m))/sig*(sqrt(2/M_PI)*sqrt(nu)*exp(-0.5*nu))/m;
     		  break;
     	  default:
     		  return -(sig8*dsigdM(m))/sig*(sqrt(2/M_PI)*sqrt(nu)*exp(-0.5*nu));
@@ -488,7 +488,7 @@ double COSMOLOGY::stdfdm(
   double nu = aST*pow(dc/Dg/sig,2);
   switch (caseunit){
   	  case 1:
-  		  return -Omo*rho_crit(0)*(sig8*dsigdM(m))/sig*(AST*(1+1/pow(nu,pST))*sqrt(nu/2)*exp(-0.5*nu))/m;
+  		  return -Omo*rho_crit(0)/h/h*(sig8*dsigdM(m))/sig*(AST*(1+1/pow(nu,pST))*sqrt(nu/2)*exp(-0.5*nu))/m;
   		  break;
   	  case 2:
   	          nu = m*sqrt(aST);
@@ -514,7 +514,7 @@ double COSMOLOGY::powerlawdfdm(
 	double alpha0 = 1./3.;
 	switch (caseunit){
 		case 1:
-			return Omo*rho_crit(0)*0.6*alpha0/2.*sqrt(2/M_PI)*pow(mr,alpha)*exp(-0.5*pow(mr*pow((1+z),3./2.),alpha0*1.3))/m/m;
+			return Omo*rho_crit(0)/h/h*0.6*alpha0/2.*sqrt(2/M_PI)*pow(mr,alpha)*exp(-0.5*pow(mr*pow((1+z),3./2.),alpha0*1.3))/m/m;
 			break;
 		default:
 			return 0.6*alpha0/2.*sqrt(2/M_PI)*pow(mr,alpha)*exp(-0.5*pow(mr*pow((1+z),3./2.),alpha0*1.3))/m/m;
@@ -600,7 +600,8 @@ double COSMOLOGY::totalMassDensityinHalos(
 double COSMOLOGY::haloNumberDensityOnSky (double m, double z1, double z2,int t, double alpha){
   double n=0.0;
   double x,d,f,v,c;
-
+  // to have masses in Msun/h
+   m*=h;
    for (int i=0;i<ni;i++){
 	   x=(z2-z1)*xf[i]+z1;
 	   d=angDist(0.0,x)/Hubble_length*h;
@@ -842,11 +843,6 @@ double COSMOLOGY::halo_bias (
   default: // Mo-White
     return 1+(nu2-1)/dc;
   }
-}
-
-/// The radius to which a halo must shrink to be 200 times as dense as the average density of the universe.
-double COSMOLOGY::R200(double z,double mass){
-	return pow(3*mass/800/pi/rho_crit(z),1.0/3.);
 }
 
 /***************************************************************/
