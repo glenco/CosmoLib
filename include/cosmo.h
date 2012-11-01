@@ -15,6 +15,11 @@
 #define lightspeed 2.99792458e5
 #endif
 
+#ifndef error_message
+#define error_message
+#define ERROR_MESSAGE() std::cout << "ERROR: file: " << __FILE__ << " line: " << __LINE__ << std::endl;
+#endif
+
 #ifndef cosmo_declare
 
 /** \ingroup cosmolib
@@ -130,14 +135,6 @@ public:
     COSMOLOGY(double omegam,double omegal,double h, double w);
     ~COSMOLOGY();
 
-    // methods for NFW profile
-    double NFW_V200(double M200,double R200);
-    double NFW_Vmax(double cons,double M200,double R200);
-    double NFW_Vr(double x,double cons,double M200,double R200);
-    double NFW_deltac(double cons);
-    double NFW_Concentration(double Vmax,double M200,double R200);
-    double NFW_rho(double cons,double x);
-
     double totalMassDensityinHalos(int t,double alpha,double m_min,double z,double z1,double z2);
 
 private:
@@ -243,6 +240,30 @@ private:
 
 typedef COSMOLOGY *CosmoHndl;
 
+class NFW_Utility {
+public:
+	NFW_Utility();
+	virtual ~NFW_Utility();
+
+	// methods for NFW profile
+	double NFW_V200(double M200,double R200);
+	double NFW_Vmax(double cons,double M200,double R200);
+	double NFW_Vr(double x,double cons,double M200,double R200);
+	double NFW_deltac(double cons);
+	double NFW_Concentration(double Vmax,double M200,double R200);
+	double NFW_rho(double cons,double x);
+
+	void match_nfw(float Vmax,float R_half,float mass,float *cons,float *Rmax);
+	float Rmax(float cons,float Vmax,float mass);
+	float g_func(float x);
+
+private:
+    typedef float (NFW_Utility::*MemFunc)(float);
+    float zbrentD(MemFunc func, float a,float b,float tols);
+    float nfwfunc(float cons);
+    double funcforconcentration(double cons);
+};
+
 
 #define cosmo_declare
 #endif
@@ -262,7 +283,6 @@ void free_dmatrixcos(double **m, long nrl, long nrh, long ncl, long nch);
 //double Deltao(double m);
 
 /* in nfw.c */
-double funcforconcentration(double cons);
 
 /* in powerEHv2.c */
 void TFset_parameters(double omega0hh, double f_baryon, double Tcmb);
