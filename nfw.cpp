@@ -83,8 +83,8 @@ double NFW_Utility::NFW_Concentration(
 	return zbrentD(&NFW_Utility::funcforconcentration,2.175,1000,1.0e-8);
 }
 
-double NFW_Utility::funcforconcentration(double cons){
-	double f = log(1+cons) - cons/(1+cons);
+float NFW_Utility::funcforconcentration(float cons){
+	float f = log(1+cons) - cons/(1+cons);
 	return vg*vg - 0.216*cons/f;
 }
 /// The density of an NFW profile in units of the critical density

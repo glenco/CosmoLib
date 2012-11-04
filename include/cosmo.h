@@ -261,7 +261,7 @@ private:
     typedef float (NFW_Utility::*MemFunc)(float);
     float zbrentD(MemFunc func, float a,float b,float tols);
     float nfwfunc(float cons);
-    double funcforconcentration(double cons);
+    float funcforconcentration(float cons);
 };
 
 
