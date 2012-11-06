@@ -6,9 +6,6 @@
  */
 #include <halo.h>
 
-#define CRITD 2.49783e18    /* critical density / Ho^2 solar/Mpc */
-#define CRITD2 2.7752543e11 /* critical density / h^2 M_sun/Mpc^3 */
-
  /** \ingroup cosmolib
   * \brief Constructor initializing a NFW-halo
   */
@@ -46,17 +43,18 @@ void HALO::reset(double mr,double zr){
  * \brief Virial radius of the halo in Mpc
  */
 double HALO:: getRvir(
-		int caseunit    /// by default uses the Brayan and Norman fit, if equal to 1 uses the fit by Felix and Stšhr
-		){
-	double d=co->DeltaVir(z,caseunit)*Omo*CRITD2/Omz;
-	return co->gethubble()*pow( 3*m/(4*M_PI*d), 0.3333 )/(1+z);
+		      int caseunit    /// by default uses the Brayan and Norman fit, if equal to 1 uses the fit by Felix and Stoer
+		      ){
+  double d=co->DeltaVir(z,caseunit)*co->rho_crit(z);
+  return pow( 3*m/(4*M_PI*d), 0.3333 )/(1+z);
 }
 
 /** \ingroup cosmolib
- * \brief Radius at which the enclosed density reach 200 times the critical value
+ * \brief Radius in Mpc at which the enclosed density reach 200 times the critical value
  */
 double HALO:: getR200(){
-	return 1.63e-5*pow( m*Omz/Omo, 0.3333 )/( 1.0+z );
+  double d=200.0*co->rho_crit(z);
+  return pow( 3*m/(4*M_PI*d), 0.3333 )/(1+z);
 }
 
 /** \ingroup cosmolib
@@ -107,6 +105,12 @@ double HALO:: getConcentration(
 	    	case (1): // Munoz-Cuartas et al. 2011
 	    		a = w*z-mu;
 	    		b=alpha/(z+gamma)+beta/(z+gamma)/(z+gamma);
+	    		logc=a*log10(m*co->gethubble())+b;
+	    		return pow(10.,logc);
+	    		break;
+	    	case (-1): // Munoz-Cuartas et al. 2011, as the previous but M is assumet in M/h
+	    		a = w*z-mu;
+	    		b=alpha/(z+gamma)+beta/(z+gamma)/(z+gamma);
 	    		logc=a*log10(m)+b;
 	    		return pow(10.,logc);
 	    		break;
@@ -117,7 +121,13 @@ double HALO:: getConcentration(
 			  return 0.45*(4.23+pow(t0/t004,1.15)+pow(t0/t05,2.3));
 			  break;
 	    	case (3): // power-law c-m relation
-				alpha0 = alpha0/(1+z);
+		        alpha0 = alpha0/(1+z);
+	    		h0 = co->gethubble();
+	    		hz = h0/co->drdz(1+z);
+	    		return 10.*pow(m*h0/1.e+12,alpha0)*pow(h0/hz,2./3.);
+	    		break;
+	    	case (-3): // power-law c-m relation, as the previous but M is assumed in M/h
+		        alpha0 = alpha0/(1+z);
 	    		h0 = co->gethubble();
 	    		hz = h0/co->drdz(1+z);
 	    		return 10.*pow(m/1.e+12,alpha0)*pow(h0/hz,2./3.);
@@ -130,27 +140,3 @@ double HALO:: getConcentration(
 
 		return 0;
 }
-
-/** \ingroup cosmolib
- * \brief The halo total mass density in haloes with mass larger than m is returned,
- * if the integer 1 is given total mass density in haloes rescaled to the background is returned
- * two more parameter can be set,
- *   the first that define the halo mass function to use
- *
- *  the second set the slope of the power-law mass function
- */
-double HALO :: totalMassDensityinHalos(
-		int caseunit   /// if == 1, gives fraction of current average density, otherwise density in Msun/Mpc^3
-		,int t	       /// choice of mass function, 0 Press-Shechter, 1 Sheth-Tormen, 2 Power-law
-		,double alpha  /// slope of power law if t==2
-		){
-  switch (caseunit){
-	    	case (1):
-	    		return co->haloNumberDensity(m,z,1,t,alpha)/(CRITD2*co->Omegam(0.));
-	    		break;
-	    	default:
-	    		return co->haloNumberDensity(m,z,1,t,alpha);
-  }
-
-}
-

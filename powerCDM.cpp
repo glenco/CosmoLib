@@ -143,7 +143,6 @@ double COSMOLOGY::npow(double k){
 double COSMOLOGY::power_linear(double k,double z){
 
   if(z==0.0) return powerloc(k,0);
-
   return pow(Dgrowth(z)*(1+z),2)*powerloc(k,z);
 }
 

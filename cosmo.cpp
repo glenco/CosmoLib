@@ -16,8 +16,6 @@
 #define JMAXP (JMAX+1)
 #define K 6
 #define NRANSI
-#define CRITD 2.49783e18    /* critical density / Ho^2 solar/Mpc */
-#define CRITD2 2.7752543e11 /* critical density / h^2 M_sun/Mpc^3 */
 #define Hubble_length 3.0e3 /* Mpc/h */
 
 int kmax,kount;
@@ -88,7 +86,7 @@ COSMOLOGY::COSMOLOGY(){
 }
 
 COSMOLOGY::~COSMOLOGY(){
-  std::cout << "deleting cosmology" << std::endl;
+  // std::cout << "deleting cosmology" << std::endl;
   delete[] xf;
   delete[] wf;
 }
@@ -346,12 +344,13 @@ double COSMOLOGY::Dgrowth(double z){
  * \brief Critical density in M_sun/Mpc^3
  */
 double COSMOLOGY::rho_crit(double z){
-	return CRITD2*h*h*( Omo*pow(1+z,3)+Oml-(Omo+Oml-1)*pow(1+z,2) );
+  return CRITD2*h*h*( Omo*pow(1+z,3)+Oml-(Omo+Oml-1)*pow(1+z,2) )/pow(1+z,3);
 }
 
 /** \ingroup cosmolib
  * \brief The derivative of the comoving radial distance with respect to redshift in units of Ho^-1, x=1+z
  */
+
 double COSMOLOGY::drdz(double x){
  double temp;
 
@@ -452,7 +451,7 @@ double COSMOLOGY::psdfdm(
   double nu = pow(dc/Dg/sig,2);
   switch (caseunit){
     	  case 1:
-    		  return -(sig8*dsigdM(m))/sig*(sqrt(2/M_PI)*sqrt(nu)*exp(-0.5*nu))/m*Omo*CRITD2;
+	    return -Omo*rho_crit(0)*(sig8*dsigdM(m))/sig*(sqrt(2/M_PI)*sqrt(nu)*exp(-0.5*nu))/m;
     		  break;
     	  default:
     		  return -(sig8*dsigdM(m))/sig*(sqrt(2/M_PI)*sqrt(nu)*exp(-0.5*nu));
@@ -489,7 +488,11 @@ double COSMOLOGY::stdfdm(
   double nu = aST*pow(dc/Dg/sig,2);
   switch (caseunit){
   	  case 1:
-  		  return -(sig8*dsigdM(m))/sig*(AST*(1+1/pow(nu,pST))*sqrt(nu/2)*exp(-0.5*nu))/m*Omo*CRITD2;
+  		  return -Omo*rho_crit(0)*(sig8*dsigdM(m))/sig*(AST*(1+1/pow(nu,pST))*sqrt(nu/2)*exp(-0.5*nu))/m;
+  		  break;
+  	  case 2:
+  	          nu = m*sqrt(aST);
+  	          return AST*(1.+1./pow(nu,pST))*sqrt(nu/2.)*exp(-0.5*nu)/sqrt(M_PI);
   		  break;
   	  default:
   		  return -(sig8*dsigdM(m))/sig*(AST*(1+1/pow(nu,pST))*sqrt(nu/2)*exp(-0.5*nu));
@@ -511,7 +514,7 @@ double COSMOLOGY::powerlawdfdm(
 	double alpha0 = 1./3.;
 	switch (caseunit){
 		case 1:
-			return Omo*CRITD2*0.6*alpha0/2.*sqrt(2/M_PI)*pow(mr,alpha)*exp(-0.5*pow(mr*pow((1+z),3./2.),alpha0*1.3))/m/m;
+			return Omo*rho_crit(0)*0.6*alpha0/2.*sqrt(2/M_PI)*pow(mr,alpha)*exp(-0.5*pow(mr*pow((1+z),3./2.),alpha0*1.3))/m/m;
 			break;
 		default:
 			return 0.6*alpha0/2.*sqrt(2/M_PI)*pow(mr,alpha)*exp(-0.5*pow(mr*pow((1+z),3./2.),alpha0*1.3))/m/m;
@@ -558,63 +561,35 @@ double COSMOLOGY::haloNumberDensity(
 	return n*(lm2-lm1);
 }
 
-double COSMOLOGY::haloMassDensity(
-		double m      /// minimum mass of halos
-		, double z    /// redshift
-		, double a    /// moment of mass function that is wanted
-		, int t       /// mass function type: 0 Press-Schecter, 1 Sheth-Torman, 2 power-law
-		,double alpha /// exponent of power law if t==2
-		){
-
-	double n=0.0;
-	double lm1 = log(m);
-	double lm2 = 2.3*100.; // upper limit in natural log: I think 10^100 M_sun/h should be enough
-	double lx,x,y,y1;
-
-	for (int i=0;i<ni;i++){
-		lx=(lm2-lm1)*xf[i]+lm1;
-		x = exp(lx);
-		switch (t){
-			case 1: // Sheth-Tormen
-				y1=log(stdfdm(z,x,1));
-				break;
-			case 2: // power-law mass function
-				y1=log(powerlawdfdm(z,x,alpha,1));
-				break;
-			default: // Press-Schechter
-				y1=log(psdfdm(z,x,1));
-				break;
-		}
-		y = x*exp(y1+(a+1.0)*lx);
-		n+=wf[i]*y;
-	}
-	return n*(lm2-lm1);
-}
 /** \ingroup cosmolib
  * \brief The halo total surface mass density in haloes with mass larger than m_min
+ * in the redshift bin [z1,z2] and projected to redhisft z
+ * in solar mass / Mpc^2
  */
 double COSMOLOGY::totalMassDensityinHalos(
 		int t	       /// choice of mass function, 0 Press-Shechter, 1 Sheth-Tormen, 2 Power-law
 		,double alpha  /// slope of power law if t==2
-		,double m
+		,double m_min
 		,double z
 		,double z1
 		,double z2){
   double n=0.0;
   double x,d,f,v,c;
-  
-  for (int i=0;i<ni;i++){
-    x=(z2-z1)*xf[i]+z1;
-    d=angDist(0.0,x)/Hubble_length*h;
-    f=1.0+x;
-    v=4.0*pi*d*d*DpropDz(x)*f*f*f;
-    c=haloMassDensity(m,x,0.0,t,alpha);
-    n+=wf[i]*v*c;
+
+   for (int i=0;i<ni;i++){
+	   x=(z2-z1)*xf[i]+z1;
+	   d=angDist(0.0,x)/Hubble_length*h;
+	   f=1.0+x;
+	   v=4.0*pi*d*d*DpropDz(x)*f*f*f;
+	   c=haloNumberDensity(m_min,x,1,t,alpha);
+	   n+=wf[i]*v*c;
   }
 
-  double A = 4.0*pi*pow(angDist(0,z),2);
+   double DL = angDist(0,z)*pi/180.;
+   
+   return n*(z2-z1)*pow(Hubble_length,3)/41253./DL/DL;
 
-  return n*(z2-z1)*pow(Hubble_length,3)/A; //Mpc^-2
+  //return haloNumberDensity(m_min,z,1,t,alpha)*h*h*pow(1+z,3)*angDist(z1,z2);
 }
 
 /** \ingroup cosmolib
@@ -747,7 +722,7 @@ double COSMOLOGY::timeEarly(double a){
  */
 double COSMOLOGY::time(double z){
 	double CfactorT = 0.102271;
-    CfactorT = 1/(h*CfactorT);
+        CfactorT = 1/(h*CfactorT);
 	double a=1/(z+1.);
 	double aEqual=8.3696e-05/Omo;  // equality
 	double e=5.*aEqual;
@@ -867,11 +842,6 @@ double COSMOLOGY::halo_bias (
   default: // Mo-White
     return 1+(nu2-1)/dc;
   }
-}
-
-/// The radius to which a halo must shrink to be 200 times as dense as the average density of the universe.
-double COSMOLOGY::R200(double z,double mass){
-	return pow(3*mass/800/pi/rho_crit(z),1.0/3.);
 }
 
 /***************************************************************/
