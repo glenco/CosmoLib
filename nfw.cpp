@@ -96,17 +96,17 @@ double NFW_Utility::NFW_rho(
 	return NFW_deltac(cons)/x/pow(1+x,2);
 }
 
-static float glb_mass,glb_Rhalf,glb_Vmax;
 /// Returns the concentration and radius of an NFW halo with the mass, half mass radius and Vmax provided
 void NFW_Utility::match_nfw(
-		float Vmax        /// Maximum circular velocity (km/s)
-		,float R_half     /// Half mass radius (Mpc)
-		,float mass       /// Mass (solar masses)
+		float my_Vmax        /// Maximum circular velocity (km/s)
+		,float my_R_half     /// Half mass radius (Mpc)
+		,float my_mass       /// Mass (solar masses)
 		,float *my_cons      /// output concentration
 		,float *my_Rmax      /// Radius of halo,  Not necessarily R200 or Rvir.
 		){
 
-	if(mass <= 0.0){
+	//std::cout << "NFW_Utility Test: " << " mass: " << my_mass << " R_half: " << my_R_half << " Vmax: " << my_Vmax << std::endl;
+	if(my_mass <= 0.0){
 		*my_cons = 0;
 		*my_Rmax = 0;
 		return;
@@ -114,15 +114,24 @@ void NFW_Utility::match_nfw(
 	assert(Vmax > 0.0);
 	assert(R_half > 0.0);
 
-	glb_mass = mass;
-	glb_Rhalf = R_half;
-	glb_Vmax = Vmax;
-	*my_cons = zbrentD(&NFW_Utility::nfwfunc,0,1.0e4,1.0e-8);
+	mass = my_mass;
+	R_half = my_R_half;
+	Vmax = my_Vmax;
+
+	if(nfwfunc(1.0e-4)*nfwfunc(1.0e4) > 0.0){
+		ERROR_MESSAGE();
+		std::cout << "ERROR: Vmax, R_half & mass are inconsistent!" << std::endl;
+		exit(1);
+	}
+
+	*my_cons = zbrentD(&NFW_Utility::nfwfunc,1.0e-5,1.0e4,1.0e-8);
+	//std::cout << "NFW_Utility Test: " << nfwfunc(1.0e-4)<< nfwfunc(*my_cons)<< nfwfunc(1.0e4) << " mass: " << mass << " R_half: " << R_half << " Vmax: " << Vmax << std::endl;
 	*my_Rmax = Rmax(*my_cons,Vmax,mass);
+	assert(*my_Rmax > my_R_half);
 }
 
 float NFW_Utility::nfwfunc(float cons){
-	return 2*g_func(glb_Rhalf/Rmax(cons,glb_Vmax,glb_mass) ) - g_func(cons);
+	return 2*g_func(R_half*cons/Rmax(cons,Vmax,mass) ) - g_func(cons);
 }
 
 float NFW_Utility::Rmax(float cons,float Vmax,float mass){

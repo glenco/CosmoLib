@@ -242,8 +242,8 @@ typedef COSMOLOGY *CosmoHndl;
 
 class NFW_Utility {
 public:
-	NFW_Utility();
-	virtual ~NFW_Utility();
+	NFW_Utility(){return;}
+	~NFW_Utility(){};
 
 	// methods for NFW profile
 	double NFW_V200(double M200,double R200);
@@ -258,6 +258,8 @@ public:
 	float g_func(float x);
 
 private:
+	float Vmax,R_half,mass;       /// Mass (solar masses)
+
     typedef float (NFW_Utility::*MemFunc)(float);
     float zbrentD(MemFunc func, float a,float b,float tols);
     float nfwfunc(float cons);
