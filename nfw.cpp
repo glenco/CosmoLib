@@ -111,8 +111,8 @@ void NFW_Utility::match_nfw(
 		*my_Rmax = 0;
 		return;
 	}
-	assert(Vmax > 0.0);
-	assert(R_half > 0.0);
+	assert(my_Vmax > 0.0);
+	assert(my_R_half > 0.0);
 
 	mass = my_mass;
 	R_half = my_R_half;

@@ -341,7 +341,7 @@ double COSMOLOGY::Dgrowth(double z){
   }
 }
 /** \ingroup cosmolib
- * \brief Critical density in M_sun/Mpc^3
+ * \brief comoving critical density in M_sun/Mpc^3
  */
 double COSMOLOGY::rho_crit(double z){
   return CRITD2*h*h*( Omo*pow(1+z,3)+Oml-(Omo+Oml-1)*pow(1+z,2) )/pow(1+z,3);
@@ -572,7 +572,8 @@ double COSMOLOGY::totalMassDensityinHalos(
 		,double m_min
 		,double z
 		,double z1
-		,double z2){
+		,double z2
+		,bool in_radians){
   double n=0.0;
   double x,d,f,v,c;
 
@@ -585,7 +586,11 @@ double COSMOLOGY::totalMassDensityinHalos(
 	   n+=wf[i]*v*c;
   }
 
-   double DL = angDist(0,z)*pi/180.;
+   double DL;
+   if(in_radians == true)
+     DL = pi/180;
+   else
+     DL = angDist(0,z)*pi/180.;
    
    return n*(z2-z1)*pow(Hubble_length,3)/41253./DL/DL;
 
@@ -771,22 +776,6 @@ double COSMOLOGY::nonlinMass(double z){
 	  return pow(10.,lm0);
 }
 
-
-/** \ingroup cosmolib
- * \brief \f$ \sigma(m) \f$: the rms top-hat power in standard CDM model, normalized to sig8
- *
- * Warning! Uses global variables Omo_static,Oml_static and h_static. Not perfectly accurate.
- *
-double Deltao(double m){
-  double dc;
-  dc=1.68647;
-  if(Omo_static<1 && Oml_static==0) dc*=pow(Omo_static,0.0185);
-  if(Omo_static+Oml_static==1) dc*=pow(Omo_static,0.0055);
-  //return dc*pow(m/1.0e10,-0.25);
-  return f4(6.005e14*pow(h_static*Omo_static,3))/f4(m*h_static*h_static*h_static*h_static*Omo_static*Omo_static);
-}
-
-*/
 /** \ingroup cosmolib
  * \brief \f$ \sigma(m) \f$: the rms top-hat power in standard CDM model, normalized to sig8
  *
