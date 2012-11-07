@@ -138,7 +138,7 @@ public:
     COSMOLOGY(double omegam,double omegal,double h, double w);
     ~COSMOLOGY();
 
-    double totalMassDensityinHalos(int t,double alpha,double m_min,double z,double z1,double z2, bool in_rad=true);
+    double totalMassDensityinHalos(int t,double alpha,double m_min,double z,double z1,double z2);
 
 private:
 

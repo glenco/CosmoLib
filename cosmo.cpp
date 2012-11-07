@@ -572,8 +572,7 @@ double COSMOLOGY::totalMassDensityinHalos(
 		,double m_min
 		,double z
 		,double z1
-		,double z2
-		,bool in_radians){
+		,double z2){
   double n=0.0;
   double x,d,f,v,c;
 
@@ -586,11 +585,7 @@ double COSMOLOGY::totalMassDensityinHalos(
 	   n+=wf[i]*v*c;
   }
 
-   double DL;
-   if(in_radians == true)
-     DL = pi/180;
-   else
-     DL = angDist(0,z)*pi/180.;
+   double DL = angDist(0,z)*pi/180.;
    
    return n*(z2-z1)*pow(Hubble_length,3)/41253./DL/DL;
 
