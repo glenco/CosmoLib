@@ -524,7 +524,7 @@ double COSMOLOGY::powerlawdfdm(
 
 /** \ingroup cosmolib
  * \brief The cumulative comoving number density of haloes with mass larger than m
- * (in solar masses/h) (TODO M & C: This still has an h in it?) at redshift z; if the dummy argument a is given, the mass function
+ * (in solar masses) at redshift z; if the dummy argument a is given, the mass function
  * times m^a is integrated. If a is omitted, a default of zero is assumed. The dummy
  * argument type specifies which type of mass function is to be used, 0 PS, 1 ST or 2 power-law
  * (in this case also the slope alpha can be set as an additional parameter)
@@ -563,7 +563,7 @@ double COSMOLOGY::haloNumberDensity(
 }
 
 /** \ingroup cosmolib
- * \brief The halo total surface mass density in haloes with mass larger than m_min
+ * \brief The halo total surface mass density in haloes with mass larger than m_min (solar masses)
  * in the redshift bin [z1,z2] and projected to redhisft z
  * in solar mass / Mpc^2
  */
@@ -579,36 +579,13 @@ double COSMOLOGY::totalMassDensityinHalos(
 	tmp_alpha = alpha;
 	tmp_mass = m_min;
 	tmp_a = 1.0;
+
 	return nintegrateDcos(&COSMOLOGY::dNdzdAng,z1,z2,1.0e-3)/pow(angDist(0,z),2);
-
-// TODO M & C :If haloNumberDensity() is the comoving density, as it says in the comments and I think is true, then why
-// is the angular distance used? And why are you dividing by Hubble_length twice and multiplying thrice? And
-//	why are you using DpropDz(x) if you are using the comoving density?
-
-  double n=0.0;
-  double x,d,f,v,c;
-
-   for (int i=0;i<ni;i++){
-	   x=(z2-z1)*xf[i]+z1;
-	   d=angDist(0.0,x)/Hubble_length*h;      // TODO M & C:  h should be on top, but why divide it out anyway?
-	   f=1.0+x;
-	   v=4.0*pi*d*d*DpropDz(x)*f*f*f;
-	   c=haloNumberDensity(m_min,x,1,type,alpha);
-	   n+=wf[i]*v*c;
-  }
-
-   double DL = angDist(0,z)*pi/180.;
-   
-   return n*(z2-z1)*pow(Hubble_length,3)/41253./DL/DL;
-
-  //return haloNumberDensity(m_min,z,1,t,alpha)*h*h*pow(1+z,3)*angDist(z1,z2);
 }
 
 
 /** \ingroup cosmolib
- * \brief Number of halos with mass larger than m (in solar masses/h)
- * (TODO M & C Are we still using m/h some places and not others?  It is the same as in totalMassDensityinHalos()
- * but it is not commented there.)
+ * \brief Number of halos with mass larger than m (in solar masses)
  * between
  * redshifts z1 and z2 per square degree
  * The flag type specifies which type of mass function is to be used, 0 PS or 1 ST
@@ -619,21 +596,8 @@ double COSMOLOGY::haloNumberDensityOnSky (double mass, double z1, double z2,int 
 	tmp_alpha = alpha;
 	tmp_mass = mass;
 	tmp_a = 0.0;
+
 	return nintegrateDcos(&COSMOLOGY::dNdzdAng,z1,z2,1.0e-3)*pow(pi/180,2);
-
-// TODO M & C: Same comment as for totalMassDensityinHalos()
-	double n=0.0;
-  double x,d,f,v,c;
-
-   for (int i=0;i<ni;i++){
-	   x=(z2-z1)*xf[i]+z1;
-	   d=angDist(0.0,x)/Hubble_length*h;      // TODO M & C;  h should be on top, but why divide it out anyway?
-	   f=1.0+x;
-	   v=4.0*pi*d*d*DpropDz(x)*f*f*f;
-	   c=haloNumberDensity(mass,x,0.0,type,alpha);
-	   n+=wf[i]*v*c;
-  }
-   return n*(z2-z1)*pow(Hubble_length,3)/41253.;
 }
 
 double COSMOLOGY::dNdzdAng(double z){
