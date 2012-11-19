@@ -599,8 +599,11 @@ double COSMOLOGY::haloNumberDensityOnSky (double mass, double z1, double z2,int 
   return nintegrateDcos(&COSMOLOGY::dNdz,z1,z2,1.0e-3)/41253.;
 }
 
+/*
+ * Total halo number (tmp_a=0) or mass (tmp_a=1) in solar masses in a redshift bin.
+ */
 double COSMOLOGY::dNdz(double z){
-  return 4.0*pi*pow(angDist(0,z)*(1+z),2)*haloNumberDensity(tmp_mass,z,0,tmp_type,tmp_alpha)*drdz(1+z)*Hubble_length/h;
+  return 4.0*pi*pow(angDist(0,z)*(1+z),2)*haloNumberDensity(tmp_mass,z,tmp_a,tmp_type,tmp_alpha)*drdz(1+z)*Hubble_length/h;
 }
 
 /** \ingroup cosmolib
