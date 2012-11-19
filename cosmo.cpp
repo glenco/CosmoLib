@@ -209,7 +209,7 @@ double COSMOLOGY::rcurve(){
 
 double COSMOLOGY::DpropDz(double z){
 	double a=1.0/(1.0+z);
-	return a*drdz_dark(1/a);
+	return a*drdz(1/a);
 }
 
 
@@ -580,28 +580,27 @@ double COSMOLOGY::totalMassDensityinHalos(
 	tmp_mass = m_min;
 	tmp_a = 1.0;
 
-	return nintegrateDcos(&COSMOLOGY::dNdzdAng,z1,z2,1.0e-3)/pow(angDist(0,z),2);
+	return nintegrateDcos(&COSMOLOGY::dNdz,z1,z2,1.0e-3)/(4*pi*pow(angDist(0,z),2));
 }
 
 
 /** \ingroup cosmolib
  * \brief Number of halos with mass larger than m (in solar masses)
- * between
- * redshifts z1 and z2 per square degree
+ * between redshifts z1 and z2 per square degree
  * The flag type specifies which type of mass function is to be used, 0 PS or 1 ST
  */
 double COSMOLOGY::haloNumberDensityOnSky (double mass, double z1, double z2,int type, double alpha){
+  
+  tmp_type = type;
+  tmp_alpha = alpha;
+  tmp_mass = mass;
+  tmp_a = 0.0;
 
-	tmp_type = type;
-	tmp_alpha = alpha;
-	tmp_mass = mass;
-	tmp_a = 0.0;
-
-	return nintegrateDcos(&COSMOLOGY::dNdzdAng,z1,z2,1.0e-3)*pow(pi/180,2);
+  return nintegrateDcos(&COSMOLOGY::dNdz,z1,z2,1.0e-3)/41253.;
 }
 
-double COSMOLOGY::dNdzdAng(double z){
-	return pow(coorDist(0,z),2)*haloNumberDensity(tmp_mass,z,tmp_a,tmp_type,tmp_alpha)*drdz(1+z)*Hubble_length/h;
+double COSMOLOGY::dNdz(double z){
+  return 4.0*pi*pow(angDist(0,z)*(1+z),2)*haloNumberDensity(tmp_mass,z,0,tmp_type,tmp_alpha)*drdz(1+z)*Hubble_length/h;
 }
 
 /** \ingroup cosmolib
@@ -838,7 +837,7 @@ double COSMOLOGY::nintegrateDcos(pt2MemFunc func, double a,double b,double tols)
 	   if(fabs(dss) <= tols*fabs(ss)) return ss;
 	}
 	h2[j+1]=0.25*h2[j];
-   }
+	}
    cout << "s2= "; for(j=1;j<=JMAX;j++) cout << s2[j] << " ";
    cout << "\n";
    cout << "Too many steps in routine nintegrateDcos\n";
@@ -847,18 +846,20 @@ double COSMOLOGY::nintegrateDcos(pt2MemFunc func, double a,double b,double tols)
 
 double COSMOLOGY::trapzdDcoslocal(pt2MemFunc func, double a, double b, int n, double *s2, double *sum2)
 {
-   double x,tnm,del;
+  double x,tnm,del,sum;
    int it,j;
 
    if (n == 1) {
 	return (*s2=0.5*(b-a)*( (this->*func)(a) +(this->*func)(b) ));
    } else {
+
 	for (it=1,j=1;j<n-1;j++) it <<= 1;
 	tnm=it;
 	del=(b-a)/tnm;
 	x=a+0.5*del;
-	for (*sum2=0.0,j=1;j<=it;j++,x+=del) *sum2 += (this->*func)(x);
-	*s2=0.5*(*s2+(b-a)*(*sum2)/tnm);
+	for (sum=0.0,j=1;j<=it;j++,x+=del) sum += (this->*func)(x);
+	*s2=0.5*(*s2+(b-a)*sum/tnm);
+
 	return *s2;
    }
 }
