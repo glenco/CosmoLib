@@ -193,6 +193,7 @@ private:
   double dsigdM(double m);
   double timeEarly(double a);
   double Deltao(double m);
+  double dNdzdAng(double z);
   
   typedef double (COSMOLOGY::*pt2MemFunc)(double);
   
@@ -238,6 +239,13 @@ private:
   double y_drag;		/* Ratio of z_equality to z_drag */
   double z_drag;		/* Redshift of the drag epoch */
   double z_equality;	/* Redshift of matter-radiation equality */
+
+  // temporary variables for doing interations
+  int tmp_type;
+  double tmp_alpha;
+  double tmp_mass;
+  double tmp_a;
+
 };
 
 typedef COSMOLOGY *CosmoHndl;

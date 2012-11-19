@@ -428,12 +428,13 @@ double COSMOLOGY::gradius(
 }
 
 /**  \ingroup cosmolib
-  \brief Press-Schechter mass function in unit of logarithmic mass bin and mean density
+*  \brief Press-Schechter halo mass function - default \f$ \frac{1}{\overline{\rho}_{comoving}}\frac{dN}{d\ln M} \f$ i.e. fraction of mass or
+*  if caseunit==1 the \f$ \frac{dN}{dlogM} \f$
 */
 double COSMOLOGY::psdfdm(
 		double z      /// redshift
 		,double m      /// mass
-		,int caseunit  /// if equal to 1 return the number density per unit mass
+		,int caseunit  /// if equal to 1 return the comoving number density per unit mass
 		){
 
   double dc,Omz,sig,Dg;
@@ -450,12 +451,12 @@ double COSMOLOGY::psdfdm(
   /*printf("dc=%e dsigdM=%e sig=%e m=%e D=%e\n",dc,dsigdM(m),sig,m,Dg);*/
   double nu = pow(dc/Dg/sig,2);
   switch (caseunit){
-    	  case 1:
-	    return -Omo*rho_crit(0)*(sig8*dsigdM(m))/sig*(sqrt(2/M_PI)*sqrt(nu)*exp(-0.5*nu))/m;
-    		  break;
-    	  default:
-    		  return -(sig8*dsigdM(m))/sig*(sqrt(2/M_PI)*sqrt(nu)*exp(-0.5*nu));
-    }
+  case 1:
+	  return -Omo*rho_crit(0)*(sig8*dsigdM(m))/sig*(sqrt(2/M_PI)*sqrt(nu)*exp(-0.5*nu))/m;
+	  break;
+  default:
+	  return -(sig8*dsigdM(m))/sig*(sqrt(2/M_PI)*sqrt(nu)*exp(-0.5*nu));
+  }
 }
 
 /** \ingroup cosmolib
@@ -465,7 +466,7 @@ double COSMOLOGY::psdfdm(
 double COSMOLOGY::stdfdm(
 		double z      /// redshift
 		,double m      /// mass
-		,int caseunit  /// if equal to 1 return the number density per unit mass
+		,int caseunit  /// if equal to 1 return the number density per unit mass TODO Carlo, why aren't the other options explained?
 		){
 
   double dc,Omz,sig,Dg;
@@ -523,17 +524,17 @@ double COSMOLOGY::powerlawdfdm(
 
 /** \ingroup cosmolib
  * \brief The cumulative comoving number density of haloes with mass larger than m
- * (in solar masses/h) at redshift z; if the dummy argument a is given, the mass function
+ * (in solar masses/h) (TODO M & C: This still has an h in it?) at redshift z; if the dummy argument a is given, the mass function
  * times m^a is integrated. If a is omitted, a default of zero is assumed. The dummy
- * argument t specifies which type of mass function is to be used, 0 PS, 1 ST or 2 power-law
+ * argument type specifies which type of mass function is to be used, 0 PS, 1 ST or 2 power-law
  * (in this case also the slope alpha can be set as an additional parameter)
  */
 double COSMOLOGY::haloNumberDensity(
 		double m      /// minimum mass of halos
 		, double z    /// redshift
 		, double a    /// moment of mass function that is wanted
-		, int t       /// mass function type: 0 Press-Schecter, 1 Sheth-Torman, 2 power-law
-		,double alpha /// exponent of power law if t==2
+		, int type       /// mass function type: 0 Press-Schecter, 1 Sheth-Torman, 2 power-law
+		,double alpha /// exponent of power law if type==2
 		){
 
 	double n=0.0;
@@ -544,7 +545,7 @@ double COSMOLOGY::haloNumberDensity(
 	for (int i=0;i<ni;i++){
 		lx=(lm2-lm1)*xf[i]+lm1;
 		x = exp(lx);
-		switch (t){
+		switch (type){
 			case 1: // Sheth-Tormen
 				y1=log(stdfdm(z,x,1));
 				break;
@@ -567,21 +568,32 @@ double COSMOLOGY::haloNumberDensity(
  * in solar mass / Mpc^2
  */
 double COSMOLOGY::totalMassDensityinHalos(
-		int t	       /// choice of mass function, 0 Press-Shechter, 1 Sheth-Tormen, 2 Power-law
-		,double alpha  /// slope of power law if t==2
+		int type	       /// choice of mass function, 0 Press-Shechter, 1 Sheth-Tormen, 2 Power-law
+		,double alpha  /// slope of power law if type==2
 		,double m_min
 		,double z
 		,double z1
 		,double z2){
+
+	tmp_type = type;
+	tmp_alpha = alpha;
+	tmp_mass = m_min;
+	tmp_a = 1.0;
+	return nintegrateDcos(&COSMOLOGY::dNdzdAng,z1,z2,1.0e-3)/pow(angDist(0,z),2);
+
+// TODO M & C :If haloNumberDensity() is the comoving density, as it says in the comments and I think is true, then why
+// is the angular distance used? And why are you dividing by Hubble_length twice and multiplying thrice? And
+//	why are you using DpropDz(x) if you are using the comoving density?
+
   double n=0.0;
   double x,d,f,v,c;
 
    for (int i=0;i<ni;i++){
 	   x=(z2-z1)*xf[i]+z1;
-	   d=angDist(0.0,x)/Hubble_length*h;
+	   d=angDist(0.0,x)/Hubble_length*h;      // TODO M & C:  h should be on top, but why divide it out anyway?
 	   f=1.0+x;
 	   v=4.0*pi*d*d*DpropDz(x)*f*f*f;
-	   c=haloNumberDensity(m_min,x,1,t,alpha);
+	   c=haloNumberDensity(m_min,x,1,type,alpha);
 	   n+=wf[i]*v*c;
   }
 
@@ -592,24 +604,40 @@ double COSMOLOGY::totalMassDensityinHalos(
   //return haloNumberDensity(m_min,z,1,t,alpha)*h*h*pow(1+z,3)*angDist(z1,z2);
 }
 
+
 /** \ingroup cosmolib
- * \brief Number of haloes with mass larger than m (in solar masses/h) between
+ * \brief Number of halos with mass larger than m (in solar masses/h)
+ * (TODO M & C Are we still using m/h some places and not others?  It is the same as in totalMassDensityinHalos()
+ * but it is not commented there.)
+ * between
  * redshifts z1 and z2 per square degree
- * The flag t specifies which type of mass function is to be used, 0 PS or 1 ST
+ * The flag type specifies which type of mass function is to be used, 0 PS or 1 ST
  */
-double COSMOLOGY::haloNumberDensityOnSky (double m, double z1, double z2,int t, double alpha){
-  double n=0.0;
+double COSMOLOGY::haloNumberDensityOnSky (double mass, double z1, double z2,int type, double alpha){
+
+	tmp_type = type;
+	tmp_alpha = alpha;
+	tmp_mass = mass;
+	tmp_a = 0.0;
+	return nintegrateDcos(&COSMOLOGY::dNdzdAng,z1,z2,1.0e-3)*pow(pi/180,2);
+
+// TODO M & C: Same comment as for totalMassDensityinHalos()
+	double n=0.0;
   double x,d,f,v,c;
 
    for (int i=0;i<ni;i++){
 	   x=(z2-z1)*xf[i]+z1;
-	   d=angDist(0.0,x)/Hubble_length*h;
+	   d=angDist(0.0,x)/Hubble_length*h;      // TODO M & C;  h should be on top, but why divide it out anyway?
 	   f=1.0+x;
 	   v=4.0*pi*d*d*DpropDz(x)*f*f*f;
-	   c=haloNumberDensity(m,x,0.0,t,alpha);
+	   c=haloNumberDensity(mass,x,0.0,type,alpha);
 	   n+=wf[i]*v*c;
   }
    return n*(z2-z1)*pow(Hubble_length,3)/41253.;
+}
+
+double COSMOLOGY::dNdzdAng(double z){
+	return pow(coorDist(0,z),2)*haloNumberDensity(tmp_mass,z,tmp_a,tmp_type,tmp_alpha)*drdz(1+z)*Hubble_length/h;
 }
 
 /** \ingroup cosmolib
@@ -792,13 +820,13 @@ double f4(double u){
  * \brief Halo bias, uses formalism by Mo-White
  *
  * by default it gives the halo bias by Mo-White
- * t=1 returns the Sheth-Tormen 99 while
- * setting t=2 the Sheth-Mo-Tormen 2001 bias
+ * type=1 returns the Sheth-Tormen 99 while
+ * setting type=2 the Sheth-Mo-Tormen 2001 bias
  */
 double COSMOLOGY::halo_bias (
 		double m       /// halo mass in solar masses
 		,double z      /// redshift
-		,int t         /// (0) Mo & White bias (1) Sheth-Tormen 99 (2) Sheth-Mo-Tormen 2001
+		,int type         /// (0) Mo & White bias (1) Sheth-Tormen 99 (2) Sheth-Mo-Tormen 2001
 		){
   double dc,Omz,sig,Dg;
   
@@ -814,7 +842,7 @@ double COSMOLOGY::halo_bias (
   double nu2 = pow(dc/Dg/sig,2);
   double nu = dc/Dg/sig;
   
-  switch (t){
+  switch (type){
   case 1: // Sheth-Tormen 99
     return 1+((0.707*nu2-1)/dc)+(2*0.3/dc)/(1 + pow(0.707*nu2,0.3));
     break;
