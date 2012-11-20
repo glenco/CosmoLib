@@ -574,13 +574,27 @@ double COSMOLOGY::totalMassDensityinHalos(
 		,double z
 		,double z1
 		,double z2){
+  double n = 0.0;
+  double x,d,v,c;
+  
+  for (int i=0;i<ni;i++){
+    x=(z2-z1)*xf[i]+z1;
+    d=coorDist(0.0,x);
+    v=4.0*pi*d*d*drdz(1+x)*Hubble_length/h;
+    c=haloNumberDensity(m_min,x,1.0,type,alpha);
+    n+=wf[i]*v*c;
+  }
+  
+  return n*(z2-z1)/(4*pi*pow(angDist(0,z),2));
 
+  /*
 	tmp_type = type;
 	tmp_alpha = alpha;
 	tmp_mass = m_min;
 	tmp_a = 1.0;
 
 	return nintegrateDcos(&COSMOLOGY::dNdz,z1,z2,1.0e-3)/(4*pi*pow(angDist(0,z),2));
+  */
 }
 
 
@@ -590,13 +604,27 @@ double COSMOLOGY::totalMassDensityinHalos(
  * The flag type specifies which type of mass function is to be used, 0 PS or 1 ST
  */
 double COSMOLOGY::haloNumberDensityOnSky (double mass, double z1, double z2,int type, double alpha){
-  
+  double n = 0.0;
+  double x,d,v,c;
+
+for (int i=0;i<ni;i++){
+  x=(z2-z1)*xf[i]+z1;
+  d=coorDist(0.0,x);
+  v=4.0*pi*d*d*drdz(1+x)*Hubble_length/h;
+  c=haloNumberDensity(mass,x,0.0,type,alpha);
+  n+=wf[i]*v*c;
+ }
+ 
+ return n*(z2-z1)/41253.;
+ 
+  /*
   tmp_type = type;
   tmp_alpha = alpha;
   tmp_mass = mass;
   tmp_a = 0.0;
 
   return nintegrateDcos(&COSMOLOGY::dNdz,z1,z2,1.0e-3)/41253.;
+  */
 }
 
 /*
