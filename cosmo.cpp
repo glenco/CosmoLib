@@ -565,7 +565,12 @@ double COSMOLOGY::haloNumberDensity(
 /** \ingroup cosmolib
  * \brief The halo total surface mass density in haloes with mass larger than m_min (solar masses)
  * in the redshift bin [z1,z2] and projected to redhisft z
- * in solar mass / Mpc^2
+ * in solar mass / proper Mpc^2
+ *
+ * sigma = integral rho*(1+z)^2 dr = integral rho*(1+z)^2 dr/dz dz
+ *
+ * rho -- comoving mass density of halos in solar M/comovoing Mpc^3
+ * r -- comoving distance
  */
 double COSMOLOGY::totalMassDensityinHalos(
 		int type	       /// choice of mass function, 0 Press-Shechter, 1 Sheth-Tormen, 2 Power-law
@@ -575,17 +580,16 @@ double COSMOLOGY::totalMassDensityinHalos(
 		,double z1
 		,double z2){
   double n = 0.0;
-  double x,d,v,c;
+  double x,f,c;
   
   for (int i=0;i<ni;i++){
     x=(z2-z1)*xf[i]+z1;
-    d=coorDist(0.0,x);
-    v=4.0*pi*d*d*drdz(1+x)*Hubble_length/h;
-    c=haloNumberDensity(m_min,x,1.0,type,alpha);
-    n+=wf[i]*v*c;
+    f = 1.0+x;
+    c=haloNumberDensity(m_min,x,1.0,type,alpha)*drdz(1+x)*Hubble_length/h;
+    n+=wf[i]*c*f*f;
   }
   
-  return n*(z2-z1)/(4*pi*pow(angDist(0,z),2));
+  return n*(z2-z1);
 
   /*
 	tmp_type = type;
@@ -602,6 +606,11 @@ double COSMOLOGY::totalMassDensityinHalos(
  * \brief Number of halos with mass larger than m (in solar masses)
  * between redshifts z1 and z2 per square degree
  * The flag type specifies which type of mass function is to be used, 0 PS or 1 ST
+ *
+ * N = integral n dV = integral 4pi r^2 n dr/dz dz
+ *
+ * n -- number density of halos in 1/comoving Mpc^3
+ * r -- comoving distance
  */
 double COSMOLOGY::haloNumberDensityOnSky (double mass, double z1, double z2,int type, double alpha){
   double n = 0.0;
