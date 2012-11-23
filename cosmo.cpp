@@ -489,7 +489,7 @@ double COSMOLOGY::stdfdm(
   double nu = aST*pow(dc/Dg/sig,2);
   switch (caseunit){
   	  case 1:
-  		  return -Omo*rho_crit(0)*(sig8*dsigdM(m))/sig*(AST*(1+1/pow(nu,pST))*sqrt(nu/2)*exp(-0.5*nu))/m;
+  		  return -Omo*rho_crit(0)*(sig8*dsigdM(m))/sig*(AST*(1+1/pow(nu,pST))*sqrt(nu/M_PI/2)*exp(-0.5*nu))/m;
   		  break;
   	  case 2:
   	          nu = m*sqrt(aST);
