@@ -75,6 +75,7 @@ public:
     double haloNumberDensity(double m,double z,double a, int t,double alpha = 0.0);
 	
     double haloNumberDensityOnSky (double m,double z1,double z2,int t,double alpha = 0.0);
+    double haloNumberInBufferedCone (double mass ,double z1,double z2,double fov,double buffer ,int type ,double alpha=0.0);
 	
     double TopHatVariance(double m);
     double TopHatVarianceR(double R,double z);
