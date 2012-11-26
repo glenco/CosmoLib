@@ -585,40 +585,17 @@ double COSMOLOGY::totalMassDensityinHalos(
     n+=wf[i]*v*c;
   }
   
-  return n*(z2-z1)/(4*pi*pow(angDist(0,z),2));
+  return  n*(z2-z1)/(4*pi*pow(angDist(0,z),2));
 
-  /*
+/*
 	tmp_type = type;
 	tmp_alpha = alpha;
 	tmp_mass = m_min;
 	tmp_a = 1.0;
 
-<<<<<<< local
-// TODO M & C :If haloNumberDensity() is the comoving density, as it says in the comments and I think is true, then why
-// is the angular distance used? And why are you dividing by Hubble_length twice and multiplying thrice? And
-//	why are you using DpropDz(x) if you are using the comoving density?
 
-  double n=0.0;
-  double x,d,f,v,c;
-
-   for (int i=0;i<ni;i++){
-	   x=(z2-z1)*xf[i]+z1;
-	   d=angDist(0.0,x)/Hubble_length*h;
-	   f=1.0+x;
-	   v=4.0*pi*d*d*DpropDz(x)*f*f*f;
-	   c=haloNumberDensity(m_min,x,1,type,alpha);
-	   n+=wf[i]*v*c;
-  }
-
-   double DL = angDist(0,z)*pi/180.;
-   
-   return n*(z2-z1)*pow(Hubble_length,3)/41253./DL/DL;
-
-  //return haloNumberDensity(m_min,z,1,t,alpha)*h*h*pow(1+z,3)*angDist(z1,z2);
-=======
 	return nintegrateDcos(&COSMOLOGY::dNdz,z1,z2,1.0e-3)/(4*pi*pow(angDist(0,z),2));
   */
->>>>>>> other
 }
 
 
@@ -641,21 +618,25 @@ for (int i=0;i<ni;i++){
  
  return n*(z2-z1)/41253.;
  
-  /*
+/*
   tmp_type = type;
   tmp_alpha = alpha;
   tmp_mass = mass;
   tmp_a = 0.0;
 
+	std::cout << "totalMassDensityOnSky error = " << (ans-nintegrateDcos(&COSMOLOGY::dNdz,z1,z2,1.0e-3)/41253.)/ans << std::endl;
+
+	return ans;
+
   return nintegrateDcos(&COSMOLOGY::dNdz,z1,z2,1.0e-3)/41253.;
-  */
+*/
 }
 
 /*
- * Total halo number (tmp_a=0) or mass (tmp_a=1) in solar masses in a redshift bin.
+ * Total halo number (tmp_a=0) or mass (tmp_a=1) in solar masses in a redshift bin for the entire sphere.
  */
 double COSMOLOGY::dNdz(double z){
-  return 4.0*pi*pow(angDist(0,z)*(1+z),2)*haloNumberDensity(tmp_mass,z,tmp_a,tmp_type,tmp_alpha)*drdz(1+z)*Hubble_length/h;
+  return 4.0*pi*pow(coorDist(0,z),2)*haloNumberDensity(tmp_mass,z,tmp_a,tmp_type,tmp_alpha)*drdz(1+z)*Hubble_length/h;
 }
 
 /** \ingroup cosmolib
@@ -882,11 +863,11 @@ double COSMOLOGY::nintegrateDcos(pt2MemFunc func, double a,double b,double tols)
    double ss,dss;
    double s2[JMAXP],h2[JMAXP+1];
    int j;
-   double ss2=0, ssum2=0;
+   double ss2=0;
 
    h2[1]=1.0;
    for (j=1;j<=JMAX;j++) {
-     s2[j]=trapzdDcoslocal(func,a,b,j,&ss2,&ssum2);
+     s2[j]=trapzdDcoslocal(func,a,b,j,&ss2);
 	if (j>=K) {
 	   polintD(&h2[j-K],&s2[j-K],K,0.0,&ss,&dss);
 	   if(fabs(dss) <= tols*fabs(ss)) return ss;
@@ -899,7 +880,7 @@ double COSMOLOGY::nintegrateDcos(pt2MemFunc func, double a,double b,double tols)
    return 0.0;
 }
 
-double COSMOLOGY::trapzdDcoslocal(pt2MemFunc func, double a, double b, int n, double *s2, double *sum2)
+double COSMOLOGY::trapzdDcoslocal(pt2MemFunc func, double a, double b, int n, double *s2)
 {
   double x,tnm,del,sum;
    int it,j;
