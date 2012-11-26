@@ -601,20 +601,25 @@ double COSMOLOGY::totalMassDensityinHalos(
 
 /** \ingroup cosmolib
  * \brief Number of halos with mass larger than m (in solar masses)
- * between redshifts z1 and z2 per square degree
- * The flag type specifies which type of mass function is to be used, 0 PS or 1 ST
+ * between redshifts z1 and z2 per square degree.
  */
-double COSMOLOGY::haloNumberDensityOnSky (double mass, double z1, double z2,int type, double alpha){
+double COSMOLOGY::haloNumberDensityOnSky (
+		double mass                 /// minimum mass
+		,double z1                  /// lower redshift limit
+		,double z2                  /// higher redshift limit
+		,int type                   /// The flag type specifies which type of mass function is to be used, 0 PS or 1 ST
+		,double alpha
+		){
   double n = 0.0;
   double x,d,v,c;
 
-for (int i=0;i<ni;i++){
-  x=(z2-z1)*xf[i]+z1;
-  d=coorDist(0.0,x);
-  v=4.0*pi*d*d*drdz(1+x)*Hubble_length/h;
-  c=haloNumberDensity(mass,x,0.0,type,alpha);
-  n+=wf[i]*v*c;
- }
+  for (int i=0;i<ni;i++){
+	  x=(z2-z1)*xf[i]+z1;
+	  d=coorDist(0.0,x);
+	  v=4.0*pi*d*d*drdz(1+x)*Hubble_length/h;
+	  c=haloNumberDensity(mass,x,0.0,type,alpha);
+	  n+=wf[i]*v*c;
+  }
  
  return n*(z2-z1)/41253.;
  
@@ -631,6 +636,62 @@ for (int i=0;i<ni;i++){
   return nintegrateDcos(&COSMOLOGY::dNdz,z1,z2,1.0e-3)/41253.;
 */
 }
+/**\ingroup cosmolib
+ * \brief The number of halos in a buffered cone between redshift z1 and z2.
+ *
+ * A buffered cone is a cone with an extra perpendicular fixed physical distance added (area(z) = pi*(\theta D + buffer*(1+z))^2).
+ * This geometry is useful for reducing edge effects which can be particularly bad a low redshift for small cones.
+ */
+double COSMOLOGY::haloNumberInBufferedCone (
+		double mass                 /// minimum mass
+		,double z1                  /// lower redshift limit
+		,double z2                  /// higher redshift limit
+		,double fov                 /// field of view of cone in steradians
+		,double buffer              /// buffer length in physical Mpc
+		,int type                   /// The flag type specifies which type of mass function is to be used, 0 PS or 1 ST
+		,double alpha
+		){
+	double n = 0.0;
+	double z,d,v,c;
+
+	for (int i=0;i<ni;i++){
+	  z=(z2-z1)*xf[i]+z1;
+	  d=sqrt(fov/pi)*coorDist(0.0,z) + buffer*(1+z);
+	  v= pi*d*d*drdz(1+z)*Hubble_length/h;
+	  c=haloNumberDensity(mass,z,0.0,type,alpha);
+	  n+=wf[i]*v*c;
+	}
+	return n*(z2-z1);
+}
+/**\ingroup cosmolib
+ * \brief Total mass contained in halos in a buffered cone between redshift z1 and z2.
+ *
+ * A buffered cone is a cone with an extra perpendicular fixed physical distance added (area(z) = pi*(\theta D + buffer*(1+z))^2).
+ * This geometry is useful for reducing edge effects which can be particularly bad a low redshift for small cones.
+ */
+
+double COSMOLOGY::haloMassInBufferedCone (
+		double mass                 /// minimum mass
+		,double z1                  /// lower redshift limit
+		,double z2                  /// higher redshift limit
+		,double fov                 /// field of view of cone in steradians
+		,double buffer              /// buffer length in physical Mpc
+		,int type                   /// The flag type specifies which type of mass function is to be used, 0 PS or 1 ST
+		,double alpha
+		){
+	double n = 0.0;
+	double z,d,v,c;
+
+	for (int i=0;i<ni;i++){
+	  z=(z2-z1)*xf[i]+z1;
+	  d=sqrt(fov/pi)*coorDist(0.0,z) + buffer*(1+z);
+	  v= pi*d*d*drdz(1+z)*Hubble_length/h;
+	  c=haloNumberDensity(mass,z,0.0,type,alpha);
+	  n+=wf[i]*v*c;
+	}
+	return n*(z2-z1);
+}
+
 
 /*
  * Total halo number (tmp_a=0) or mass (tmp_a=1) in solar masses in a redshift bin for the entire sphere.
