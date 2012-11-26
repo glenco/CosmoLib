@@ -647,7 +647,7 @@ double COSMOLOGY::haloNumberInBufferedCone (
 		,double z1                  /// lower redshift limit
 		,double z2                  /// higher redshift limit
 		,double fov                 /// field of view of cone in steradians
-		,double buffer              /// buffer length in physical Mpc
+		,double buffer              /// buffer length in physical Mpc (not comoving)
 		,int type                   /// The flag type specifies which type of mass function is to be used, 0 PS or 1 ST
 		,double alpha
 		){
@@ -675,7 +675,7 @@ double COSMOLOGY::haloMassInBufferedCone (
 		,double z1                  /// lower redshift limit
 		,double z2                  /// higher redshift limit
 		,double fov                 /// field of view of cone in steradians
-		,double buffer              /// buffer length in physical Mpc
+		,double buffer              /// buffer length in physical Mpc (not comoving)
 		,int type                   /// The flag type specifies which type of mass function is to be used, 0 PS or 1 ST
 		,double alpha
 		){
@@ -686,7 +686,7 @@ double COSMOLOGY::haloMassInBufferedCone (
 	  z=(z2-z1)*xf[i]+z1;
 	  d=sqrt(fov/pi)*coorDist(0.0,z) + buffer*(1+z);
 	  v= pi*d*d*drdz(1+z)*Hubble_length/h;
-	  c=haloNumberDensity(mass,z,0.0,type,alpha);
+	  c=haloNumberDensity(mass,z,1.0,type,alpha);
 	  n+=wf[i]*v*c;
 	}
 	return n*(z2-z1);
