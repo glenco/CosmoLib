@@ -489,7 +489,7 @@ double COSMOLOGY::stdfdm(
   double nu = aST*pow(dc/Dg/sig,2);
   switch (caseunit){
   	  case 1:
-  		  return -Omo*rho_crit(0)*(sig8*dsigdM(m))/sig*(AST*(1+1/pow(nu,pST))*sqrt(nu/2)*exp(-0.5*nu))/m;
+  		  return -Omo*rho_crit(0)*(sig8*dsigdM(m))/sig*(AST*(1+1/pow(nu,pST))*sqrt(nu/M_PI/2)*exp(-0.5*nu))/m;
   		  break;
   	  case 2:
   	          nu = m*sqrt(aST);
@@ -565,27 +565,29 @@ double COSMOLOGY::haloNumberDensity(
 /** \ingroup cosmolib
  * \brief The halo total surface mass density in haloes with mass larger than m_min (solar masses)
  * in the redshift bin [z1,z2] and projected to redhisft z
- * in solar mass / Mpc^2
+ * in solar mass / proper Mpc^2
+ *
  */
 double COSMOLOGY::totalMassDensityinHalos(
 		int type	       /// choice of mass function, 0 Press-Shechter, 1 Sheth-Tormen, 2 Power-law
-		,double alpha  /// slope of power law if type==2
+		,double alpha      /// slope of power law if type==2
 		,double m_min
 		,double z
 		,double z1
-		,double z2){
+		,double z2
+		){
   double n = 0.0;
-  double x,d,v,c;
+  double x,f,c;
   
   for (int i=0;i<ni;i++){
     x=(z2-z1)*xf[i]+z1;
-    d=coorDist(0.0,x);
-    v=4.0*pi*d*d*drdz(1+x)*Hubble_length/h;
-    c=haloNumberDensity(m_min,x,1.0,type,alpha);
-    n+=wf[i]*v*c;
+    f = 1.0+x;
+    c=haloNumberDensity(m_min,x,1.0,type,alpha)*drdz(1+x)*Hubble_length/h;
+    n+=wf[i]*c*f*f;
   }
   
   return  n*(z2-z1)/(4*pi*pow(angDist(0,z),2));
+
 
 /*
 	tmp_type = type;
