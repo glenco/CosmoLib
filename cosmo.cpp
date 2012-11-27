@@ -577,13 +577,14 @@ double COSMOLOGY::totalMassDensityinHalos(
 		,double z2
 		){
   double n = 0.0;
-  double x,f,c;
+  double x,d,v,c;
   
   for (int i=0;i<ni;i++){
-    x=(z2-z1)*xf[i]+z1;
-    f = 1.0+x;
-    c=haloNumberDensity(m_min,x,1.0,type,alpha)*drdz(1+x)*Hubble_length/h;
-    n+=wf[i]*c*f*f;
+	  x=(z2-z1)*xf[i]+z1;
+	  d=coorDist(0.0,x);
+	  v=4.0*pi*d*d*drdz(1+x)*Hubble_length/h;
+	  c=haloNumberDensity(m_min,x,1.0,type,alpha);
+	  n+=wf[i]*v*c;
   }
   
   return  n*(z2-z1)/(4*pi*pow(angDist(0,z),2));
