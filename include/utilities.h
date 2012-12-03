@@ -92,17 +92,6 @@ void locate (T *v, unsigned long n, T x, unsigned long *index)
   return;
 }
 
-/** \ingroup Utill
- * \brief Template function that maps values of inputs
- */
-template <class T>
-void swap (T &a,T &b){
-	T tmp;
-	tmp = a;
-	a = b;
-	b = tmp;
-}
-
 double InterpolateYvec(std:: vector<double> x, std:: vector<double> y,double xi);
 
 double arctanh(double x);
