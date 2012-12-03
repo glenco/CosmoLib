@@ -43,6 +43,12 @@ template <class T>
 int locate (const std::vector<T> &v, const T x)
 {
   size_t n = v.size ();
+
+  if (x <= v[0])
+    return 0;
+  if (x >= v[n-1])
+    return n-1;
+
   int jl = -1;
   int ju = n;
   bool as = (v[n-1] >= v[0]);
@@ -54,19 +60,15 @@ int locate (const std::vector<T> &v, const T x)
     else
       ju=jm;
   }
-  if (x == v[0])
-    return 0;
-  else if (x == v[n-1])
-    return n-2;
-  else
-    return jl;
+
+  return jl;
 }
 
 /** \ingroup Utill
  * \brief Template function that maps values of inputs
  */
 template <class T>
-void swap (T a,T b){
+void swapT (T &a,T &b){
 	T tmp;
 	tmp = a;
 	a = b;

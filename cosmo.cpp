@@ -43,12 +43,22 @@ COSMOLOGY::COSMOLOGY(double omegam,double omegal,double hubble, double ww) :
 
 	TFmdm_set_cosm();
 	power_normalize(0.812);
-
 	// allocate step and weight for gauleg integration
 	ni = 64;
 	xf=new float[ni];
 	wf=new float[ni];
+#ifdef GSL
+	double xi, wi;
+	gsl_integration_glfixed_table *t=gsl_integration_glfixed_table_alloc(ni);
+	for(int i=0; i<ni; i++){
+	  gsl_integration_glfixed_point(0.0,1.0,i,&xi,&wi,t);
+	  xf[i] = xi;
+	  wf[i] = wi;
+	}
+	gsl_integration_glfixed_table_free(t);
+#else
 	gauleg(0.,1.,xf-1,wf-1,ni);
+#endif
 	// construct table of log(1+z), time, and \delta_c for interpolation
 	fill_linear(vlz,ni,0.,1.7);
 	double dc;
@@ -70,7 +80,18 @@ COSMOLOGY::COSMOLOGY(){
 	ni = 64;
 	xf=new float[ni];
 	wf=new float[ni];
+#ifdef GSL
+	double xi, wi;
+	gsl_integration_glfixed_table *t=gsl_integration_glfixed_table_alloc(ni);
+	for(int i=0; i<ni; i++){
+	  gsl_integration_glfixed_point(0.0,1.0,i,&xi,&wi,t);
+	  xf[i] = xi;
+	  wf[i] = wi;
+	}
+	gsl_integration_glfixed_table_free(t);
+#else
 	gauleg(0.,1.,xf-1,wf-1,ni);
+#endif
 	// construct table of log(1+z), time, and \delta_c for interpolation
 	fill_linear(vlz,ni,0.,1.7);
 	double dc;
@@ -351,6 +372,10 @@ double COSMOLOGY::rho_crit(double z){
  * \brief The derivative of the comoving radial distance with respect to redshift in units of Ho^-1, x=1+z
  */
 
+double drdz_wrapper(double x, void *params){
+  return static_cast<CosmoHndl>(params)->COSMOLOGY::drdz(x);
+}
+
 double COSMOLOGY::drdz(double x){
  double temp;
 
@@ -365,6 +390,10 @@ double COSMOLOGY::adrdz(double x){
 /** \ingroup cosmolib
  * \brief Same as drdz, but incorporates dark energy through w and w1.
  */
+
+double drdz_dark_wrapper(double x, void *params){
+  return static_cast<CosmoHndl>(params)->COSMOLOGY::drdz_dark(x);
+}
 double COSMOLOGY::drdz_dark(double x){
 	return 1.0 / sqrt(Omo*x*x*x+Oml*pow(x,3*(1+w+w1))*exp(-3*w1*(x-1)/x)-(Omo+Oml-1)*x*x);
 }
@@ -376,8 +405,23 @@ double COSMOLOGY::adrdz_dark(double x){
  * \brief The coordinate distance in units Mpc.  This is the radial distance found by integrating 1/H(z).
  */
 double COSMOLOGY::coorDist(double zo,double z){
+#ifdef GSL
+  double result, error;
+  size_t neval;
+  gsl_function F;
+  if( (w ==-1.0) && (w1 == 0.0) )
+    F.function = &drdz_wrapper;
+  else
+    F.function = &drdz_dark_wrapper;
+  F.params = this;
+  
+  gsl_integration_qng(&F,1+zo,1+z,1e-9,1e-9,&result,&error,&neval);
+
+  return result*Hubble_length/h;
+#else
 	if( (w ==-1.0) && (w1 == 0.0) ) return nintegrateDcos(&COSMOLOGY::drdz,1+zo,1+z,1.0e-9)*Hubble_length/h;
 	return nintegrateDcos(&COSMOLOGY::drdz_dark,1+zo,1+z,1.0e-9)*Hubble_length/h;
+#endif
 }
 
 /** \ingroup cosmolib
@@ -718,8 +762,19 @@ double COSMOLOGY::TopHatVariance(double m){
  * \brief Derivative of \f$ \sigma(m) \f$ in CDM model
  */
 double COSMOLOGY::dsigdM(double m){
+#ifdef GSL
+  double result, error;
+  gsl_function F;
+  F.function = &Deltao_wrapper;
+  F.params = this;
+
+  gsl_deriv_central(&F,m,0.1*m,&result,&error);
+
+  return result;
+#else
 	double err;
 	return dfridrDcos(&COSMOLOGY::Deltao,m,0.1*m,&err);
+#endif
 }
 
 /** \ingroup cosmolib
@@ -866,6 +921,11 @@ double COSMOLOGY::nonlinMass(double z){
  * \brief \f$ \sigma(m) \f$: the rms top-hat power in standard CDM model, normalized to sig8
  *
  */
+
+double Deltao_wrapper(double m, void *params){
+  return static_cast<CosmoHndl>(params)->COSMOLOGY::Deltao(m);
+}
+
 double COSMOLOGY::Deltao(double m){
   double dc;
   dc=1.68647;

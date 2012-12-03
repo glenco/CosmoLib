@@ -2,6 +2,10 @@
 #include <vector>
 #include <memory>
 #include <cstdlib>
+#ifdef GSL
+#include <gsl/gsl_integration.h>
+#include <gsl/gsl_deriv.h>
+#endif
 
 #ifndef pi
 #define pi  3.141593
@@ -24,7 +28,6 @@
 #define CRITD2 2.7752543e11 /* critical density / h^2 M_sun/Mpc^3 */
 
 #ifndef cosmo_declare
-
 /** \ingroup cosmolib
  *
  * \brief The cosmology and all the functions required to calculated quantities based on the cosmology.
@@ -61,6 +64,7 @@ public:
     double drdz_dark(double x);
     double adrdz_dark(double x);
     double DeltaVir(double z,int caseunit=0);
+    double Deltao(double m);
     double time(double z);
     double nonlinMass(double z);
     // Stuff having to do with the power spectrum
@@ -143,7 +147,7 @@ public:
 
     double totalMassDensityinHalos(int t,double alpha,double m_min,double z,double z1,double z2);
 
-private:
+ private:
 
 	/// Hubble paremters in units of 100 km/s/Mpc
   double h;
@@ -195,7 +199,6 @@ private:
   double DpropDz(double z);
   double dsigdM(double m);
   double timeEarly(double a);
-  double Deltao(double m);
   double dNdz(double z);
   
   typedef double (COSMOLOGY::*pt2MemFunc)(double);
@@ -280,6 +283,11 @@ private:
 };
 
 
+/// wrapper functions for gsl integration / differentiation
+double drdz_wrapper(double x, void *params);
+double drdz_dark_wrapper(double x, void *params);
+double Deltao_wrapper(double m, void *params);
+
 #define cosmo_declare
 #endif
 
@@ -291,11 +299,9 @@ void dir(double r,double a[],double dadr[]);
 double arctanh(double x);
 double fmini(double a,double b);
 double fmaxi(double a,double b);
-double dsigdM(double m);
 double f4(double u);
 double **dmatrixcos(long nrl, long nrh, long ncl, long nch);
 void free_dmatrixcos(double **m, long nrl, long nrh, long ncl, long nch);
-//double Deltao(double m);
 
 /* in nfw.c */
 
