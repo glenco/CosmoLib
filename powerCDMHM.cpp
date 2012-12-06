@@ -10,6 +10,8 @@
   the c-m relation. 
 */
 
+#ifdef GSL
+
 const double tiny = 1.e-4;
 const double CRITDD = 2.7752543e+11;
 
@@ -348,3 +350,5 @@ POWERCDMHM:: ~POWERCDMHM(){
   delete[] xf;
   delete[] wf;
 };
+
+#endif
