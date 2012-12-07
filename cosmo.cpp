@@ -574,7 +574,7 @@ double COSMOLOGY::powerlawdfdm(
  * (in this case also the slope alpha can be set as an additional parameter)
  */
 double COSMOLOGY::haloNumberDensity(
-		double m      /// minimum mass of halos
+		double m      /// minimum mass of halos in Msun
 		, double z    /// redshift
 		, double a    /// moment of mass function that is wanted
 		, int type       /// mass function type: 0 Press-Schecter, 1 Sheth-Torman, 2 power-law
@@ -615,7 +615,7 @@ double COSMOLOGY::haloNumberDensity(
 double COSMOLOGY::totalMassDensityinHalos(
 		int type	       /// choice of mass function, 0 Press-Shechter, 1 Sheth-Tormen, 2 Power-law
 		,double alpha      /// slope of power law if type==2
-		,double m_min
+		,double m_min      /// minimum halo mass in Msun
 		,double z
 		,double z1
 		,double z2
@@ -690,7 +690,7 @@ double COSMOLOGY::haloNumberDensityOnSky (
  * This geometry is useful for reducing edge effects which can be particularly bad a low redshift for small cones.
  */
 double COSMOLOGY::haloNumberInBufferedCone (
-		double mass                 /// minimum mass
+		double mass                 /// minimum mass in Msun
 		,double z1                  /// lower redshift limit
 		,double z2                  /// higher redshift limit
 		,double fov                 /// field of view of cone in steradians
