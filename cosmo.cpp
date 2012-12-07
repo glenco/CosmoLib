@@ -8,8 +8,8 @@
 #include <nrD.h>
 #include <nr.h>
 #include <nrutil.h>
-#include <cosmo.h>
 #include <utilities.h>
+#include <cosmo.h>
 #include <algorithm>
 
 #define JMAX 34
@@ -21,12 +21,12 @@
 int kmax,kount;
 double *xp,**yp,dxsav;
 static double alph_static;  /* DR-distance parameter */
-static double Omo_static, Oml_static, h_static;
+static double Omo_static, Oml_static;
 
 using namespace std;
 
 COSMOLOGY::COSMOLOGY(double omegam,double omegal,double hubble, double ww) :
-	Omo(omegam), Oml(omegal), h(hubble), w(ww){
+		h(hubble), Omo(omegam), Oml(omegal), w(ww){
 	n=1.0;
 	//Gamma=0.0;
 	Omnu=0;
@@ -614,7 +614,7 @@ double COSMOLOGY::haloNumberDensity(
  */
 double COSMOLOGY::totalMassDensityinHalos(
 		int type	       /// choice of mass function, 0 Press-Shechter, 1 Sheth-Tormen, 2 Power-law
-		,double alpha      /// slope of power law if type==2
+		,double alpha      /// slope of power law mass function if type==2
 		,double m_min
 		,double z
 		,double z1
@@ -655,7 +655,7 @@ double COSMOLOGY::haloNumberDensityOnSky (
 		,double z1                  /// lower redshift limit
 		,double z2                  /// higher redshift limit
 		,int type                   /// The flag type specifies which type of mass function is to be used, 0 PS or 1 ST
-		,double alpha
+		,double alpha               /// slope of power law mass function if type==2
 		){
   double n = 0.0;
   double x,d,v,c;
@@ -696,7 +696,7 @@ double COSMOLOGY::haloNumberInBufferedCone (
 		,double fov                 /// field of view of cone in steradians
 		,double buffer              /// buffer length in physical Mpc (not comoving)
 		,int type                   /// The flag type specifies which type of mass function is to be used, 0 PS or 1 ST
-		,double alpha
+		,double alpha               /// slope of power law mass function if type==2
 		){
 	double n = 0.0;
 	double z,d,v,c;
@@ -710,6 +710,7 @@ double COSMOLOGY::haloNumberInBufferedCone (
 	}
 	return n*(z2-z1);
 }
+
 /**\ingroup cosmolib
  * \brief Total mass contained in halos in a buffered cone between redshift z1 and z2.
  *
@@ -724,7 +725,7 @@ double COSMOLOGY::haloMassInBufferedCone (
 		,double fov                 /// field of view of cone in steradians
 		,double buffer              /// buffer length in physical Mpc (not comoving)
 		,int type                   /// The flag type specifies which type of mass function is to be used, 0 PS or 1 ST
-		,double alpha
+		,double alpha               /// slope of power law mass function if type==2
 		){
 	double n = 0.0;
 	double z,d,v,c;
@@ -738,7 +739,6 @@ double COSMOLOGY::haloMassInBufferedCone (
 	}
 	return n*(z2-z1);
 }
-
 
 /*
  * Total halo number (tmp_a=0) or mass (tmp_a=1) in solar masses in a redshift bin for the entire sphere.

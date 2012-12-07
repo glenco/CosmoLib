@@ -41,6 +41,10 @@
 class COSMOLOGY{
 public:
 
+	COSMOLOGY();
+	COSMOLOGY(double omegam,double omegal,double h, double w);
+	~COSMOLOGY();
+
     void SetConcordenceCosmology();
     void PrintCosmology(short physical = 0);
 
@@ -140,10 +144,6 @@ public:
 
 
     void dzdangDist(double D,double z[],double dzdD[]);
-
-    COSMOLOGY();
-    COSMOLOGY(double omegam,double omegal,double h, double w);
-    ~COSMOLOGY();
 
     double totalMassDensityinHalos(int t,double alpha,double m_min,double z,double z1,double z2);
 
