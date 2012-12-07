@@ -1,10 +1,8 @@
-NR_DIR = /Users/cgiocoli/Dropbox/Astro/Codes/EclipseWorkspace/NR
-GSL_DIR = /Users/cgiocoli/Library/CppLib/gsl-1.15/
+NR_DIR = ../NR
 
 INCL = -I./include/ \
-       -I$(NR_DIR)/include \
-       -I$(GSL_DIR)/include \
-       -I$(GSL_DIR)/include/ 
+	-I$(NR_DIR)/include \
+	-I/usr/local/include
 
 OUT = libCosmoLib.a
 
@@ -15,12 +13,12 @@ halo.cpp \
 nfw.cpp \
 powerCDM.cpp \
 utilities.cpp \
-powerCDMHM.cpp   # <--- if you include GSL you can use also this Carlo
+powerCDMHM.cpp
 
 #
 OBJ = $(SRC:.cpp=.o)
 # 
-OPT = -O2 -DGSL
+OPT = -O2
 # 
 DEBUG = -g 
 # compiler  
@@ -34,7 +32,7 @@ CFLAGS = $(INCL) $(DEBUG) $(OPT)
 CLEAR = clear
 
 .cpp.o:
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(OPT) $(CFLAGS) -c $< -o $@
 
 all: $(OBJ)
 	ar rcs $(OUT) $(OBJ)

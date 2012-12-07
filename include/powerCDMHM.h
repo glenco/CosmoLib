@@ -13,6 +13,9 @@
 #include <cosmo.h>
 #include <halo.h>
 #include <utilities.h>
+
+#ifdef GSL
+
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_integration.h>
 #include <gsl/gsl_sf.h>
@@ -52,6 +55,8 @@ class POWERCDMHM{
   private:
   float *xf,*wf;
 };
+
+#endif
 
 #endif /* POWERCDMHM_H_ */
 
