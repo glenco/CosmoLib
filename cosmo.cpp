@@ -614,13 +614,8 @@ double COSMOLOGY::haloNumberDensity(
  */
 double COSMOLOGY::totalMassDensityinHalos(
 		int type	       /// choice of mass function, 0 Press-Shechter, 1 Sheth-Tormen, 2 Power-law
-<<<<<<< local
-		,double alpha      /// slope of power law if type==2
-		,double m_min      /// minimum halo mass in Msun
-=======
 		,double alpha      /// slope of power law mass function if type==2
-		,double m_min
->>>>>>> other
+		,double m_min      /// minimum halo mass in Msun
 		,double z
 		,double z1
 		,double z2
