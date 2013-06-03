@@ -51,3 +51,5 @@ include_directories(include)
 
 add_library(CosmoLib ${HEADERS} ${SOURCES})
 
+add_dependencies(CosmoLib NR)
+
