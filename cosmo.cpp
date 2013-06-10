@@ -45,8 +45,8 @@ COSMOLOGY::COSMOLOGY(double omegam,double omegal,double hubble, double ww) :
 	power_normalize(0.812);
 	// allocate step and weight for gauleg integration
 	ni = 64;
-	xf=new float[ni];
-	wf=new float[ni];
+	xf.resize(ni);
+	wf.resize(ni);
 #ifdef GSL
 	double xi, wi;
 	gsl_integration_glfixed_table *t=gsl_integration_glfixed_table_alloc(ni);
@@ -57,7 +57,7 @@ COSMOLOGY::COSMOLOGY(double omegam,double omegal,double hubble, double ww) :
 	}
 	gsl_integration_glfixed_table_free(t);
 #else
-	gauleg(0.,1.,xf-1,wf-1,ni);
+	gauleg(0.,1.,&xf[0]-1,&wf[0]-1,ni);
 #endif
 	// construct table of log(1+z), time, and \delta_c for interpolation
 	fill_linear(vlz,ni,0.,1.7);
@@ -78,8 +78,8 @@ COSMOLOGY::COSMOLOGY(){
 
 	// allocate step and weight for gauleg integration
 	ni = 64;
-	xf=new float[ni];
-	wf=new float[ni];
+	xf.resize(ni);
+	wf.resize(ni);
 #ifdef GSL
 	double xi, wi;
 	gsl_integration_glfixed_table *t=gsl_integration_glfixed_table_alloc(ni);
@@ -90,7 +90,7 @@ COSMOLOGY::COSMOLOGY(){
 	}
 	gsl_integration_glfixed_table_free(t);
 #else
-	gauleg(0.,1.,xf-1,wf-1,ni);
+	gauleg(0.,1.,&xf[0]-1,&wf[0]-1,ni);
 #endif
 	// construct table of log(1+z), time, and \delta_c for interpolation
 	fill_linear(vlz,ni,0.,1.7);
@@ -107,9 +107,6 @@ COSMOLOGY::COSMOLOGY(){
 }
 
 COSMOLOGY::~COSMOLOGY(){
-  // std::cout << "deleting cosmology" << std::endl;
-  delete[] xf;
-  delete[] wf;
 }
 
 /** \ingroup cosmolib

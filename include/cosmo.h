@@ -210,7 +210,7 @@ public:
   double dfridrDcos(pt2MemFunc func, double x, double h, double *err);
   
   int ni;
-  float *xf,*wf;
+  std::vector<float> xf, wf;
   
   /* in powerEH.c */
   short TFmdm_set_cosm_change_z(double redshift);
