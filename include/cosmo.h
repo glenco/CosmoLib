@@ -100,8 +100,8 @@ public:
     double gethubble(){return h;}
     
     /// Primordial spectral index, renormalizes P(k) to keep sig8 fixed
-    void setindex(double nn){ n = nn;}
-    double getindex(){ return n; power_normalize(sig8);}
+    void setindex(double nn){ n = nn;  power_normalize(sig8);}
+    double getindex(){ return n;}
     
     /// Omega matter, renormalizes P(k) to keep sig8 fixed
     void setOmega_matter(double Omega_matter,bool FLAT = false){Omo = Omega_matter; if(FLAT) Oml = 1-Omo ; TFmdm_set_cosm(); power_normalize(sig8);}
@@ -140,6 +140,8 @@ public:
     // 2 gamma parameterization is used for dark energy
     void setDEtype(short tt){darkenergy = tt;}
     short getDEtype(){return darkenergy;}
+  
+    void setSigma8(double my_sig8){power_normalize(my_sig8);}
     double getSigma8(){return sig8;}
 
 
