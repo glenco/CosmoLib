@@ -2,6 +2,7 @@
 #include <vector>
 #include <memory>
 #include <cstdlib>
+#include <cstddef>
 #ifdef GSL
 #include <gsl/gsl_integration.h>
 #include <gsl/gsl_deriv.h>
@@ -57,6 +58,9 @@ public:
     double lumDist(double zo,double z);
     double DRradius(double zo,double z,double pfrac);
     double DRradius2(double zo,double z);
+
+    double invCoorDist(double d);
+    double invRadDist(double d);
 
     double scalefactor(double rad);
     double Omegam(double z);
@@ -149,6 +153,10 @@ public:
 
     double totalMassDensityinHalos(int t,double alpha,double m_min,double z,double z1,double z2);
 
+    /// set interpolation range
+    void setInterpolation(double z_interp);
+    /// set interpolation range and number of points
+    void setInterpolation(double z_interp, std::size_t n_interp);
  private:
 
 	/// Hubble paremters in units of 100 km/s/Mpc
@@ -254,6 +262,15 @@ public:
   double tmp_mass;
   double tmp_a;
 
+  // interpolation of functions
+  double z_interp;
+  std::size_t n_interp;
+  void calc_interp(double z_interp, std::size_t n_interp);
+  double interp(std::vector<double>& table, double z);
+  double invert(std::vector<double>& table, double f_z);
+  std::vector<double> redshift_interp;
+  std::vector<double> coorDist_interp;
+  std::vector<double> radDist_interp;
 };
 
 typedef COSMOLOGY *CosmoHndl;
