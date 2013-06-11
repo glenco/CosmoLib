@@ -149,7 +149,7 @@ public:
 
     double totalMassDensityinHalos(int t,double alpha,double m_min,double z,double z1,double z2);
 
- private:
+ protected:
 
 	/// Hubble paremters in units of 100 km/s/Mpc
   double h;
