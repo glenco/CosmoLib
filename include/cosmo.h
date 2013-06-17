@@ -160,7 +160,7 @@ public:
     void setInterpolation(double z_interp);
     /// set interpolation range and number of points
     void setInterpolation(double z_interp, std::size_t n_interp);
- private:
+protected:
 
 	/// Hubble paremters in units of 100 km/s/Mpc
   double h;
