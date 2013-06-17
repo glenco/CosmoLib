@@ -28,6 +28,9 @@
 #define CRITD2 2.7752543e11 /* critical density / h^2 M_sun/Mpc^3 */
 
 #ifndef cosmo_declare
+
+enum CosmoParamSet {WMAP5yr,Millennium,Planck1yr};
+
 /** \ingroup cosmolib
  *
  * \brief The cosmology and all the functions required to calculated quantities based on the cosmology.
@@ -41,11 +44,11 @@
 class COSMOLOGY{
 public:
 
-	COSMOLOGY();
+	COSMOLOGY(CosmoParamSet cosmo_p = WMAP5yr);
 	COSMOLOGY(double omegam,double omegal,double h, double w);
 	~COSMOLOGY();
 
-    void SetConcordenceCosmology();
+    void SetConcordenceCosmology(CosmoParamSet cosmo_p = WMAP5yr);
     void PrintCosmology(short physical = 0);
 
     // Lengths

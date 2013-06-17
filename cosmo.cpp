@@ -73,8 +73,8 @@ COSMOLOGY::COSMOLOGY(double omegam,double omegal,double hubble, double ww) :
 
 }
 
-COSMOLOGY::COSMOLOGY(){
-	SetConcordenceCosmology();
+COSMOLOGY::COSMOLOGY(CosmoParamSet cosmo_p){
+	SetConcordenceCosmology(cosmo_p);
 
 	// allocate step and weight for gauleg integration
 	ni = 64;
@@ -115,38 +115,72 @@ COSMOLOGY::~COSMOLOGY(){
 /** \ingroup cosmolib
  * \brief Sets cosmology to WMAP 2009 model.  This is done automatically in the constructor.
  */
-void COSMOLOGY::SetConcordenceCosmology(){
-	// set cosmological parameters to standard WMAP 5r values
-	// Komatsu et al. 2009, ApJ 180, 330
-	// does not set power spectrum normalization
-	// which needs to be done separately
+void COSMOLOGY::SetConcordenceCosmology(CosmoParamSet cosmo_p){
 
-	Omo=0.1358;
-	Omb=0.02267;
-	h=0.705;
 
-	Omo/=h*h;
-	Omb/=h*h;
-	Oml=1.0-Omo;
+	if(cosmo_p == WMAP5yr){
+		// set cosmological parameters to standard WMAP 5r values
+		// Komatsu et al. 2009, ApJ 180, 330
+		// does not set power spectrum normalization
+		// which needs to be done separately
 
-	w=-1.0;
-	w1=0.0;
-	n=1.0;
-	//Gamma=0.0;
-	Omnu=0;
-	Nnu=3.0;
-	dndlnk=0.0;
-	gamma=0.55;
+		Omo=0.1358;
+		Omb=0.02267;
+		h=0.705;
 
-	darkenergy=1;
+		Omo/=h*h;
+		Omb/=h*h;
+		Oml=1.0-Omo;
 
-	/* if 2 gamma parameterization is used for dark energy */
-	/* if 1 w,w_1 parameterization is used for dark energy */
+		w=-1.0;
+		w1=0.0;
+		n=1.0;
+		//Gamma=0.0;
+		Omnu=0;
+		Nnu=3.0;
+		dndlnk=0.0;
+		gamma=0.55;
 
+		darkenergy=1;
+
+		/* if 2 gamma parameterization is used for dark energy */
+		/* if 1 w,w_1 parameterization is used for dark energy */
+
+		TFmdm_set_cosm();
+		power_normalize(0.812);
+
+	}else if(cosmo_p == Planck1yr){
+
+		ERROR_MESSAGE();
+		std::cout << "I don't know what to do for Planck 1st year cosmology!" << std::endl;
+		exit(1);
+	}else if(cosmo_p == Millennium){
+
+		// The cosmology used in the Millennium simulations
+
+		Omo=0.25;
+		Omb=0.02267;
+		h=0.73;
+
+		Omb/=h*h;
+		Oml=1.0-Omo;
+
+		w=-1.0;
+		w1=0.0;
+		n=1.0;
+		//Gamma=0.0;
+		Omnu=0.0;
+		Nnu=3.0;
+		dndlnk=0.0;
+		gamma=0.55;
+
+		darkenergy=1;
+
+		TFmdm_set_cosm();
+		power_normalize(0.9);
+	}
 	// set parameters for Eisenstein&Hu power spectrum
 
-	TFmdm_set_cosm();
-	power_normalize(0.812);
 }
 
 /** \ingroup cosmolib
