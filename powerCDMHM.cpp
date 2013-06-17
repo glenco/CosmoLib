@@ -4,16 +4,18 @@
 #include <nrutil.h>
 
 
-/*
-  This  code reconstruct  the  non-linear dark  matter power  spectrum
-  using the halo model. In considers 1 and 2 Halo terms and scatter in
+/**
+  This  code reconstructs  the  non-linear dark  matter power  spectrum
+  using the halo model. It considers 1 and 2 Halo terms and scatter in
   the c-m relation. 
 */
+
+#ifdef GSL
 
 const double tiny = 1.e-4;
 const double CRITDD = 2.7752543e+11;
 
-/* integration parameters global */
+// integration parameters global
 int nn  = 128;
 const size_t limit = 128; 
 const int key = 1;
@@ -348,3 +350,5 @@ POWERCDMHM:: ~POWERCDMHM(){
   delete[] xf;
   delete[] wf;
 };
+
+#endif

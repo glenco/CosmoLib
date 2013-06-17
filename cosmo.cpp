@@ -11,6 +11,7 @@
 #include <utilities.h>
 #include <cosmo.h>
 #include <algorithm>
+#include <limits>
 
 #define JMAX 34
 #define JMAXP (JMAX+1)
@@ -22,6 +23,14 @@ int kmax,kount;
 double *xp,**yp,dxsav;
 static double alph_static;  /* DR-distance parameter */
 static double Omo_static, Oml_static;
+
+#ifndef Z_INTERP
+#define Z_INTERP 10.0
+#endif
+
+#ifndef N_INTERP
+#define N_INTERP 1024
+#endif
 
 using namespace std;
 
@@ -45,8 +54,8 @@ COSMOLOGY::COSMOLOGY(double omegam,double omegal,double hubble, double ww) :
 	power_normalize(0.812);
 	// allocate step and weight for gauleg integration
 	ni = 64;
-	xf=new float[ni];
-	wf=new float[ni];
+	xf.resize(ni);
+	wf.resize(ni);
 #ifdef GSL
 	double xi, wi;
 	gsl_integration_glfixed_table *t=gsl_integration_glfixed_table_alloc(ni);
@@ -57,7 +66,7 @@ COSMOLOGY::COSMOLOGY(double omegam,double omegal,double hubble, double ww) :
 	}
 	gsl_integration_glfixed_table_free(t);
 #else
-	gauleg(0.,1.,xf-1,wf-1,ni);
+	gauleg(0.,1.,&xf[0]-1,&wf[0]-1,ni);
 #endif
 	// construct table of log(1+z), time, and \delta_c for interpolation
 	fill_linear(vlz,ni,0.,1.7);
@@ -71,6 +80,8 @@ COSMOLOGY::COSMOLOGY(double omegam,double omegal,double hubble, double ww) :
 	  vt.push_back(time(z));
 	}
 
+	// interpolate functions
+	calc_interp(Z_INTERP, N_INTERP);
 }
 
 COSMOLOGY::COSMOLOGY(CosmoParamSet cosmo_p){
@@ -78,8 +89,8 @@ COSMOLOGY::COSMOLOGY(CosmoParamSet cosmo_p){
 
 	// allocate step and weight for gauleg integration
 	ni = 64;
-	xf=new float[ni];
-	wf=new float[ni];
+	xf.resize(ni);
+	wf.resize(ni);
 #ifdef GSL
 	double xi, wi;
 	gsl_integration_glfixed_table *t=gsl_integration_glfixed_table_alloc(ni);
@@ -90,7 +101,7 @@ COSMOLOGY::COSMOLOGY(CosmoParamSet cosmo_p){
 	}
 	gsl_integration_glfixed_table_free(t);
 #else
-	gauleg(0.,1.,xf-1,wf-1,ni);
+	gauleg(0.,1.,&xf[0]-1,&wf[0]-1,ni);
 #endif
 	// construct table of log(1+z), time, and \delta_c for interpolation
 	fill_linear(vlz,ni,0.,1.7);
@@ -104,12 +115,11 @@ COSMOLOGY::COSMOLOGY(CosmoParamSet cosmo_p){
 	  vt.push_back(time(z));
 	}
 
+	// interpolate functions
+	calc_interp(Z_INTERP, N_INTERP);
 }
 
 COSMOLOGY::~COSMOLOGY(){
-  // std::cout << "deleting cosmology" << std::endl;
-  delete[] xf;
-  delete[] wf;
 }
 
 /** \ingroup cosmolib
@@ -439,6 +449,10 @@ double COSMOLOGY::adrdz_dark(double x){
  * \brief The coordinate distance in units Mpc.  This is the radial distance found by integrating 1/H(z).
  */
 double COSMOLOGY::coorDist(double zo,double z){
+	// interpolation
+	if(zo < z_interp && z < z_interp)
+		return interp(coorDist_interp, z) - interp(coorDist_interp, zo);
+	
 #ifdef GSL
   double result, error;
   size_t neval;
@@ -462,6 +476,9 @@ double COSMOLOGY::coorDist(double zo,double z){
  * \brief Non-comoving radial distance in units Mpc.  This is coorDist only integrated with the scale factor a=1/(1+z).
  */
 double COSMOLOGY::radDist(double zo,double z){
+	if(zo < z_interp && z < z_interp)
+		return interp(radDist_interp, z) - interp(radDist_interp, zo);
+	
 	if( (w ==-1.0) && (w1 == 0.0) ) return nintegrateDcos(&COSMOLOGY::adrdz,1+zo,1+z,1.0e-9)*Hubble_length/h;
 	return nintegrateDcos(&COSMOLOGY::adrdz_dark,1+zo,1+z,1.0e-9)*Hubble_length/h;
 }
@@ -489,6 +506,22 @@ double COSMOLOGY::angDist(double zo,double z){
  */
 double COSMOLOGY::lumDist(double zo,double z){
 	return pow(1+z,2)*angDist(zo,z);
+}
+
+/** \ingroup cosmolib
+ * \brief The inverse of the coordinate distance in units Mpc, works within interpolation range.
+ */
+double COSMOLOGY::invCoorDist(double d)
+{
+	return invert(coorDist_interp, d);
+}
+
+/** \ingroup cosmolib
+ * \brief The inverse of the radial distance in units Mpc, works within interpolation range.
+ */
+double COSMOLOGY::invRadDist(double d)
+{
+	return invert(radDist_interp, d);
 }
 
 /** \ingroup cosmolib
@@ -608,7 +641,7 @@ double COSMOLOGY::powerlawdfdm(
  * (in this case also the slope alpha can be set as an additional parameter)
  */
 double COSMOLOGY::haloNumberDensity(
-		double m      /// minimum mass of halos
+		double m      /// minimum mass of halos in Msun
 		, double z    /// redshift
 		, double a    /// moment of mass function that is wanted
 		, int type       /// mass function type: 0 Press-Schecter, 1 Sheth-Torman, 2 power-law
@@ -649,7 +682,7 @@ double COSMOLOGY::haloNumberDensity(
 double COSMOLOGY::totalMassDensityinHalos(
 		int type	       /// choice of mass function, 0 Press-Shechter, 1 Sheth-Tormen, 2 Power-law
 		,double alpha      /// slope of power law mass function if type==2
-		,double m_min
+		,double m_min      /// minimum halo mass in Msun
 		,double z
 		,double z1
 		,double z2
@@ -724,7 +757,7 @@ double COSMOLOGY::haloNumberDensityOnSky (
  * This geometry is useful for reducing edge effects which can be particularly bad a low redshift for small cones.
  */
 double COSMOLOGY::haloNumberInBufferedCone (
-		double mass                 /// minimum mass
+		double mass                 /// minimum mass in Msun
 		,double z1                  /// lower redshift limit
 		,double z2                  /// higher redshift limit
 		,double fov                 /// field of view of cone in steradians
@@ -1092,4 +1125,80 @@ double COSMOLOGY::dfridrDcos(pt2MemFunc func, double x, double b, double *err)
 	return ans;
 }
 
+void COSMOLOGY::setInterpolation(double z_interp)
+{
+	calc_interp(z_interp, N_INTERP);
+}
 
+void COSMOLOGY::setInterpolation(double z_interp, std::size_t n_interp)
+{
+	calc_interp(z_interp, n_interp);
+}
+
+void COSMOLOGY::calc_interp(double z_max, std::size_t n)
+{
+	// unset values
+	z_interp = 0;
+	n_interp = 0;
+	
+	// prepare vectors
+	redshift_interp.resize(n+1);
+	coorDist_interp.resize(n+1);
+	radDist_interp.resize(n+1);
+	
+	// step size going like square root
+	double dz = z_max/(n*n);
+	
+	for(std::size_t i = 0; i <= n; ++i)
+	{
+		// make sure last value is exactly z_max
+		double z = (i < n) ? (i*i*dz) : z_max;
+		
+		redshift_interp[i] = z;
+		coorDist_interp[i] = coorDist(0, z);
+		radDist_interp[i] = radDist(0, z);
+	}
+	
+	// set values
+	z_interp = z_max;
+	n_interp = n;
+}
+
+double COSMOLOGY::interp(std::vector<double>& table, double z)
+{
+	double dz = z_interp/(n_interp*n_interp);
+	double di = sqrt(z/dz);
+	std::size_t i = di;
+	
+	// interpolation range
+	if(i < n_interp)
+		return table[i] + (di-i)*(table[i+1]-table[i]);
+	
+	// maximum value
+	if (i == n_interp)
+		return table.back();
+	
+	// out of range
+	throw std::out_of_range("redshift out of interpolation range");
+}
+
+double COSMOLOGY::invert(std::vector<double>& table, double f_z)
+{
+	if(f_z < 0)
+		throw std::out_of_range("cannot invert negative function values");
+	
+	// find value in table
+	std::size_t i = std::distance(table.begin(), std::lower_bound(table.begin(), table.end(), f_z));
+	
+	// out of range
+	if(i > n_interp)
+		throw std::out_of_range("function value out of interpolation range");
+	
+	double f_0 = (i > 0) ? table[i-1] : 0;
+	double f_1 = table[i];
+	
+	double z_0 = (i > 0) ? redshift_interp[i-1] : 0;
+	double z_1 = redshift_interp[i];
+	
+	return z_0 + ((f_z-f_0)/(f_1-f_0))*(z_1-z_0);
+}

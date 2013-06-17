@@ -11,7 +11,7 @@
   */
 HALO::HALO (
 		COSMOLOGY *cos     /// pointer to a COSMOLOGY
-		,double mass       /// halo mass in M_sun/h
+		,double mass       /// halo mass in M_sun/h   TODO Carlo:  Is this really M_sun/h
 		,double redshift   /// redshift
 		)
 : co(cos),m(mass),z(redshift){

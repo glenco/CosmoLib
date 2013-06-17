@@ -63,7 +63,7 @@ double NFW_Utility::NFW_Concentration(
 		){
 	double funcforconcentration(double cons);
 
-	double tmp=NFW_Vmax(1.0,M200,R200);
+	//double tmp=NFW_Vmax(1.0,M200,R200);
 
 	vg = Vmax/NFW_V200(M200,R200);
 	if( vg < 1){
