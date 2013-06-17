@@ -12,6 +12,7 @@
 #include <cosmo.h>
 #include <algorithm>
 #include <limits>
+#include <stdexcept>
 
 #define JMAX 34
 #define JMAXP (JMAX+1)
