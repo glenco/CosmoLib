@@ -126,12 +126,7 @@ void dir(double r,double a[],double dadr[]){
 double COSMOLOGY::npow(double k){
   double qt;
 
-  /* return -1;*/
-  /*  qt = k*exp(Omb+Omb/Omo)/(Omo*h*h);  */
-
   qt = k*exp(2*Omb)/(Omo*h*h);
-  //if( Gamma==0) qt = k*exp(2*Omb)/(omo*h*h);
-  //else qt= k/Gamma/h;
 
   return n-2.0+4.68*qt/(log(1+2.34*qt)*(1+2.34*qt))
     -0.5*qt*(3.89+qt*(5.1842e2+qt*(4.8831e2+8.1088e3*qt)))/( 1+qt*(3.89+qt*(2.5921e2+qt*(1.6277e2+2.0272e3*qt))) );

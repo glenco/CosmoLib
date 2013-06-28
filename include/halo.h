@@ -15,7 +15,7 @@
 /** \ingroup cosmolib
  * \brief Class for calculating the properties of dark matter halos.
  */
-//TODO Change to physical length units !!!!
+//TODO: Change to physical length units !!!!
 class HALO{
 public:
     HALO (COSMOLOGY *co, double mass, double redshift);

@@ -178,8 +178,8 @@ protected:
   double Nnu;
    /// Dark energy equation of state parameter p/rho = w + w_1 (1+z)
   double w;
+  /// Dark energy equation of state parameter p/rho = w + w_1 (1+z)
   double w1;
-  //double Gamma;
    /// Running of primordial spectral index, P(k)_primordial \propto pow(k/h,n+dndlnk*log(k))
   double dndlnk;
 
@@ -191,8 +191,8 @@ protected:
   short darkenergy;
 
   /* table for growth parameter */
-  std::auto_ptr<double> *aa;
-  std::auto_ptr<double> *growth;
+  //std::auto_ptr<double> *aa;
+  //std::auto_ptr<double> *growth;
   int Ntable;
   
   double A;
@@ -277,7 +277,12 @@ protected:
 };
 
 typedef COSMOLOGY *CosmoHndl;
-
+/**
+ *  \brief Class for calculating properties of NFW halo profile.
+ *   
+ *   This class does not take into affect the cosmological corrilations between concentration and mass.  
+ *   For this see the HALO class.
+ */
 class NFW_Utility {
 public:
 	NFW_Utility(){return;}

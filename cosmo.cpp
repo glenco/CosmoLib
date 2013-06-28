@@ -38,7 +38,6 @@ using namespace std;
 COSMOLOGY::COSMOLOGY(double omegam,double omegal,double hubble, double ww) :
 		h(hubble), Omo(omegam), Oml(omegal), w(ww){
 	n=1.0;
-	//Gamma=0.0;
 	Omnu=0;
 	Nnu=3.0;
 	dndlnk=0.0;
@@ -146,7 +145,6 @@ void COSMOLOGY::SetConcordenceCosmology(CosmoParamSet cosmo_p){
 		w=-1.0;
 		w1=0.0;
 		n=1.0;
-		//Gamma=0.0;
 		Omnu=0;
 		Nnu=3.0;
 		dndlnk=0.0;
@@ -161,10 +159,29 @@ void COSMOLOGY::SetConcordenceCosmology(CosmoParamSet cosmo_p){
 		power_normalize(0.812);
 
 	}else if(cosmo_p == Planck1yr){
+    
+    Oml = 0.6817;
+    Omo = 1-Oml;
+    h = 0.6704;
+    
+    Omb = 0.022032/h/h;
 
-		ERROR_MESSAGE();
-		std::cout << "I don't know what to do for Planck 1st year cosmology!" << std::endl;
-		exit(1);
+    w=-1.0;
+		w1=0.0;
+		n=1.0;
+		Omnu=0;
+		Nnu=3.0;
+		dndlnk=0.0;
+		gamma=0.55;
+    
+		darkenergy=1;
+    
+		/* if 2 gamma parameterization is used for dark energy */
+		/* if 1 w,w_1 parameterization is used for dark energy */
+    
+		TFmdm_set_cosm();
+		power_normalize(0.8347);
+
 	}else if(cosmo_p == Millennium){
 
 		// The cosmology used in the Millennium simulations
@@ -179,7 +196,6 @@ void COSMOLOGY::SetConcordenceCosmology(CosmoParamSet cosmo_p){
 		w=-1.0;
 		w1=0.0;
 		n=1.0;
-		//Gamma=0.0;
 		Omnu=0.0;
 		Nnu=3.0;
 		dndlnk=0.0;
@@ -205,7 +221,6 @@ void COSMOLOGY::PrintCosmology(short physical){
 	cout << "dndlnk: " << dndlnk << "\n";
 	cout << "A: " << A << "\n";
 	cout << "sig8: " << sig8 << "\n";
-	//cout << "Gamma: " << Gamma << "\n";
 
 	if(physical==0){
 		cout << "Omo: " << Omo << "\n";
@@ -578,7 +593,7 @@ double COSMOLOGY::psdfdm(
 double COSMOLOGY::stdfdm(
 		double z      /// redshift
 		,double m      /// mass
-		,int caseunit  /// if equal to 1 return the number density per unit mass TODO Carlo, why aren't the other options explained?
+		,int caseunit  /// if equal to 1 return the number density per unit mass TODO: Carlo, why aren't the other options explained?
 		){
 
   double dc,Omz,sig,Dg;
