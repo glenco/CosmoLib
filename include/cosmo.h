@@ -13,7 +13,7 @@
 #endif
 
 #ifndef Grav
-#define Grav 4.7788e-20
+#define Grav 4.7788e-20  // Newton's over c^2 in Mpc / Msun
 #endif
 
 #ifndef lightspeed
@@ -56,9 +56,13 @@ public:
     double rcurve();
     double emptyDist(double zo,double z);
     double coorDist(double zo,double z);
+    double coorDist(double z) {return coorDist(0,z);}
     double radDist(double zo,double z);
+    double radDist(double z){return radDist(0,z);}
     double angDist(double zo,double z);
+    double angDist(double z) {return angDist(0,z);}
     double lumDist(double zo,double z);
+    double lumDist(double z){return lumDist(0,z);}
     double DRradius(double zo,double z,double pfrac);
     double DRradius2(double zo,double z);
 
@@ -160,6 +164,9 @@ public:
     void setInterpolation(double z_interp);
     /// set interpolation range and number of points
     void setInterpolation(double z_interp, std::size_t n_interp);
+
+  /// The lensing critical density in Msun / Mpc^2
+   double SigmaCrit(double zlens,double zsource);
 protected:
 
 	/// Hubble paremters in units of 100 km/s/Mpc

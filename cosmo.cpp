@@ -206,7 +206,7 @@ void COSMOLOGY::SetConcordenceCosmology(CosmoParamSet cosmo_p){
 		TFmdm_set_cosm();
 		power_normalize(0.9);
 	}
-	// set parameters for Eisenstein&Hu power spectrum
+	// set parameters for Eisenstein & Hu power spectrum
 
 }
 
@@ -464,7 +464,7 @@ double COSMOLOGY::adrdz_dark(double x){
 /** \ingroup cosmolib
  * \brief The coordinate distance in units Mpc.  This is the radial distance found by integrating 1/H(z).
  */
-double COSMOLOGY::coorDist(double zo,double z){
+double COSMOLOGY::coorDist(double zo,double z) {
 	// interpolation
 	if(zo < z_interp && z < z_interp)
 		return interp(coorDist_interp, z) - interp(coorDist_interp, zo);
@@ -505,7 +505,7 @@ double COSMOLOGY::radDist(double zo,double z){
  *  Converts angles to proper distance NOT comoving distance.
  */
 
-double COSMOLOGY::angDist(double zo,double z){
+double COSMOLOGY::angDist(double zo,double z) {
   double Rcur;
 
   if(Omo+Oml==1) return coorDist(zo,z)/(1+z);
@@ -1218,3 +1218,8 @@ double COSMOLOGY::invert(std::vector<double>& table, double f_z)
 	
 	return z_0 + ((f_z-f_0)/(f_1-f_0))*(z_1-z_0);
 }
+
+double COSMOLOGY::SigmaCrit(double zlens,double zsource) {
+  return angDist(0,zsource)/angDist(0,zlens)/angDist(zlens,zsource)/(4*pi*Grav);
+}
+

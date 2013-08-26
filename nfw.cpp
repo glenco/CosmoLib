@@ -120,13 +120,17 @@ void NFW_Utility::match_nfw(
 
 	if(nfwfunc(1.0e-4)*nfwfunc(1.0e4) > 0.0){
 		ERROR_MESSAGE();
-		std::cout << "ERROR: Vmax, R_half & mass are inconsistent!" << std::endl;
-		exit(1);
-	}
+    std::cout << "ERROR: Vmax, R_half & mass are inconsistent!" << std::endl;
+		//throw std::runtime_error("ERROR: Vmax, R_half & mass are inconsistent!");
+    mass = R_half = Vmax = 0.0;
+    *my_cons = 1.1;
+    *my_Rmax = 1.0e-30;
+	}else{
 
-	*my_cons = zbrentD(&NFW_Utility::nfwfunc,1.0e-5,1.0e4,1.0e-8);
-	//std::cout << "NFW_Utility Test: " << nfwfunc(1.0e-4)<< nfwfunc(*my_cons)<< nfwfunc(1.0e4) << " mass: " << mass << " R_half: " << R_half << " Vmax: " << Vmax << std::endl;
-	*my_Rmax = Rmax(*my_cons,Vmax,mass);
+    *my_cons = zbrentD(&NFW_Utility::nfwfunc,1.0e-5,1.0e4,1.0e-8);
+    //std::cout << "NFW_Utility Test: " << nfwfunc(1.0e-4)<< nfwfunc(*my_cons)<< nfwfunc(1.0e4) << " mass: " << mass << " R_half: " << R_half << " Vmax: " << Vmax << std::endl;
+    *my_Rmax = Rmax(*my_cons,Vmax,mass);
+  }
 	assert(*my_Rmax > my_R_half);
 }
 
