@@ -200,7 +200,7 @@ protected:
   /* table for growth parameter */
   //std::auto_ptr<double> *aa;
   //std::auto_ptr<double> *growth;
-  int Ntable;
+  //int Ntable;
   
   double A;
   double sig8;  /* do not access these normalization outside */
