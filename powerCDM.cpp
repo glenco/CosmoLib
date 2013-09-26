@@ -147,8 +147,8 @@ double COSMOLOGY::power_linear(double k,double z){
  */
 double COSMOLOGY::powerloc(double k,double z){
 
-//  return powerEHv2(k);
-  return powerEH(k,z);
+  return powerEHv2(k);
+//  return powerEH(k,z);
 }
 /** \ingroup cosmolib
  * \brief Set the linear normalization for the power spectrum.
