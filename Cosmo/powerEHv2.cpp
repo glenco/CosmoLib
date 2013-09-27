@@ -70,11 +70,11 @@ you would be better off not simply #include'ing this file in your programs,
 but rather compiling it separately, calling only the driver, and using
 extern declarations to access the intermediate quantities. */
 
-/* ----------------------------- DRIVER ------------------------------- */
+/* ----------------------------- DRIVER ------------------------------- *
 
 void TFfit_hmpc(double omega0, double f_baryon, double hubble, double Tcmb,
 	int numk, double *k, double *tf_full, double *tf_baryon, double *tf_cdm)
-/* Remember: k[0..numk-1] is in units of h Mpc^-1. */
+// Remember: k[0..numk-1] is in units of h Mpc^-1. 
 {
     int j;
     double tf_thisk, baryon_piece, cdm_piece;
