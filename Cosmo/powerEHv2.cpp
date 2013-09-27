@@ -102,25 +102,6 @@ global variables in case you wish to access them, e.g. by declaring
 them as extern variables in your main program. */
 /* Note that all internal scales are in Mpc, without any Hubble constants! */
 
-static double	omhh,		/* Omega_matter*h^2 */
-	obhh,		/* Omega_baryon*h^2 */
-	theta_cmb,	/* Tcmb in units of 2.7 K */
-	z_equality,	/* Redshift of matter-radiation equality, really 1+z */
-	k_equality,	/* Scale of equality, in Mpc^-1 */
-	z_drag,		/* Redshift of drag epoch */
-	R_drag,		/* Photon-baryon ratio at drag epoch */
-	R_equality,	/* Photon-baryon ratio at equality epoch */
-	sound_horizon,	/* Sound horizon at drag epoch, in Mpc */
-	k_silk,		/* Silk damping scale, in Mpc^-1 */
-	alpha_c,	/* CDM suppression */
-	beta_c,		/* CDM log shift */
-	alpha_b,	/* Baryon suppression */
-	beta_b,		/* Baryon envelope shift */
-	beta_node,	/* Sound horizon shift */
-	k_peak,		/* Fit to wavenumber of first peak, in Mpc^-1 */
-	sound_horizon_fit,	/* Fit to sound horizon, in Mpc */
-	alpha_gamma;	/* Gamma suppression in approximate TF */
-
 /* Convenience from Numerical Recipes in C, 2nd edition */
 //static double sqrarg;
 //#define SQR(a) ((sqrarg=(a)) == 0.0 ? 0.0 : sqrarg*sqrarg)
@@ -130,7 +111,7 @@ static double pow4arg;
 #define POW4(a) ((pow4arg=(a)) == 0.0 ? 0.0 : pow4arg*pow4arg*pow4arg*pow4arg)
 	/* Yes, I know the last one isn't optimal; it doesn't appear much */
 
-void TFset_parameters(double omega0hh, double f_baryon, double Tcmb)
+void COSMOLOGY::TFset_parameters(double omega0hh, double f_baryon, double Tcmb)
 /* Set all the scalars quantities for Eisenstein & Hu 1997 fitting formula */
 /* Input: omega0hh -- The density of CDM and baryons, in units of critical dens,
 		multiplied by the square of the Hubble constant, in units
@@ -195,7 +176,7 @@ You can access them yourself, if you want. */
     return;
 }
 
-double TFfit_onek(double k, double *tf_baryon, double *tf_cdm)
+double COSMOLOGY::TFfit_onek(double k, double *tf_baryon, double *tf_cdm)
 /* Input: k -- Wavenumber at which to calculate transfer function, in Mpc^-1.
 	  *tf_baryon, *tf_cdm -- Input value not used; replaced on output if
 				the input was not NULL. */
@@ -248,16 +229,16 @@ double TFfit_onek(double k, double *tf_baryon, double *tf_cdm)
 
 /* ======================= Approximate forms =========================== */
 
+/*
 double TFsound_horizon_fit(double omega0, double f_baryon, double hubble)
-/* Input: omega0 -- CDM density, in units of critical density
-	  f_baryon -- Baryon fraction, the ratio of baryon to CDM density.
-	  hubble -- Hubble constant, in units of 100 km/s/Mpc
+// Input: omega0 -- CDM density, in units of critical density
+//	  f_baryon -- Baryon fraction, the ratio of baryon to CDM density.
+//	  hubble -- Hubble constant, in units of 100 km/s/Mpc
 
- Output: The approximate value of the sound horizon, in h^-1 Mpc.
+// Output: The approximate value of the sound horizon, in h^-1 Mpc.
 
- Note: If you prefer to have the answer in  units of Mpc, use hubble -> 1
-   and omega0 -> omega0*hubble^2.
-*/
+// Note: If you prefer to have the answer in  units of Mpc, use hubble -> 1
+//   and omega0 -> omega0*hubble^2.
 {
     double omhh, sound_horizon_fit_mpc;
     omhh = omega0*hubble*hubble;
@@ -265,42 +246,44 @@ double TFsound_horizon_fit(double omega0, double f_baryon, double hubble)
 	44.5*log(9.83/omhh)/sqrt(1+10.0*pow(omhh*f_baryon,0.75));
     return sound_horizon_fit_mpc*hubble;
 }
-
+ */
+/*
 double TFk_peak(double omega0, double f_baryon, double hubble)
-/* Input: omega0 -- CDM density, in units of critical density
-	  f_baryon -- Baryon fraction, the ratio of baryon to CDM density.
-	  hubble -- Hubble constant, in units of 100 km/s/Mpc
-/* Output: The approximate location of the first baryonic peak, in h Mpc^-1 */
-/* Note: If you prefer to have the answer in  units of Mpc^-1, use hubble -> 1
-and omega0 -> omega0*hubble^2. */ 
+  // Input: omega0 -- CDM density, in units of critical density
+  //	  f_baryon -- Baryon fraction, the ratio of baryon to CDM density.
+  //	  hubble -- Hubble constant, in units of 100 km/s/Mpc
+  // Output: The approximate location of the first baryonic peak, in h Mpc^-1 
+  // Note: If you prefer to have the answer in  units of Mpc^-1, use hubble -> 1 and omega0 ->
+  //       omega0*hubble^2.
 {
     double omhh, k_peak_mpc;
     omhh = omega0*hubble*hubble;
     k_peak_mpc = 2.5*3.14159*(1+0.217*omhh)/TFsound_horizon_fit(omhh,f_baryon,1.0);
     return k_peak_mpc/hubble;
 }
-
+*/
+/*
 double TFnowiggles(double omega0, double f_baryon, double hubble,
 		double Tcmb, double k_hmpc)
-/* Input: omega0 -- CDM density, in units of critical density
-	  f_baryon -- Baryon fraction, the ratio of baryon to CDM density.
-	  hubble -- Hubble constant, in units of 100 km/s/Mpc
-	  Tcmb -- Temperature of the CMB in Kelvin; Tcmb<=0 forces use of
-			COBE FIRAS value of 2.728 K
-	  k_hmpc -- Wavenumber in units of (h Mpc^-1). */
-/* Output: The value of an approximate transfer function that captures the
-non-oscillatory part of a partial baryon transfer function.  In other words,
-the baryon oscillations are left out, but the suppression of power below
-the sound horizon is included. See equations (30) and (31).  */
-/* Note: If you prefer to use wavenumbers in units of Mpc^-1, use hubble -> 1
-and omega0 -> omega0*hubble^2. */ 
+// Input: omega0 -- CDM density, in units of critical density
+//	  f_baryon -- Baryon fraction, the ratio of baryon to CDM density.
+//	  hubble -- Hubble constant, in units of 100 km/s/Mpc
+//	  Tcmb -- Temperature of the CMB in Kelvin; Tcmb<=0 forces use of
+//			COBE FIRAS value of 2.728 K
+//	  k_hmpc -- Wavenumber in units of (h Mpc^-1). 
+// Output: The value of an approximate transfer function that captures the
+//non-oscillatory part of a partial baryon transfer function.  In other words,
+//the baryon oscillations are left out, but the suppression of power below
+//the sound horizon is included. See equations (30) and (31).
+// Note: If you prefer to use wavenumbers in units of Mpc^-1, use hubble -> 1
+//      and omega0 -> omega0*hubble^2. 
 {
     double k, omhh, theta_cmb, k_equality, q, xx, alpha_gamma, gamma_eff;
     double q_eff, T_nowiggles_L0, T_nowiggles_C0;
 
-    k = k_hmpc*hubble;	/* Convert to Mpc^-1 */
+    k = k_hmpc*hubble;	// Convert to Mpc^-1
     omhh = omega0*hubble*hubble;
-    if (Tcmb<=0.0) Tcmb=2.728;	/* COBE FIRAS */
+    if (Tcmb<=0.0) Tcmb=2.728;	// COBE FIRAS
     theta_cmb = Tcmb/2.7;
 
     k_equality = 0.0746*omhh/DSQR(theta_cmb);
@@ -316,24 +299,24 @@ and omega0 -> omega0*hubble^2. */
     T_nowiggles_C0 = 14.2 + 731.0/(1+62.5*q_eff);
     return T_nowiggles_L0/(T_nowiggles_L0+T_nowiggles_C0*DSQR(q_eff));
 }
-
+*/
 /* ======================= Zero Baryon Formula =========================== */
-
+/*
 double TFzerobaryon(double omega0, double hubble, double Tcmb, double k_hmpc)
-/* Input: omega0 -- CDM density, in units of critical density
-	  hubble -- Hubble constant, in units of 100 km/s/Mpc
-	  Tcmb -- Temperature of the CMB in Kelvin; Tcmb<=0 forces use of
-			COBE FIRAS value of 2.728 K
-	  k_hmpc -- Wavenumber in units of (h Mpc^-1). */
-/* Output: The value of the transfer function for a zero-baryon universe. */
-/* Note: If you prefer to use wavenumbers in units of Mpc^-1, use hubble -> 1
-and omega0 -> omega0*hubble^2. */ 
+// Input: omega0 -- CDM density, in units of critical density
+//	  hubble -- Hubble constant, in units of 100 km/s/Mpc
+//	  Tcmb -- Temperature of the CMB in Kelvin; Tcmb<=0 forces use of
+//			COBE FIRAS value of 2.728 K
+//	  k_hmpc -- Wavenumber in units of (h Mpc^-1). 
+// Output: The value of the transfer function for a zero-baryon universe.
+// Note: If you prefer to use wavenumbers in units of Mpc^-1, use hubble -> 1
+// and omega0 -> omega0*hubble^2. 
 {
     double k, omhh, theta_cmb, k_equality, q, T_0_L0, T_0_C0;
 
-    k = k_hmpc*hubble;	/* Convert to Mpc^-1 */
+    k = k_hmpc*hubble;	// Convert to Mpc^-1
     omhh = omega0*hubble*hubble;
-    if (Tcmb<=0.0) Tcmb=2.728;	/* COBE FIRAS */
+    if (Tcmb<=0.0) Tcmb=2.728;	// COBE FIRAS
     theta_cmb = Tcmb/2.7;
 
     k_equality = 0.0746*omhh/DSQR(theta_cmb);
@@ -343,4 +326,4 @@ and omega0 -> omega0*hubble^2. */
     T_0_C0 = 14.2 + 731.0/(1+62.5*q);
     return T_0_L0/(T_0_L0+T_0_C0*q*q);
 }
-
+*/

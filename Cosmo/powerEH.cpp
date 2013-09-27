@@ -67,7 +67,7 @@ static double
 /* Finally, TFmdm_onek_mpc() and TFmdm_onek_hmpc() give their answers as */
 static double   tf_cb,		/* The transfer function for density-weighted
 			CDM + Baryon perturbations. */
-	tf_cbnu;	/* The transfer function for density-weighted
+	            tf_cbnu;	/* The transfer function for density-weighted
 			CDM + Baryon + Massive Neutrino perturbations. */
 
 /* By default, these functions return tf_cb */
@@ -192,6 +192,9 @@ all the internal scalar quantities needed to compute the transfer function. */
     beta_c = 1/(1-0.949*f_bnu);
     /* Done setting scalar variables */
 
+    // This has been added to initialize parameters for BAO version of E&H
+    TFset_parameters((Omo*h*h),(Omb/Omo),2.728);
+    
    return qwarn;
 }
 

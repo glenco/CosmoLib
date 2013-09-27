@@ -167,6 +167,7 @@ public:
 
   /// The lensing critical density in Msun / Mpc^2
    double SigmaCrit(double zlens,double zsource);
+    
 protected:
 
 	/// Hubble paremters in units of 100 km/s/Mpc
@@ -230,41 +231,53 @@ protected:
   int ni;
   std::vector<float> xf, wf;
   
-  /* in powerEH.c */
+  // The parameters used in Eisenstein & Hu power spectrum
+    /* in powerEH.c */
   short TFmdm_set_cosm_change_z(double redshift);
   short TFmdm_set_cosm();
   double TFmdm_onek_mpc(double kk);
   double TFmdm_onek_hmpc(double kk);
   
-  // The parameters used in Eisenstein & Hu power spectrum
+  double f_baryon;	// Baryon fraction 
+  double f_bnu;		// Baryon + Massive Neutrino fraction
+  double f_cb;		// Baryon + CDM fraction
+  double f_cdm;		// CDM fraction
+  double f_hdm;		// Massive Neutrino fraction
   
-  
-  double f_baryon;	/* Baryon fraction */
-  double f_bnu;		/* Baryon + Massive Neutrino fraction */
-  double f_cb;		/* Baryon + CDM fraction */
-  double f_cdm;		/* CDM fraction */
-  double f_hdm;		/* Massive Neutrino fraction */
-  
-  double alpha_gamma;	/* sqrt(alpha_nu) */
-  double alpha_nu;	/* The small-scale suppression */
-  double beta_c;		/* The correction to the log in the small-scale */
-  double num_degen_hdm;	/* Number of degenerate massive neutrino species */
-  double growth_k0;	/* D_1(z) -- the growth function as k->0 */
-  double growth_to_z0;	/* D_1(z)/D_1(0) -- the growth relative to z=0 */
-  double k_equality;	/* The comoving wave number of the horizon at equality*/
-  double obhh;		/* Omega_baryon * hubble^2 */
-  double omega_curv;	/* = 1 - omega_matter - omega_lambda */
-  double omega_lambda_z; /* Omega_lambda at the given redshift */
-  double omega_matter_z;	/* Omega_matter at the given redshift */
-  double omhh;		/* Omega_matter * hubble^2 */
-  double onhh;		/* Omega_hdm * hubble^2 */
-  double p_c;		    /* The correction to the exponent before drag epoch */
-  double p_cb;		/* The correction to the exponent after drag epoch */
-  double sound_horizon_fit;  /* The sound horizon at the drag epoch */
-  double theta_cmb;	/* The temperature of the CMB, in units of 2.7 K */
-  double y_drag;		/* Ratio of z_equality to z_drag */
-  double z_drag;		/* Redshift of the drag epoch */
-  double z_equality;	/* Redshift of matter-radiation equality */
+  double alpha_gamma;	 // sqrt(alpha_nu)
+  double alpha_nu;	     // The small-scale suppression
+  double beta_c;		 // The correction to the log in the small-scale
+  double num_degen_hdm;	 // Number of degenerate massive neutrino species
+  double growth_k0;	     // D_1(z) -- the growth function as k->0
+  double growth_to_z0;	 // D_1(z)/D_1(0) -- the growth relative to z=0
+  double k_equality;	 // The comoving wave number of the horizon at equality
+  double obhh;		     // Omega_baryon * hubble^2 
+  double omega_curv;	 // = 1 - omega_matter - omega_lambda
+  double omega_lambda_z; // Omega_lambda at the given redshift
+  double omega_matter_z; // Omega_matter at the given redshift
+  double omhh;		     // Omega_matter * hubble^2
+  double onhh;		     // Omega_hdm * hubble^2
+  double p_c;		     // The correction to the exponent before drag epoch
+  double p_cb;		     // The correction to the exponent after drag epoch 
+  double sound_horizon_fit;  // The sound horizon at the drag epoch 
+  double theta_cmb;	     // The temperature of the CMB, in units of 2.7 K
+  double y_drag;		 // Ratio of z_equality to z_drag 
+  double z_drag;		 // Redshift of the drag epoch
+  double z_equality;	 // Redshift of matter-radiation equality
+    
+    // in powerEHv2.c
+    void TFset_parameters(double omega0hh, double f_baryon, double Tcmb);
+    double TFfit_onek(double k, double *tf_baryon, double *tf_cdm);
+
+	double R_drag;		// Photon-baryon ratio at drag epoch
+	double R_equality;	// Photon-baryon ratio at equality epoch
+	double sound_horizon;	// Sound horizon at drag epoch, in Mpc
+	double k_silk;		// Silk damping scale, in Mpc^-1
+	double alpha_c;	    // CDM suppression
+	double alpha_b;	    // Baryon suppression
+	double beta_b;		// Baryon envelope shift
+	double beta_node;	// Sound horizon shift
+	double k_peak;		// Fit to wavenumber of first peak, in Mpc^-1
 
   // temporary variables for doing interations
   int tmp_type;

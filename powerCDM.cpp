@@ -147,7 +147,7 @@ double COSMOLOGY::power_linear(double k,double z){
  */
 double COSMOLOGY::powerloc(double k,double z){
 
-  //return powerEHv2(k);
+  if(Omnu == 0.0) return powerEHv2(k);
   return powerEH(k,z);
 }
 /** \ingroup cosmolib
@@ -226,21 +226,10 @@ double COSMOLOGY::powerEHv2(double k){
   CosmoHndl cosmo_old;
   double Trans;
   double baryon_piece,cdm_piece;
-
-  /*PrintCosmology(cosmo_old);*/
-  /*  PrintCosmology(cosmo_old);*/
-  /*printf("compare = %i\n",cosmo_compare(cosmo_old,cosmo));*/
-  
-  if(cosmo_compare(cosmo_old,this)){
-
-	  TFset_parameters((Omo*h*h),(Omb/Omo),2.728);
-
-	  cosmo_copy(cosmo_old,this);
-  }
  
   Trans=TFfit_onek(k, &baryon_piece, &cdm_piece);
   //printf("trans=%e A=%e h=%e n=%e\n",Trans,A,h,n);
-  return A*pow(k/h,n)*Trans*Trans/pow(h/3.0e3,3);
+  return A*pow(k/h,n+dndlnk*log(k))*Trans*Trans/pow(h/3.0e3,3);
 }
 
 
