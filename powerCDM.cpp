@@ -147,7 +147,7 @@ double COSMOLOGY::power_linear(double k,double z){
  */
 double COSMOLOGY::powerloc(double k,double z){
 
-  //if(Omnu == 0.0) return powerEHv2(k);
+  if(Omnu == 0.0) return powerEHv2(k);
   return powerEH(k,z);
 }
 /** \ingroup cosmolib
