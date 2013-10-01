@@ -436,14 +436,14 @@ double drdz_wrapper(double x, void *params){
   return static_cast<CosmoHndl>(params)->COSMOLOGY::drdz(x);
 }
 
-double COSMOLOGY::drdz(double x){
+double COSMOLOGY::drdz(double x) const{
  double temp;
 
   temp=Omo*x*x*x+Oml-(Omo+Oml-1)*x*x;
   if(temp<=0.0) return -1.0e30;                   // non-physical values
   return 1.0/sqrt(temp);
 }
-double COSMOLOGY::adrdz(double x){
+double COSMOLOGY::adrdz(double x) const{
   return drdz(x)/x;
 }
 
@@ -454,17 +454,17 @@ double COSMOLOGY::adrdz(double x){
 double drdz_dark_wrapper(double x, void *params){
   return static_cast<CosmoHndl>(params)->COSMOLOGY::drdz_dark(x);
 }
-double COSMOLOGY::drdz_dark(double x){
+double COSMOLOGY::drdz_dark(double x) const{
 	return 1.0 / sqrt(Omo*x*x*x+Oml*pow(x,3*(1+w+w1))*exp(-3*w1*(x-1)/x)-(Omo+Oml-1)*x*x);
 }
-double COSMOLOGY::adrdz_dark(double x){
+double COSMOLOGY::adrdz_dark(double x) const{
   return drdz_dark(x)/x;
 }
 
 /** \ingroup cosmolib
  * \brief The coordinate distance in units Mpc.  This is the radial distance found by integrating 1/H(z).
  */
-double COSMOLOGY::coorDist(double zo,double z) {
+double COSMOLOGY::coorDist(double zo,double z) const{
 	// interpolation
 	if(zo < z_interp && z < z_interp)
 		return interp(coorDist_interp, z) - interp(coorDist_interp, zo);
@@ -491,7 +491,7 @@ double COSMOLOGY::coorDist(double zo,double z) {
 /** \ingroup cosmolib
  * \brief Non-comoving radial distance in units Mpc.  This is coorDist only integrated with the scale factor a=1/(1+z).
  */
-double COSMOLOGY::radDist(double zo,double z){
+double COSMOLOGY::radDist(double zo,double z) const {
 	if(zo < z_interp && z < z_interp)
 		return interp(radDist_interp, z) - interp(radDist_interp, zo);
 	
@@ -505,7 +505,7 @@ double COSMOLOGY::radDist(double zo,double z){
  *  Converts angles to proper distance NOT comoving distance.
  */
 
-double COSMOLOGY::angDist(double zo,double z) {
+double COSMOLOGY::angDist(double zo,double z) const{
   double Rcur;
 
   if(Omo+Oml==1) return coorDist(zo,z)/(1+z);
@@ -520,7 +520,7 @@ double COSMOLOGY::angDist(double zo,double z) {
 /** \ingroup cosmolib
  * \brief The luminosity distance in units Mpc
  */
-double COSMOLOGY::lumDist(double zo,double z){
+double COSMOLOGY::lumDist(double zo,double z) const{
 	return pow(1+z,2)*angDist(zo,z);
 }
 
@@ -1009,7 +1009,7 @@ double Deltao_wrapper(double m, void *params){
   return static_cast<CosmoHndl>(params)->COSMOLOGY::Deltao(m);
 }
 
-double COSMOLOGY::Deltao(double m){
+double COSMOLOGY::Deltao(double m) const{
   double dc;
   dc=1.68647;
   if(Omo<1 && Oml==0) dc*=pow(Omo,0.0185);
@@ -1018,7 +1018,7 @@ double COSMOLOGY::Deltao(double m){
   return f4(6.005e14*pow(h*Omo,3))/f4(m*h*h*h*h*Omo*Omo);
 }
 
-double f4(double u){
+double  COSMOLOGY::f4(double u) const{
   return 8.6594e-12*pow(u,0.67)*pow( 1+pow( 3.5*pow(u,-0.1) +1.628e9*pow(u,-0.63),0.255) ,3.92157);
 }
 
@@ -1065,7 +1065,7 @@ double COSMOLOGY::halo_bias (
 /***************************************************************/
 /*** isolated integrator used for cosmological calculations ***/
 /***************************************************************/
-double COSMOLOGY::nintegrateDcos(pt2MemFunc func, double a,double b,double tols)
+double COSMOLOGY::nintegrateDcos(pt2MemFunc func, double a,double b,double tols) const
 {
    double ss,dss;
    double s2[JMAXP],h2[JMAXP+1];
@@ -1087,7 +1087,7 @@ double COSMOLOGY::nintegrateDcos(pt2MemFunc func, double a,double b,double tols)
    return 0.0;
 }
 
-double COSMOLOGY::trapzdDcoslocal(pt2MemFunc func, double a, double b, int n, double *s2)
+double COSMOLOGY::trapzdDcoslocal(pt2MemFunc func, double a, double b, int n, double *s2) const
 {
   double x,tnm,del,sum;
    int it,j;
@@ -1105,6 +1105,48 @@ double COSMOLOGY::trapzdDcoslocal(pt2MemFunc func, double a, double b, int n, do
 
 	return *s2;
    }
+}
+
+double COSMOLOGY::nintegrateDcos(pt2MemFuncNonConst func, double a,double b,double tols)
+{
+  double ss,dss;
+  double s2[JMAXP],h2[JMAXP+1];
+  int j;
+  double ss2=0;
+  
+  h2[1]=1.0;
+  for (j=1;j<=JMAX;j++) {
+    s2[j]=trapzdDcoslocal(func,a,b,j,&ss2);
+    if (j>=K) {
+      polintD(&h2[j-K],&s2[j-K],K,0.0,&ss,&dss);
+      if(fabs(dss) <= tols*fabs(ss)) return ss;
+    }
+    h2[j+1]=0.25*h2[j];
+	}
+  cout << "s2= "; for(j=1;j<=JMAX;j++) cout << s2[j] << " ";
+  cout << "\n";
+  cout << "Too many steps in routine nintegrateDcos\n";
+  return 0.0;
+}
+
+double COSMOLOGY::trapzdDcoslocal(pt2MemFuncNonConst func, double a, double b, int n, double *s2)
+{
+  double x,tnm,del,sum;
+  int it,j;
+  
+  if (n == 1) {
+    return (*s2=0.5*(b-a)*( (this->*func)(a) +(this->*func)(b) ));
+  } else {
+    
+    for (it=1,j=1;j<n-1;j++) it <<= 1;
+    tnm=it;
+    del=(b-a)/tnm;
+    x=a+0.5*del;
+    for (sum=0.0,j=1;j<=it;j++,x+=del) sum += (this->*func)(x);
+    *s2=0.5*(*s2+(b-a)*sum/tnm);
+    
+    return *s2;
+  }
 }
 
 double COSMOLOGY::dfridrDcos(pt2MemFunc func, double x, double b, double *err)
@@ -1180,7 +1222,7 @@ void COSMOLOGY::calc_interp(double z_max, std::size_t n)
 	n_interp = n;
 }
 
-double COSMOLOGY::interp(std::vector<double>& table, double z)
+double COSMOLOGY::interp(const std::vector<double> & table, double z) const
 {
 	double dz = z_interp/(n_interp*n_interp);
 	double di = sqrt(z/dz);

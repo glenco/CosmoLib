@@ -55,14 +55,14 @@ public:
     // Lengths
     double rcurve();
     double emptyDist(double zo,double z);
-    double coorDist(double zo,double z);
-    double coorDist(double z) {return coorDist(0,z);}
-    double radDist(double zo,double z);
-    double radDist(double z){return radDist(0,z);}
-    double angDist(double zo,double z);
-    double angDist(double z) {return angDist(0,z);}
-    double lumDist(double zo,double z);
-    double lumDist(double z){return lumDist(0,z);}
+    double coorDist(double zo,double z) const;
+    double coorDist(double z) const {return coorDist(0,z);}
+    double radDist(double zo,double z) const;
+    double radDist(double z) const {return radDist(0,z);}
+    double angDist(double zo,double z) const;
+    double angDist(double z) const {return angDist(0,z);}
+    double lumDist(double zo,double z) const;
+    double lumDist(double z) const {return lumDist(0,z);}
     double DRradius(double zo,double z,double pfrac);
     double DRradius2(double zo,double z);
 
@@ -74,12 +74,12 @@ public:
     double rho_crit(double z);
     double gradius(double R,double rd);
     double drdz_empty(double x);
-    double drdz(double x);
-    double adrdz(double x);
-    double drdz_dark(double x);
-    double adrdz_dark(double x);
+    double drdz(double x) const;
+    double adrdz(double x) const;
+    double drdz_dark(double x) const;
+    double adrdz_dark(double x) const;
     double DeltaVir(double z,int caseunit=0);
-    double Deltao(double m);
+    double Deltao(double m) const;
     double time(double z);
     double nonlinMass(double z);
     // Stuff having to do with the power spectrum
@@ -108,52 +108,52 @@ public:
 
     /// Hubble paremters in units of 100 km/s/Mpc, renormalizes P(k) to keep sig8 fixed
     void sethubble(double ht){ h = ht; TFmdm_set_cosm(); power_normalize(sig8);}
-    double gethubble(){return h;}
+    double gethubble() const {return h;}
     
     /// Primordial spectral index, renormalizes P(k) to keep sig8 fixed
     void setindex(double nn){ n = nn;  power_normalize(sig8);}
-    double getindex(){ return n;}
+    double getindex() const { return n;}
     
     /// Omega matter, renormalizes P(k) to keep sig8 fixed
     void setOmega_matter(double Omega_matter,bool FLAT = false){Omo = Omega_matter; if(FLAT) Oml = 1-Omo ; TFmdm_set_cosm(); power_normalize(sig8);}
-    double getOmega_matter(){return Omo;}
+    double getOmega_matter() const {return Omo;}
     
     /// Omega lambda, renormalizes P(k) to keep sig8 fixed
     void setOmega_lambda(double Omega_lambda,bool FLAT = false){Oml = Omega_lambda;  if(FLAT) Oml = 1-Omo ; TFmdm_set_cosm(); power_normalize(sig8);}
-    double getOmega_lambda(){return Oml;}
+    double getOmega_lambda() const {return Oml;}
 
     /// Omega baryon, renormalizes P(k) to keep sig8 fixed
     void setOmega_baryon(double Omega_baryon){Omb = Omega_baryon; TFmdm_set_cosm(); power_normalize(sig8);}
-    double getOmega_baryon(){return Omb;}
+    double getOmega_baryon() const {return Omb;}
     
     /// Omega neutrino, renormalizes P(k) to keep sig8 fixed
     void setOmega_neutrino(double Omega_neutrino){Omnu = Omega_neutrino; TFmdm_set_cosm(); power_normalize(sig8);}
-    double getOmega_neutrino(){return Omnu;}
+    double getOmega_neutrino() const {return Omnu;}
 
     /// Number of neutrino species, renormalizes P(k) to keep sig8 fixed
     void setNneutrino(double Nneutrino){Nnu = Nneutrino; TFmdm_set_cosm(); power_normalize(sig8);}
-    double getNneutrino(){return Nnu;}
+    double getNneutrino() const {return Nnu;}
 	
    /// Dark energy equation of state parameter p/rho = w + w_1 (1+z)
     void setW(double ww){w = ww;}
-    double getW(){return w;}
+    double getW() const {return w;}
     void setW1(double ww){w1 = ww;}
-    double getW1(){return w1;}
+    double getW1() const {return w1;}
     
     /// Running of primordial spectral index, P(k)_primordial \propto pow(k/h,n+dndlnk*log(k)), renormalizes P(k) to keep sig8 fixed
     void setdndlnk(double w){dndlnk = w; power_normalize(sig8);}
-    double getdndlnk(){return dndlnk;}
+    double getdndlnk() const {return dndlnk;}
 
     /// Alternative to w for dark energy/ alt. grav. structure evolution
     void setgamma(double gamm){gamma = gamm;}
-    double getgamma(){return gamma;}
+    double getgamma() const {return gamma;}
     // If physical = 1 all Omega are Omega*h^2 otherwise they have the usual definitions.
     // 2 gamma parameterization is used for dark energy
     void setDEtype(short tt){darkenergy = tt;}
-    short getDEtype(){return darkenergy;}
+    short getDEtype() const {return darkenergy;}
   
     void setSigma8(double my_sig8){power_normalize(my_sig8);}
-    double getSigma8(){return sig8;}
+    double getSigma8() const {return sig8;}
 
 
     void dzdangDist(double D,double z[],double dzdD[]);
@@ -222,12 +222,16 @@ protected:
   double timeEarly(double a);
   double dNdz(double z);
   
-  typedef double (COSMOLOGY::*pt2MemFunc)(double);
+  typedef double (COSMOLOGY::*pt2MemFunc)(double) const;
+  typedef double (COSMOLOGY::*pt2MemFuncNonConst)(double);
   
-  double nintegrateDcos(pt2MemFunc func,double a,double b,double tols);
-  double trapzdDcoslocal(pt2MemFunc func, double a, double b, int n, double *s2);
+  double nintegrateDcos(pt2MemFunc func,double a,double b,double tols) const;
+  double trapzdDcoslocal(pt2MemFunc func, double a, double b, int n, double *s2) const;
+  double nintegrateDcos(pt2MemFuncNonConst func,double a,double b,double tols);
+  double trapzdDcoslocal(pt2MemFuncNonConst func, double a, double b, int n, double *s2);
   double dfridrDcos(pt2MemFunc func, double x, double h, double *err);
-  
+  double f4(double u) const;
+
   int ni;
   std::vector<float> xf, wf;
   
@@ -289,7 +293,7 @@ protected:
   double z_interp;
   std::size_t n_interp;
   void calc_interp(double z_interp, std::size_t n_interp);
-  double interp(std::vector<double>& table, double z);
+  double interp(const std::vector<double>& table, double z) const;
   double invert(std::vector<double>& table, double f_z);
   std::vector<double> redshift_interp;
   std::vector<double> coorDist_interp;
@@ -346,7 +350,6 @@ void dir(double r,double a[],double dadr[]);
 double arctanh(double x);
 double fmini(double a,double b);
 double fmaxi(double a,double b);
-double f4(double u);
 double **dmatrixcos(long nrl, long nrh, long ncl, long nch);
 void free_dmatrixcos(double **m, long nrl, long nrh, long ncl, long nch);
 
