@@ -214,7 +214,7 @@ void COSMOLOGY::SetConcordenceCosmology(CosmoParamSet cosmo_p){
  * \brief Print cosmological parameters 
  */
 
-void COSMOLOGY::PrintCosmology(short physical){
+void COSMOLOGY::PrintCosmology(short physical) const {
 
 	cout << "h: " << h << "\n";
 	cout << "n: " << n << "\n";
@@ -280,7 +280,7 @@ void cosmo_copy(CosmoHndl cos1, CosmoHndl cos2){
  * \brief Curvature radius in Mpc
  */
 
-double COSMOLOGY::rcurve(){
+double COSMOLOGY::rcurve() const{
   if(Omo+Oml != 1.0){
     return Hubble_length/(h*sqrt(fabs(1-Omo-Oml)));  /** curviture scale **/
   }
@@ -297,7 +297,7 @@ double COSMOLOGY::DpropDz(double z){
 /** \ingroup cosmolib
  * \brief Matter density parameter at redshift z
  */
-double COSMOLOGY::Omegam(double z){
+double COSMOLOGY::Omegam(double z) const{
 	return Omo*pow(1+z,3)/( Omo*pow(1+z,3)+(1-Omo-Oml)*pow(1+z,2)+Oml );
 }
 
@@ -407,7 +407,7 @@ void ders(double z,double Da[],double dDdz[]){
  * \brief Linear growth factor normalized to 1 at z=0
  */
 
-double COSMOLOGY::Dgrowth(double z){
+double COSMOLOGY::Dgrowth(double z) const{
   double a,Omot,Omlt,g,go;
 
   a=1./(1+z);
@@ -424,7 +424,7 @@ double COSMOLOGY::Dgrowth(double z){
 /** \ingroup cosmolib
  * \brief comoving critical density in M_sun/Mpc^3
  */
-double COSMOLOGY::rho_crit(double z){
+double COSMOLOGY::rho_crit(double z) const {
   return CRITD2*h*h*( Omo*pow(1+z,3)+Oml-(Omo+Oml-1)*pow(1+z,2) )/pow(1+z,3);
 }
 
@@ -462,7 +462,8 @@ double COSMOLOGY::adrdz_dark(double x) const{
 }
 
 /** \ingroup cosmolib
- * \brief The coordinate distance in units Mpc.  This is the radial distance found by integrating 1/H(z).
+ * \brief The coordinate distance in units Mpc.  This is the radial distance found by integrating 1/H(z).  This 
+ *  is NOT the comoving angular size distance if the universe is not flat.
  */
 double COSMOLOGY::coorDist(double zo,double z) const{
 	// interpolation
@@ -527,7 +528,7 @@ double COSMOLOGY::lumDist(double zo,double z) const{
 /** \ingroup cosmolib
  * \brief The inverse of the coordinate distance in units Mpc, works within interpolation range.
  */
-double COSMOLOGY::invCoorDist(double d)
+double COSMOLOGY::invCoorDist(double d) const
 {
 	return invert(coorDist_interp, d);
 }
@@ -535,7 +536,7 @@ double COSMOLOGY::invCoorDist(double d)
 /** \ingroup cosmolib
  * \brief The inverse of the radial distance in units Mpc, works within interpolation range.
  */
-double COSMOLOGY::invRadDist(double d)
+double COSMOLOGY::invRadDist(double d) const
 {
 	return invert(radDist_interp, d);
 }
@@ -546,7 +547,7 @@ double COSMOLOGY::invRadDist(double d)
 double COSMOLOGY::gradius(
 		double R    /// the curvature radius
 		,double rd  /// the coordinate
-		){
+		) const{
 
   if( fabs(Omo+Oml-1) < 1.0e-4) return rd;
   if((Omo+Oml)<1.0) return R*sinh(rd/R);
@@ -835,7 +836,7 @@ double COSMOLOGY::dNdz(double z){
  * formula for the CDM model which might not be perfectly accurate.  See
  * TopHatVarianceR() for an alternative.
  */
-double COSMOLOGY::TopHatVariance(double m){
+double COSMOLOGY::TopHatVariance(double m) const{
 	double v = sig8*Deltao(m);
 	return v*v;
 }
@@ -866,7 +867,7 @@ double COSMOLOGY::dsigdM(double m){
 double COSMOLOGY:: DeltaVir(
 		double z         /// redshift
 		,int caseunit    /// by default uses the Brayan and Norman fit, if equal to 1 uses the fit by Felix Stšhr
-		){
+		) const{
 	double omz = Omegam(z);
 	double af,bf;
 	switch (caseunit){
@@ -940,7 +941,7 @@ double COSMOLOGY::getTimefromDeltaC(double dc){
 	  else return f*vt[i+1]+(1-f)*vt[i];
 }
 
-double COSMOLOGY::timeEarly(double a){
+double COSMOLOGY::timeEarly(double a) const{
 	double aEqual=8.3696e-05/Omo; // set by hand
 	double r=aEqual/a;
 	return 2.0/3.0*a*sqrt(a)/sqrt(Omo)*((1-2*r)*sqrt(1+r)+2*r*sqrt(r));
@@ -949,7 +950,7 @@ double COSMOLOGY::timeEarly(double a){
 /** \ingroup cosmolib
  * \brief Return the time from the Big Bang in Gyr at a given redshift z
  */
-double COSMOLOGY::time(double z){
+double COSMOLOGY::time(double z) const{
 	double CfactorT = 0.102271;
         CfactorT = 1/(h*CfactorT);
 	double a=1/(z+1.);
@@ -969,7 +970,7 @@ double COSMOLOGY::time(double z){
 	}
 }
 
-double COSMOLOGY::nonlinMass(double z){
+double COSMOLOGY::nonlinMass(double z) const{
 	  double Omz=Omegam(z);
 	  double dc;
 	  if(Omo<1 && Oml==0) dc=1.68647*pow(Omz,0.0185);
@@ -1240,7 +1241,7 @@ double COSMOLOGY::interp(const std::vector<double> & table, double z) const
 	throw std::out_of_range("redshift out of interpolation range");
 }
 
-double COSMOLOGY::invert(std::vector<double>& table, double f_z)
+double COSMOLOGY::invert(const std::vector<double>& table, double f_z) const
 {
 	if(f_z < 0)
 		throw std::out_of_range("cannot invert negative function values");
@@ -1261,7 +1262,7 @@ double COSMOLOGY::invert(std::vector<double>& table, double f_z)
 	return z_0 + ((f_z-f_0)/(f_1-f_0))*(z_1-z_0);
 }
 
-double COSMOLOGY::SigmaCrit(double zlens,double zsource) {
+double COSMOLOGY::SigmaCrit(double zlens,double zsource) const {
   return angDist(0,zsource)/angDist(0,zlens)/angDist(zlens,zsource)/(4*pi*Grav);
 }
 

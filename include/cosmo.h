@@ -50,11 +50,11 @@ public:
 	~COSMOLOGY();
 
     void SetConcordenceCosmology(CosmoParamSet cosmo_p = WMAP5yr);
-    void PrintCosmology(short physical = 0);
+    void PrintCosmology(short physical = 0) const;
 
     // Lengths
-    double rcurve();
-    double emptyDist(double zo,double z);
+    double rcurve() const;
+    //double emptyDist(double zo,double z);
     double coorDist(double zo,double z) const;
     double coorDist(double z) const {return coorDist(0,z);}
     double radDist(double zo,double z) const;
@@ -63,29 +63,30 @@ public:
     double angDist(double z) const {return angDist(0,z);}
     double lumDist(double zo,double z) const;
     double lumDist(double z) const {return lumDist(0,z);}
+  
     double DRradius(double zo,double z,double pfrac);
     double DRradius2(double zo,double z);
 
-    double invCoorDist(double d);
-    double invRadDist(double d);
+    double invCoorDist(double d) const;
+    double invRadDist(double d) const;
 
-    double scalefactor(double rad);
-    double Omegam(double z);
-    double rho_crit(double z);
-    double gradius(double R,double rd);
-    double drdz_empty(double x);
+    double scalefactor(double rad) const;
+    double Omegam(double z) const;
+    double rho_crit(double z) const;
+    //double drdz_empty(double x);
     double drdz(double x) const;
     double adrdz(double x) const;
     double drdz_dark(double x) const;
     double adrdz_dark(double x) const;
-    double DeltaVir(double z,int caseunit=0);
+    double DeltaVir(double z,int caseunit=0) const;
     double Deltao(double m) const;
-    double time(double z);
-    double nonlinMass(double z);
+    double time(double z) const;
+    double nonlinMass(double z) const;
+  
     // Stuff having to do with the power spectrum
     double power_normalize(double sigma8);
     double power_linear(double k,double z);
-    double Dgrowth(double z);
+    double Dgrowth(double z) const;
     double powerCDMz(double k,double z);
     double psdfdm(double z,double m,int caseunit=0);
     double halo_bias (double m, double z, int t=0);
@@ -97,9 +98,10 @@ public:
     double haloNumberInBufferedCone (double mass ,double z1,double z2,double fov,double buffer ,int type ,double alpha=0.0);
     double haloMassInBufferedCone (double mass ,double z1,double z2,double fov,double buffer ,int type ,double alpha=0.0);
 	
-    double TopHatVariance(double m);
+    double TopHatVariance(double m) const;
     double TopHatVarianceR(double R,double z);
     double TopHatVarianceM(double M,double z);
+  //double gradius(double R,double rd);
 
     double getTimefromDeltaC(double dc);
     double getZfromDeltaC(double dc);
@@ -166,7 +168,7 @@ public:
     void setInterpolation(double z_interp, std::size_t n_interp);
 
   /// The lensing critical density in Msun / Mpc^2
-   double SigmaCrit(double zlens,double zsource);
+   double SigmaCrit(double zlens,double zsource) const;
     
 protected:
 
@@ -214,12 +216,13 @@ protected:
   double powerloc(double k,double z);
   double npow(double k);
   double normL(double lgk);
-  
+  double gradius(double R,double rd) const;
+
   int nbin;  // number of points when binning to interpolate
   std:: vector<double> vDeltaCz,vlz,vt;
   double DpropDz(double z);
   double dsigdM(double m);
-  double timeEarly(double a);
+  double timeEarly(double a) const;
   double dNdz(double z);
   
   typedef double (COSMOLOGY::*pt2MemFunc)(double) const;
@@ -294,7 +297,7 @@ protected:
   std::size_t n_interp;
   void calc_interp(double z_interp, std::size_t n_interp);
   double interp(const std::vector<double>& table, double z) const;
-  double invert(std::vector<double>& table, double f_z);
+  double invert(const std::vector<double>& table, double f_z) const;
   std::vector<double> redshift_interp;
   std::vector<double> coorDist_interp;
   std::vector<double> radDist_interp;

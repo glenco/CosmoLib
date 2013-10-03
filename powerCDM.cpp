@@ -83,7 +83,7 @@ double COSMOLOGY::powerCDMz(
  * \brief The scale factor, a = 1/(1+z), as a function of radius in Mpc
  */
 
-double COSMOLOGY::scalefactor(double rad){
+double COSMOLOGY::scalefactor(double rad) const{
   double a[1];
   int nok,nbad;
   void dir(double,double [],double []);
