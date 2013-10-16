@@ -470,7 +470,7 @@ double COSMOLOGY::coorDist(double zo,double z) const{
 	if(zo < z_interp && z < z_interp)
 		return interp(coorDist_interp, z) - interp(coorDist_interp, zo);
 	
-#ifdef GSL
+/*#ifdef GSL
   double result, error;
   size_t neval;
   gsl_function F;
@@ -483,14 +483,14 @@ double COSMOLOGY::coorDist(double zo,double z) const{
   gsl_integration_qng(&F,1+zo,1+z,1e-9,1e-9,&result,&error,&neval);
 
   return result*Hubble_length/h;
-#else
+#else*/
 	if( (w ==-1.0) && (w1 == 0.0) ) return nintegrateDcos(&COSMOLOGY::drdz,1+zo,1+z,1.0e-9)*Hubble_length/h;
 	return nintegrateDcos(&COSMOLOGY::drdz_dark,1+zo,1+z,1.0e-9)*Hubble_length/h;
-#endif
+//#endif
 }
 
 /** \ingroup cosmolib
- * \brief Non-comoving radial distance in units Mpc.  This is coorDist only integrated with the scale factor a=1/(1+z).
+ * \brief Non-comoving radial distance in units Mpc also known as the lookback time.  This is coorDist only integrated with the scale factor a=1/(1+z).
  */
 double COSMOLOGY::radDist(double zo,double z) const {
 	if(zo < z_interp && z < z_interp)

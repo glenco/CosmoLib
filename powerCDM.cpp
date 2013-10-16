@@ -8,6 +8,8 @@ static double omo, oml, hh;
 /** \ingroup cosmolib
 * \brief  powerCDM.c calculates the nonlinear P(k,z)/a(r)^2
 *
+* The method of Peacock & Dodds 1996 is used to convert the linear 
+* power spectrum into the nonlinear one.
 * This could be updated to a more recent nonlinear power spectrum
 */
 

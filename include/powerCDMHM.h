@@ -23,10 +23,9 @@
 #include <gsl/gsl_spline.h>
 #include <gsl/gsl_rng.h>
 
-/** \ingroup cosmolib
- * \brief Class for calculating the non-linear power spectrum using the Halo Model
+/** 
+ * \brief Class for calculating the non-linear power spectrum using ****** Halo Model.
  */
-
 class POWERCDMHM{
   public:
   POWERCDMHM (COSMOLOGY *co, double redshift, double minHalomass, double sigma=0.25,int cmRelation=0,double slope=-0.1);
@@ -55,8 +54,8 @@ class POWERCDMHM{
   private:
   float *xf,*wf;
 };
-
 #endif
+
 
 #endif /* POWERCDMHM_H_ */
 
