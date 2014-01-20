@@ -33,6 +33,7 @@ set(SOURCES
 	halo.cpp
 	nfw.cpp
 	powerCDM.cpp
+  powerCDMHM.cpp
 	utilities.cpp
 )
 
@@ -43,6 +44,11 @@ set(SOURCES
 
 include_directories(${NR_SOURCE_DIR}/include)
 include_directories(include)
+
+if(GSL)
+	include_directories(${GSL_INCLUDE_DIRS})
+endif()
+
 
 
 ####

@@ -14,7 +14,7 @@
 #include <halo.h>
 #include <utilities.h>
 
-#ifdef GSL
+#if GSL
 
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_integration.h>
@@ -25,6 +25,7 @@
 
 /** 
  * \brief Class for calculating the non-linear power spectrum using ****** Halo Model.
+ *  To use this class you must enable GSL.
  */
 class POWERCDMHM{
   public:

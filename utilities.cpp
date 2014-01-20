@@ -7,24 +7,24 @@
 
 #include <utilities.h>
 
-double arctanh(double x){
+PosType arctanh(PosType x){
     return 0.5*log((1+x)/(1-x));
 }
 
-double fmini(double a,double b){
+PosType fmini(PosType a,PosType b){
   if(a<b)return a;
   return b;
 }
-double fmaxi(double a,double b){
+PosType fmaxi(PosType a,PosType b){
   if(a>b)return a;
   return b;
 }
 
-/*
+/**
  * Interpolate (cubic interpolation) the value of a function
  * \f$ y=y(x) \f$ given xi
  */
-double InterpolateYvec(std:: vector<double> x, std:: vector<double> y,double xi){
+PosType InterpolateYvec(std:: vector<PosType> x, std:: vector<PosType> y,PosType xi){
 	int n=x.size();
 	if(x[n-1]>x[0]){
 		if(xi>x[n-1]) return y[n-1];
@@ -36,9 +36,9 @@ double InterpolateYvec(std:: vector<double> x, std:: vector<double> y,double xi)
 	}
 	int i = locate (x,xi);
 	i = std::min (std::max (i,0), int (n)-2);
-	double f=(xi-x[i])/(x[i+1]-x[i]);
+	PosType f=(xi-x[i])/(x[i+1]-x[i]);
 	if(i>1 && i<n-2){
-		double a0,a1,a2,a3,f2;
+		PosType a0,a1,a2,a3,f2;
 	    f2 = f*f;
 	    a0 = y[i+2] - y[i+1] - y[i-1] + y[i];
 	    a1 = y[i-1] - y[i] - a0;
@@ -49,8 +49,8 @@ double InterpolateYvec(std:: vector<double> x, std:: vector<double> y,double xi)
 	else return f*y[i+1]+(1-f)*y[i];
 }
 
-double median(std:: vector<double> vec){
-  typedef std:: vector<double>::size_type vec_sz;
+PosType median(std:: vector<PosType> vec){
+  typedef std:: vector<PosType>::size_type vec_sz;
   vec_sz size = vec.size();
   if (size == 0){
     // std:: cout << "median of an empty vector" << std:: endl;

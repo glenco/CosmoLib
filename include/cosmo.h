@@ -3,7 +3,7 @@
 #include <memory>
 #include <cstdlib>
 #include <cstddef>
-#ifdef GSL
+#if GSL
 #include <gsl/gsl_integration.h>
 #include <gsl/gsl_deriv.h>
 #endif

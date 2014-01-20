@@ -13,6 +13,17 @@
 #include <algorithm>
 #include <limits>
 #include <stdexcept>
+//#include <gsl/gsl_integration_glfixed_table_alloc.h>
+
+#if GSL
+  #include <gsl/gsl_errno.h>
+  #include <gsl/gsl_integration.h>
+  #include <gsl/gsl_sf.h>
+  #include <gsl/gsl_math.h>
+  #include <gsl/gsl_spline.h>
+  #include <gsl/gsl_rng.h>
+#endif
+
 
 #define JMAX 34
 #define JMAXP (JMAX+1)
@@ -56,7 +67,7 @@ COSMOLOGY::COSMOLOGY(double omegam,double omegal,double hubble, double ww) :
 	ni = 64;
 	xf.resize(ni);
 	wf.resize(ni);
-#ifdef GSL
+/*#if GSL
 	double xi, wi;
 	gsl_integration_glfixed_table *t=gsl_integration_glfixed_table_alloc(ni);
 	for(int i=0; i<ni; i++){
@@ -65,9 +76,9 @@ COSMOLOGY::COSMOLOGY(double omegam,double omegal,double hubble, double ww) :
 	  wf[i] = wi;
 	}
 	gsl_integration_glfixed_table_free(t);
-#else
+#else */
 	gauleg(0.,1.,&xf[0]-1,&wf[0]-1,ni);
-#endif
+//#endif
 	// construct table of log(1+z), time, and \delta_c for interpolation
 	fill_linear(vlz,ni,0.,1.7);
 	double dc;
@@ -91,7 +102,7 @@ COSMOLOGY::COSMOLOGY(CosmoParamSet cosmo_p){
 	ni = 64;
 	xf.resize(ni);
 	wf.resize(ni);
-#ifdef GSL
+/*#if GSL
 	double xi, wi;
 	gsl_integration_glfixed_table *t=gsl_integration_glfixed_table_alloc(ni);
 	for(int i=0; i<ni; i++){
@@ -100,9 +111,9 @@ COSMOLOGY::COSMOLOGY(CosmoParamSet cosmo_p){
 	  wf[i] = wi;
 	}
 	gsl_integration_glfixed_table_free(t);
-#else
+#else */
 	gauleg(0.,1.,&xf[0]-1,&wf[0]-1,ni);
-#endif
+//#endif
 	// construct table of log(1+z), time, and \delta_c for interpolation
 	fill_linear(vlz,ni,0.,1.7);
 	double dc;
@@ -470,7 +481,7 @@ double COSMOLOGY::coorDist(double zo,double z) const{
 	if(zo < z_interp && z < z_interp)
 		return interp(coorDist_interp, z) - interp(coorDist_interp, zo);
 	
-/*#ifdef GSL
+/*#if GSL
   double result, error;
   size_t neval;
   gsl_function F;
@@ -846,7 +857,7 @@ double COSMOLOGY::TopHatVariance(double m) const{
  * \brief Derivative of \f$ \sigma(m) \f$ in CDM model
  */
 double COSMOLOGY::dsigdM(double m){
-#ifdef GSL
+#if GSL
   double result, error;
   gsl_function F;
   F.function = &Deltao_wrapper;

@@ -3,14 +3,13 @@
 #include <nr.h>
 #include <nrutil.h>
 
-
 /**
   This  code reconstructs  the  non-linear dark  matter power  spectrum
   using the halo model. It considers 1 and 2 Halo terms and scatter in
   the c-m relation. 
 */
 
-#ifdef GSL
+#if GSL
 
 const double tiny = 1.e-4;
 const double CRITDD = 2.7752543e+11;
@@ -35,7 +34,7 @@ double sigmalnC; // log-normal scatter in the c-m
 int cmRelation;  // model for the c-m relation see halo.cpp
 double slopeCM;  // slope of the c-m
 
-/*
+/**
  * \brief Normalized fourier transform of the NFW profile
  */
 double ukNFW(double m, double c){
@@ -70,7 +69,7 @@ struct Glob{
   int dp3;
 };
 
-// log normal distribution times f function
+/// log normal distribution times f function
 double ftimeslognormal (double lx, void *ip){
   struct Glob* g=static_cast<struct Glob*> (ip);
   // dp1 - mass
@@ -82,14 +81,14 @@ double ftimeslognormal (double lx, void *ip){
   return pow(uk,g->dp3)/sqrt(2*M_PI*gsl_pow_2(sigmalnC))*exp(-gsl_pow_2(lx)/2/gsl_pow_2(sigmalnC));
 }
 
-// halo mass function normalization function
+/// halo mass function normalization function
 double intNORMmassfunction (double m, void *ip){
   m = pow(10.,m);
   double fnu = co->stdfdm(z,m,1)/pow(co->gethubble(),2);
   return log(10.)*m*m/rhob*fnu;  
 }
 
-// halo mass function times bias normalization function
+/// halo mass function times bias normalization function
 double intNORMmassfunctionbias (double m, void *ip){
   m = pow(10.,m);
   double bias = co->halo_bias (m,z,1);
@@ -97,7 +96,7 @@ double intNORMmassfunctionbias (double m, void *ip){
   return log(10.)*m*m/rhob*fnu*bias;
 }
 
-// integral of the 1-Halo Component function
+/// integral of the 1-Halo Component function
 double int1H (double m, void *ip){
   m = pow(10.,m);
   HALO ha(co,m,z);  
@@ -125,7 +124,7 @@ double int1H (double m, void *ip){
   return log(10.)*m*m/rhob*fnu*res*m/rhob;     // < --- with scatter in c
 }
 
-// integral of the 2-Halo Component function
+/// integral of the 2-Halo Component function
 double int2H (double m, void *ip){
   m = pow(10.,m);
   HALO ha(co,m,z);  

@@ -12,6 +12,12 @@
 #include <math.h>
 #include <algorithm>
 
+#ifndef PosType_declare
+#define PosType_declare
+typedef double PosType;
+#endif
+
+
 const double nXbin=64.;
 
 /** \ingroup Utill
@@ -92,14 +98,14 @@ void locate (T *v, unsigned long n, T x, unsigned long *index)
   return;
 }
 
-double InterpolateYvec(std:: vector<double> x, std:: vector<double> y,double xi);
+PosType InterpolateYvec(std:: vector<PosType> x, std:: vector<PosType> y,PosType xi);
 
-double arctanh(double x);
+PosType arctanh(PosType x);
 
-double fmini(double a,double b);
+PosType fmini(PosType a,PosType b);
 
-double fmaxi(double a,double b);
+PosType fmaxi(PosType a,PosType b);
 
-double median(std:: vector<double> vec); 
+PosType median(std:: vector<PosType> vec); 
 
 #endif /* UTILITIES_H_ */
