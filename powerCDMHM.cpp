@@ -38,7 +38,7 @@ double slopeCM;  // slope of the c-m
  * \brief Normalized fourier transform of the NFW profile
  */
 double ukNFW(double m, double c){
-  HALO ha(co,m,z);
+  HALOCalculator ha(co,m,z);
   double Rvir = ha.getRvir()*(1+z)*pow(co->gethubble(),2./3.);
   double rs=Rvir/c;
   double rhos=m/( 4.*M_PI*pow( rs,3 )*(log( 1.+c )-c/( 1.+c )));
@@ -99,7 +99,7 @@ double intNORMmassfunctionbias (double m, void *ip){
 /// integral of the 1-Halo Component function
 double int1H (double m, void *ip){
   m = pow(10.,m);
-  HALO ha(co,m,z);  
+  HALOCalculator ha(co,m,z);  
   double c = ha.getConcentration(cmRelation,slopeCM);
   double uk = ukNFW(m,c);
   struct Glob g; 
@@ -127,7 +127,7 @@ double int1H (double m, void *ip){
 /// integral of the 2-Halo Component function
 double int2H (double m, void *ip){
   m = pow(10.,m);
-  HALO ha(co,m,z);  
+  HALOCalculator ha(co,m,z);  
   double c = ha.getConcentration(cmRelation,slopeCM);
   double bias = co->halo_bias (m,z,1);
   double uk = ukNFW(m,c);

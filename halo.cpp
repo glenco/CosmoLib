@@ -9,7 +9,7 @@
  /** \ingroup cosmolib
   * \brief Constructor initializing a NFW-halo
   */
-HALO::HALO (
+HALOCalculator::HALOCalculator (
 		COSMOLOGY *cos     /// pointer to a COSMOLOGY
 		,double mass       /// halo mass in M_sun/h   TODO Carlo:  Is this really M_sun/h
 		,double redshift   /// redshift
@@ -18,7 +18,7 @@ HALO::HALO (
 	Set_Parameters();
 }
 
-void HALO::Set_Parameters(){
+void HALOCalculator::Set_Parameters(){
 	Omz=co->Omegam(z);
 	Omo=co->getOmega_matter();
 	Oml=co->getOmega_lambda();
@@ -28,12 +28,12 @@ void HALO::Set_Parameters(){
 	if(Omo+Oml==1) deltac0*=pow(Omz,0.0055);
 }
 
-HALO::~HALO () {}
+HALOCalculator::~HALOCalculator () {}
 
 /** \ingroup cosmolib
  * \brief Reset halo mass and redshift
  */
-void HALO::reset(double mr,double zr){
+void HALOCalculator::reset(double mr,double zr){
 	m = mr;
 	z = zr;
 	Set_Parameters();
@@ -42,7 +42,7 @@ void HALO::reset(double mr,double zr){
 /** \ingroup cosmolib
  * \brief Virial radius of the halo in Mpc
  */
-double HALO:: getRvir(
+double HALOCalculator:: getRvir(
 		      int caseunit    /// by default uses the Brayan and Norman fit, if equal to 1 uses the fit by Felix and Stoer
 		      ){
   double d=co->DeltaVir(z,caseunit)*co->rho_crit(z);
@@ -52,7 +52,7 @@ double HALO:: getRvir(
 /** \ingroup cosmolib
  * \brief Radius in Mpc at which the enclosed density reach 200 times the critical value
  */
-double HALO:: getR200(){
+double HALOCalculator:: getR200(){
   double d=200.0*co->rho_crit(z);
   return pow( 3*m/(4*M_PI*d), 0.3333 )/(1+z);
 }
@@ -62,7 +62,7 @@ double HALO:: getR200(){
  * 50% of the halo mass, if 0<f<1 is given, is returned the redshift at which
  * this fraction is assembled
  */
-double HALO:: getFormationRedshift(double f){
+double HALOCalculator:: getFormationRedshift(double f){
 	double sigma2fM=co->TopHatVariance(f*m);
 	double alphaf = 0.815*exp(-2*f*f*f)/pow(f,0.707);
 	double wmed = sqrt(2*log(alphaf+1));
@@ -75,7 +75,7 @@ double HALO:: getFormationRedshift(double f){
  * 50% of the halo mass, if 0<f<1 is given, is returned the redshift at which
  * this fraction is assembled
  */
-double HALO:: getFormationTime(double f){
+double HALOCalculator:: getFormationTime(double f){
 	double sigma2fM=co->TopHatVariance(f*m);
 	double alphaf = 0.815*exp(-2*f*f*f)/pow(f,0.707);
 	double wmed = sqrt(2*log(alphaf+1));
@@ -89,7 +89,7 @@ double HALO:: getFormationTime(double f){
  * if 2 the concentration according to Giocoli et al. 2012 is returned
  * is returned
  */
-double HALO:: getConcentration(
+double HALOCalculator:: getConcentration(
 		int caseunit     /// set relation used - (0) Zhao et al. 2009, (1) Munoz-Cuartas et al. 2011 (2) Giocoli et al. 2012 (3) power-law c-m relation
 		,double alpha0   /// power-law slope if caseunit == 3
 		){

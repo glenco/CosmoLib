@@ -24,6 +24,7 @@
   #include <gsl/gsl_rng.h>
 #endif
 
+#include "utilities.h"
 
 #define JMAX 34
 #define JMAXP (JMAX+1)

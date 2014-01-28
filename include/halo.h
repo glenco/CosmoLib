@@ -13,12 +13,13 @@
 #include <cosmo.h>
 #include <utilities.h>
 /** \ingroup cosmolib
- * \brief Class for calculating the properties of dark matter halos.
+ * \brief Class for calculating the properties of NFW dark matter halos 
+ *        at a specified redshift and mass.
  */
 //TODO: Change to physical length units !!!!
-class HALO{
+class HALOCalculator{
 public:
-    HALO (COSMOLOGY *co, double mass, double redshift);
+    HALOCalculator (COSMOLOGY *co, double mass, double redshift);
     double getRvir(int caseunit=0);
     double getR200();
     double getConcentration(int caseunit=0,double alpha0=-0.1);
@@ -26,7 +27,7 @@ public:
     double getFormationRedshift(double f=0.5);
 
     void reset(double,double);
-    virtual ~HALO ();
+    virtual ~HALOCalculator ();
 protected:
     COSMOLOGY *co;   // cosmological model
     double m;        // halo mass
@@ -39,6 +40,6 @@ protected:
 private:
     void Set_Parameters();
 };
-typedef HALO *inCosmoHaloHndl;
+typedef HALOCalculator *inCosmoHaloHndl;
 
 #endif /* HALO_H_ */

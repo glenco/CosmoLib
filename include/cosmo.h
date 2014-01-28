@@ -273,8 +273,8 @@ protected:
   double z_equality;	 // Redshift of matter-radiation equality
     
     // in powerEHv2.c
-    void TFset_parameters(double omega0hh, double f_baryon, double Tcmb);
-    double TFfit_onek(double k, double *tf_baryon, double *tf_cdm);
+  void TFset_parameters(double omega0hh, double f_baryon, double Tcmb);
+  double TFfit_onek(double k, double *tf_baryon, double *tf_cdm);
 
 	double R_drag;		// Photon-baryon ratio at drag epoch
 	double R_equality;	// Photon-baryon ratio at equality epoch
@@ -307,8 +307,8 @@ typedef COSMOLOGY *CosmoHndl;
 /**
  *  \brief Class for calculating properties of NFW halo profile.
  *   
- *   This class does not take into affect the cosmological corrilations between concentration and mass.  
- *   For this see the HALO class.
+ *   This class does not take into affect the cosmological correlation between concentration and mass.
+ *   For this see the HALOCalculator class.
  */
 class NFW_Utility {
 public:
