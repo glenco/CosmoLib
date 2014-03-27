@@ -14,7 +14,7 @@
 #include <halo.h>
 #include <utilities.h>
 
-#if GSL
+#ifdef ENABLE_GSL
 
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_integration.h>

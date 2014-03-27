@@ -9,7 +9,7 @@
   the c-m relation. 
 */
 
-#if GSL
+#ifdef ENABLE_GSL
 
 const double tiny = 1.e-4;
 const double CRITDD = 2.7752543e+11;

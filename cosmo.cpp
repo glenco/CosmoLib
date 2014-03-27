@@ -15,7 +15,7 @@
 #include <stdexcept>
 //#include <gsl/gsl_integration_glfixed_table_alloc.h>
 
-#if GSL
+#ifdef ENABLE_GSL
   #include <gsl/gsl_errno.h>
   #include <gsl/gsl_integration.h>
   #include <gsl/gsl_sf.h>
@@ -68,7 +68,7 @@ COSMOLOGY::COSMOLOGY(double omegam,double omegal,double hubble, double ww) :
 	ni = 64;
 	xf.resize(ni);
 	wf.resize(ni);
-/*#if GSL
+/*#ifdef ENABLE_GSL
 	double xi, wi;
 	gsl_integration_glfixed_table *t=gsl_integration_glfixed_table_alloc(ni);
 	for(int i=0; i<ni; i++){
@@ -103,7 +103,7 @@ COSMOLOGY::COSMOLOGY(CosmoParamSet cosmo_p){
 	ni = 64;
 	xf.resize(ni);
 	wf.resize(ni);
-/*#if GSL
+/*#ifdef ENABLE_GSL
 	double xi, wi;
 	gsl_integration_glfixed_table *t=gsl_integration_glfixed_table_alloc(ni);
 	for(int i=0; i<ni; i++){
@@ -482,7 +482,7 @@ double COSMOLOGY::coorDist(double zo,double z) const{
 	if(zo < z_interp && z < z_interp)
 		return interp(coorDist_interp, z) - interp(coorDist_interp, zo);
 	
-/*#if GSL
+/*#ifdef ENABLE_GSL
   double result, error;
   size_t neval;
   gsl_function F;
@@ -858,7 +858,7 @@ double COSMOLOGY::TopHatVariance(double m) const{
  * \brief Derivative of \f$ \sigma(m) \f$ in CDM model
  */
 double COSMOLOGY::dsigdM(double m){
-#if GSL
+#ifdef ENABLE_GSL
   double result, error;
   gsl_function F;
   F.function = &Deltao_wrapper;
