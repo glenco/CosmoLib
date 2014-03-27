@@ -28,6 +28,7 @@ public:
 
     void reset(double,double);
     virtual ~HALOCalculator ();
+
 protected:
     COSMOLOGY *co;   // cosmological model
     double m;        // halo mass
