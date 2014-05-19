@@ -17,7 +17,7 @@
 typedef double PosType;
 #endif
 
-
+namespace Utilities{
 const double nXbin=64.;
 
 /** \ingroup Utill
@@ -121,4 +121,5 @@ PosType fmaxi(PosType a,PosType b);
 
 PosType median(std:: vector<PosType> vec); 
 
+}
 #endif /* UTILITIES_H_ */

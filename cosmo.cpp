@@ -81,7 +81,7 @@ COSMOLOGY::COSMOLOGY(double omegam,double omegal,double hubble, double ww) :
 	gauleg(0.,1.,&xf[0]-1,&wf[0]-1,ni);
 //#endif
 	// construct table of log(1+z), time, and \delta_c for interpolation
-	fill_linear(vlz,ni,0.,1.7);
+	Utilities::fill_linear(vlz,ni,0.,1.7);
 	double dc;
 	for(int i=0;i<ni;i++){
 	  double z = -1. + pow(10.,vlz[i]);
@@ -116,7 +116,7 @@ COSMOLOGY::COSMOLOGY(CosmoParamSet cosmo_p){
 	gauleg(0.,1.,&xf[0]-1,&wf[0]-1,ni);
 //#endif
 	// construct table of log(1+z), time, and \delta_c for interpolation
-	fill_linear(vlz,ni,0.,1.7);
+	Utilities::fill_linear(vlz,ni,0.,1.7);
 	double dc;
 	for(int i=0;i<ni;i++){
 	  double z = -1. + pow(10.,vlz[i]);
@@ -911,7 +911,7 @@ double COSMOLOGY:: DeltaVir(
 double COSMOLOGY::getZfromDeltaC(double dc){
 	  if(dc>vDeltaCz[ni-1]) return -1+pow(10.,vlz[ni-1]);
 	  if(dc<vDeltaCz[0]) return -1+pow(10.,vlz[0]);
-	  int i = locate (vDeltaCz,dc);
+    int i = Utilities::locate (vDeltaCz,dc);
 	  i = min (max (i,0), int (ni)-2);
 	  double f=(dc-vDeltaCz[i])/(vDeltaCz[i+1]-vDeltaCz[i]);
 	  if(i>1 && i<n-2){
@@ -936,7 +936,7 @@ double COSMOLOGY::getZfromDeltaC(double dc){
 double COSMOLOGY::getTimefromDeltaC(double dc){
 	  if(dc>vDeltaCz[ni-1]) return vt[ni-1];
 	  if(dc<vDeltaCz[0]) return vt[0];
-	  int i = locate (vDeltaCz,dc);
+    int i = Utilities::locate (vDeltaCz,dc);
 	  i = min (max (i,0), int (ni)-2);
 	  double f=(dc-vDeltaCz[i])/(vDeltaCz[i+1]-vDeltaCz[i]);
 	  if(i>1 && i<n-2){
