@@ -2,6 +2,7 @@
 #include <nrD.h>
 #include <nr.h>
 #include <nrutil.h>
+#include "utilities.h"
 
 /**
   This  code reconstructs  the  non-linear dark  matter power  spectrum
@@ -163,7 +164,8 @@ double POWERCDMHM::weight (double z1, double z2){
 
 double POWERCDMHM::weight (double z0){
   double a0=1.0/(1.0+z0);
-  int i=locate (wgf.ai, a0);
+  //int i=locate (wgf.ai, a0);
+  int i=locate<float>(wgf.ai, a0);
   i=std::min(std::max(i,0),nn-2);
   return (wgf.wi[i+1]-wgf.wi[i])/(wgf.ai[i+1]-wgf.ai[i])*
       (a0-wgf.ai[i])+wgf.wi[i];
