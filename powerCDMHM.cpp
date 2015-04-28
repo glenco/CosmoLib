@@ -2,6 +2,7 @@
 #include <nrD.h>
 #include <nr.h>
 #include <nrutil.h>
+#include "utilities.h"
 
 /**
   This  code reconstructs  the  non-linear dark  matter power  spectrum
