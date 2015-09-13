@@ -164,8 +164,7 @@ double POWERCDMHM::weight (double z1, double z2){
 
 double POWERCDMHM::weight (double z0){
   double a0=1.0/(1.0+z0);
-  //int i=locate (wgf.ai, a0);
-  int i=locate<float>(wgf.ai, a0);
+  int i=Utillites::locate<double> (wgf.ai, a0);
   i=std::min(std::max(i,0),nn-2);
   return (wgf.wi[i+1]-wgf.wi[i])/(wgf.ai[i+1]-wgf.ai[i])*
       (a0-wgf.ai[i])+wgf.wi[i];
@@ -237,7 +236,7 @@ double POWERCDMHM::nonlinpowerCDMHM2Halo(double _k){
 }
 
 void POWERCDMHM:: Initweight(double zs){
-  fill_linear (wgf.ai,nn, 0.1, 1.0-0.01);
+  Utilities::fill_linear (wgf.ai,nn, 0.1, 1.0-0.01);
   wgf.wi.resize (nn);
   for (int i=0;i<nn;i++){
     double zd=1.0/wgf.ai[i]-1.0;
