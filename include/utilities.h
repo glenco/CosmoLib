@@ -15,6 +15,7 @@
 #ifndef PosType_declare
 #define PosType_declare
 typedef double PosType;
+typedef unsigned long ULONG;
 #endif
 
 namespace Utilities{

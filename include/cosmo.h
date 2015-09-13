@@ -111,7 +111,9 @@ public:
     /// Hubble paremters in units of 100 km/s/Mpc, renormalizes P(k) to keep sig8 fixed
     void sethubble(double ht){ h = ht; TFmdm_set_cosm(); power_normalize(sig8);}
     double gethubble() const {return h;}
-    
+    /// Hubble parameter in 1/Mpc units
+    double getHubble() const {return 100*h/lightspeed;}
+  
     /// Primordial spectral index, renormalizes P(k) to keep sig8 fixed
     void setindex(double nn){ n = nn;  power_normalize(sig8);}
     double getindex() const { return n;}
