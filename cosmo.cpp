@@ -1097,7 +1097,7 @@ double COSMOLOGY::nintegrateDcos(pt2MemFunc func, double a,double b,double tols)
    cout << "s2= "; for(j=1;j<=JMAX;j++) cout << s2[j] << " ";
    cout << "\n";
    cout << "Too many steps in routine nintegrateDcos\n";
-   throw std::runtime_error("COSMOLOGY::nintegrateDcos failer");
+   throw std::runtime_error("COSMOLOGY::nintegrateDcos failure");
    return 0.0;
 }
 
