@@ -11,6 +11,7 @@
 #include <vector>
 #include <math.h>
 #include <algorithm>
+#include <functional>
 
 #ifndef PosType_declare
 #define PosType_declare
@@ -46,30 +47,60 @@ void fill_logarithmic ( std::vector<T> &v, size_t n, T min, T max ){
  * element, brackets the given number. If x is smaller than the smallest entry or
  * larger than the largest, the result is either -1 or n-1.
  */
-template <class T>
-int locate (const std::vector<T> &v, const T x)
-{
-  size_t n = v.size ();
-
-  if (x == v[0])
-    return 0;
-  if (x == v[n-1])
-    return n-1;
-
-  int jl = -1;
-  int ju = n;
-  bool as = (v[n-1] >= v[0]);
-  while (ju-jl > 1)
+  template <class T>
+  int locate (const std::vector<T> &v, const T x)
   {
-    int jm = (ju+jl)/2;
-    if ((x >= v[jm]) == as)
-      jl=jm;
-    else
-      ju=jm;
+    size_t n = v.size ();
+    
+    if (x == v[0])
+      return 0;
+    if (x == v[n-1])
+      return n-1;
+    
+    int jl = -1;
+    int ju = n;
+    bool as = (v[n-1] >= v[0]);
+    while (ju-jl > 1)
+    {
+      int jm = (ju+jl)/2;
+      if ((x >= v[jm]) == as)
+        jl=jm;
+      else
+        ju=jm;
+    }
+    
+    return jl;
   }
-
-  return jl;
-}
+  /** \ingroup Utill
+   * Locates the element of the given vector which, together with the following
+   * element, brackets the given number. If x is smaller than the smallest entry or
+   * larger than the largest, the result is either -1 or n-1.
+   */
+  template <class T,class F>
+  int locate (const std::vector<T> &v,F x,std::function<bool (F ,const T &)> less_than)
+  {
+    size_t n = v.size ();
+    
+    if (less_than(x,v[0]))
+      return -1;
+    if (!less_than(x,v[n-1]))
+      return n-1;
+    
+    int jl = -1;
+    int ju = n;
+    
+    
+    while (ju-jl > 1)
+    {
+      int jm = (ju+jl)/2;
+      if ( less_than(x,v[jm]) )
+        ju=jm;
+      else
+        jl=jm;
+    }
+    
+    return jl;
+  }
 
 template <class T>
 void locate (T *v, unsigned long n, T x, unsigned long *index)
