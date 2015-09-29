@@ -27,7 +27,7 @@ PosType fmaxi(PosType a,PosType b){
  * Interpolate (cubic interpolation) the value of a function
  * \f$ y=y(x) \f$ given xi
  */
-PosType InterpolateYvec(std:: vector<PosType> x, std:: vector<PosType> y,PosType xi){
+PosType InterpolateYvec(std:: vector<PosType> &x, std:: vector<PosType> &y,PosType xi){
 	int n=x.size();
 	if(x[n-1]>x[0]){
 		if(xi>x[n-1]) return y[n-1];
