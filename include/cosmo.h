@@ -325,8 +325,8 @@ public:
 	double NFW_Concentration(double Vmax,double M200,double R200);
 	double NFW_rho(double cons,double x);
 
-	void match_nfw(float Vmax,float R_half,float mass,float *cons,float *Rmax);
-	float Rmax(float cons,float Vmax,float mass);
+	void match_nfw(float Vmax,float R_half,float mass,float *cons,float *Rsize);
+	float Rsize(float cons,float Vmax,float mass);
 	float g_func(float x);
 
 private:

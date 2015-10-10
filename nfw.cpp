@@ -102,13 +102,13 @@ void NFW_Utility::match_nfw(
 		,float my_R_half     /// Half mass radius (Mpc)
 		,float my_mass       /// Mass (solar masses)
 		,float *my_cons      /// output concentration
-		,float *my_Rmax      /// Radius of halo,  Not necessarily R200 or Rvir.
+		,float *my_Rsize      /// Radius of halo,  Not necessarily R200 or Rvir.
 		){
 
 	//std::cout << "NFW_Utility Test: " << " mass: " << my_mass << " R_half: " << my_R_half << " Vmax: " << my_Vmax << std::endl;
 	if(my_mass <= 0.0){
 		*my_cons = 0;
-		*my_Rmax = 0;
+		*my_Rsize = 0;
 		return;
 	}
 	assert(my_Vmax > 0.0);
@@ -124,21 +124,21 @@ void NFW_Utility::match_nfw(
 		//throw std::runtime_error("ERROR: Vmax, R_half & mass are inconsistent!");
     mass = R_half = Vmax = 0.0;
     *my_cons = 1.1;
-    *my_Rmax = 1.0e-30;
+    *my_Rsize = 1.0e-30;
 	}else{
 
     *my_cons = zbrentD(&NFW_Utility::nfwfunc,1.0e-5,1.0e4,1.0e-8);
     //std::cout << "NFW_Utility Test: " << nfwfunc(1.0e-4)<< nfwfunc(*my_cons)<< nfwfunc(1.0e4) << " mass: " << mass << " R_half: " << R_half << " Vmax: " << Vmax << std::endl;
-    *my_Rmax = Rmax(*my_cons,Vmax,mass);
+    *my_Rsize = Rsize(*my_cons,Vmax,mass);
   }
-	assert(*my_Rmax > my_R_half);
+	assert(*my_Rsize > my_R_half);
 }
 
 float NFW_Utility::nfwfunc(float cons){
-	return 2*g_func(R_half*cons/Rmax(cons,Vmax,mass) ) - g_func(cons);
+	return 2*g_func(R_half*cons/Rsize(cons,Vmax,mass) ) - g_func(cons);
 }
 
-float NFW_Utility::Rmax(float cons,float Vmax,float mass){
+float NFW_Utility::Rsize(float cons,float Vmax,float mass){
 	return Grav*mass*pow(0.216*lightspeed*cons/Vmax,2);
 }
 float NFW_Utility::g_func(float x){
