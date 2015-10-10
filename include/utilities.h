@@ -143,7 +143,7 @@ size_t closest (const std::vector<T> &v, const T x)
 }
 
 
-PosType InterpolateYvec(std:: vector<PosType> x, std:: vector<PosType> y,PosType xi);
+PosType InterpolateYvec(std:: vector<PosType> &x, std:: vector<PosType> &y,PosType xi);
 
 PosType arctanh(PosType x);
 
