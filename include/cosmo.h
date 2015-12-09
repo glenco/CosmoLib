@@ -109,7 +109,8 @@ public:
     /// accesser functions:
 
     /// Hubble paremters in units of 100 km/s/Mpc, renormalizes P(k) to keep sig8 fixed
-    void sethubble(double ht){ h = ht; TFmdm_set_cosm(); power_normalize(sig8);}
+  void sethubble(double ht){ h = ht; TFmdm_set_cosm();
+    power_normalize(sig8); 	calc_interp_dist();}
     double gethubble() const {return h;}
     /// Hubble parameter in 1/Mpc units
     double getHubble() const {return 100*h/lightspeed;}
@@ -119,19 +120,21 @@ public:
     double getindex() const { return n;}
     
     /// Omega matter, renormalizes P(k) to keep sig8 fixed
-    void setOmega_matter(double Omega_matter,bool FLAT = false){Omo = Omega_matter; if(FLAT) Oml = 1-Omo ; TFmdm_set_cosm(); power_normalize(sig8);}
+  void setOmega_matter(double Omega_matter,bool FLAT = false){Omo = Omega_matter; if(FLAT) Oml = 1-Omo ; TFmdm_set_cosm(); power_normalize(sig8); calc_interp_dist();}
     double getOmega_matter() const {return Omo;}
     
     /// Omega lambda, renormalizes P(k) to keep sig8 fixed
-    void setOmega_lambda(double Omega_lambda,bool FLAT = false){Oml = Omega_lambda;  if(FLAT) Oml = 1-Omo ; TFmdm_set_cosm(); power_normalize(sig8);}
+  void setOmega_lambda(double Omega_lambda,bool FLAT = false){Oml = Omega_lambda;  if(FLAT) Oml = 1-Omo ; TFmdm_set_cosm(); power_normalize(sig8); calc_interp_dist();}
     double getOmega_lambda() const {return Oml;}
 
     /// Omega baryon, renormalizes P(k) to keep sig8 fixed
-    void setOmega_baryon(double Omega_baryon){Omb = Omega_baryon; TFmdm_set_cosm(); power_normalize(sig8);}
+  void setOmega_baryon(double Omega_baryon){Omb = Omega_baryon; TFmdm_set_cosm(); power_normalize(sig8); calc_interp_dist();
+}
     double getOmega_baryon() const {return Omb;}
     
     /// Omega neutrino, renormalizes P(k) to keep sig8 fixed
-    void setOmega_neutrino(double Omega_neutrino){Omnu = Omega_neutrino; TFmdm_set_cosm(); power_normalize(sig8);}
+  void setOmega_neutrino(double Omega_neutrino){Omnu = Omega_neutrino; TFmdm_set_cosm(); power_normalize(sig8); 	calc_interp_dist();
+}
     double getOmega_neutrino() const {return Omnu;}
 
     /// Number of neutrino species, renormalizes P(k) to keep sig8 fixed
@@ -139,9 +142,9 @@ public:
     double getNneutrino() const {return Nnu;}
 	
    /// Dark energy equation of state parameter p/rho = w + w_1 (1+z)
-    void setW(double ww){w = ww;}
+  void setW(double ww){w = ww; 	calc_interp_dist();}
     double getW() const {return w;}
-    void setW1(double ww){w1 = ww;}
+  void setW1(double ww){w1 = ww; 	calc_interp_dist();}
     double getW1() const {return w1;}
     
     /// Running of primordial spectral index, P(k)_primordial \propto pow(k/h,n+dndlnk*log(k)), renormalizes P(k) to keep sig8 fixed
@@ -164,8 +167,6 @@ public:
 
     double totalMassDensityinHalos(int t,double alpha,double m_min,double z,double z1,double z2);
 
-    /// set interpolation range
-    void setInterpolation(double z_interp);
     /// set interpolation range and number of points
     void setInterpolation(double z_interp, std::size_t n_interp);
 
@@ -297,7 +298,7 @@ protected:
   // interpolation of functions
   double z_interp;
   std::size_t n_interp;
-  void calc_interp(double z_interp, std::size_t n_interp);
+  void calc_interp_dist();
   double interp(const std::vector<double>& table, double z) const;
   double invert(const std::vector<double>& table, double f_z) const;
   std::vector<double> redshift_interp;

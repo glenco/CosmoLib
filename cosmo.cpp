@@ -37,14 +37,6 @@ double *xp,**yp,dxsav;
 static double alph_static;  /* DR-distance parameter */
 static double Omo_static, Oml_static;
 
-#ifndef Z_INTERP
-#define Z_INTERP 10.0
-#endif
-
-#ifndef N_INTERP
-#define N_INTERP 1024
-#endif
-
 using namespace std;
 
 COSMOLOGY::COSMOLOGY(double omegam,double omegal,double hubble, double ww) :
@@ -93,10 +85,16 @@ COSMOLOGY::COSMOLOGY(double omegam,double omegal,double hubble, double ww) :
 	}
 
 	// interpolate functions
-	calc_interp(Z_INTERP, N_INTERP);
+      z_interp = 10.0;
+      n_interp = 1024;
+      calc_interp_dist();
 }
 
 COSMOLOGY::COSMOLOGY(CosmoParamSet cosmo_p){
+  // interpolate functions
+  z_interp = 10.0;
+  n_interp = 1024;
+  
 	SetConcordenceCosmology(cosmo_p);
 
 	// allocate step and weight for gauleg integration
@@ -127,8 +125,6 @@ COSMOLOGY::COSMOLOGY(CosmoParamSet cosmo_p){
 	  vt.push_back(time(z));
 	}
 
-	// interpolate functions
-	calc_interp(Z_INTERP, N_INTERP);
 }
 
 COSMOLOGY::~COSMOLOGY(){
@@ -219,6 +215,8 @@ void COSMOLOGY::SetConcordenceCosmology(CosmoParamSet cosmo_p){
 		power_normalize(0.9);
 	}
 	// set parameters for Eisenstein & Hu power spectrum
+
+  calc_interp_dist();
 
 }
 
@@ -1197,43 +1195,40 @@ double COSMOLOGY::dfridrDcos(pt2MemFunc func, double x, double b, double *err)
 	return ans;
 }
 
-void COSMOLOGY::setInterpolation(double z_interp)
+
+void COSMOLOGY::setInterpolation(double my_z_interp, std::size_t my_n_interp)
 {
-	calc_interp(z_interp, N_INTERP);
+  z_interp = my_z_interp;
+  n_interp = my_n_interp;
+  calc_interp_dist();
 }
 
-void COSMOLOGY::setInterpolation(double z_interp, std::size_t n_interp)
+void COSMOLOGY::calc_interp_dist()
 {
-	calc_interp(z_interp, n_interp);
-}
 
-void COSMOLOGY::calc_interp(double z_max, std::size_t n)
-{
-	// unset values
-	z_interp = 0;
-	n_interp = 0;
-	
 	// prepare vectors
-	redshift_interp.resize(n+1);
-	coorDist_interp.resize(n+1);
-	radDist_interp.resize(n+1);
+	redshift_interp.resize(n_interp+1);
+	coorDist_interp.resize(n_interp+1);
+	radDist_interp.resize(n_interp+1);
 	
 	// step size going like square root
-	double dz = z_max/(n*n);
-	
+	double dz = z_interp/(n_interp*n_interp);
+
+  size_t n = n_interp;
+  double ztmp = z_interp;
+  n_interp = 0;
+  z_interp = 0;
 	for(std::size_t i = 0; i <= n; ++i)
 	{
 		// make sure last value is exactly z_max
-		double z = (i < n) ? (i*i*dz) : z_max;
+		double z = (i < n) ? (i*i*dz) : ztmp;
 		
 		redshift_interp[i] = z;
 		coorDist_interp[i] = coorDist(0, z);
 		radDist_interp[i] = radDist(0, z);
 	}
-	
-	// set values
-	z_interp = z_max;
-	n_interp = n;
+  n_interp = n;
+  z_interp = ztmp;
 }
 
 double COSMOLOGY::interp(const std::vector<double> & table, double z) const
