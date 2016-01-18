@@ -170,30 +170,56 @@ void COSMOLOGY::SetConcordenceCosmology(CosmoParamSet cosmo_p){
 		TFmdm_set_cosm();
 		power_normalize(0.812);
 
-	}else if(cosmo_p == Planck1yr){
+  }else if(cosmo_p == Planck1yr){
     
     Oml = 0.6817;
     Omo = 1-Oml;
     h = 0.6704;
     
     Omb = 0.022032/h/h;
-
+    
     w=-1.0;
-		w1=0.0;
-		n=1.0;
-		Omnu=0;
-		Nnu=3.0;
-		dndlnk=0.0;
-		gamma=0.55;
+    w1=0.0;
+    n=1.0;
+    Omnu=0;
+    Nnu=3.0;
+    dndlnk=0.0;
+    gamma=0.55;
     
-		darkenergy=1;
+    darkenergy=1;
     
-		/* if 2 gamma parameterization is used for dark energy */
-		/* if 1 w,w_1 parameterization is used for dark energy */
+    /* if 2 gamma parameterization is used for dark energy */
+    /* if 1 w,w_1 parameterization is used for dark energy */
     
-		TFmdm_set_cosm();
-		power_normalize(0.8347);
-
+    TFmdm_set_cosm();
+    power_normalize(0.8347);
+    
+  }else if(cosmo_p == Planck){
+    
+    // Final Planck cosmology Ade et al. 2015
+    
+    Omo = 0.308;
+    Oml = 1-Omo;
+    h = 0.678;
+    
+    Omb = 0.02225/h/h;
+    
+    w=-1.0;
+    w1=0.0;
+    n=0.968;
+    Omnu=0;
+    Nnu=3.0;
+    dndlnk=0.0;
+    gamma=0.55;
+    
+    darkenergy=1;
+    
+    /* if 2 gamma parameterization is used for dark energy */
+    /* if 1 w,w_1 parameterization is used for dark energy */
+    
+    TFmdm_set_cosm();
+    power_normalize(0.8347);
+    
 	}else if(cosmo_p == Millennium){
 
 		// The cosmology used in the Millennium simulations

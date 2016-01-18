@@ -30,7 +30,7 @@
 
 #ifndef cosmo_declare
 
-enum CosmoParamSet {WMAP5yr,Millennium,Planck1yr};
+enum CosmoParamSet {WMAP5yr,Millennium,Planck1yr,Planck};
 
 /** \ingroup cosmolib
  *
