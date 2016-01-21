@@ -39,14 +39,17 @@ static double Omo_static, Oml_static;
 
 using namespace std;
 
-COSMOLOGY::COSMOLOGY(double omegam,double omegal,double hubble, double ww) :
-		h(hubble), Omo(omegam), Oml(omegal), w(ww){
+COSMOLOGY::COSMOLOGY(double omegam,double omegal,double hubble, double w) :
+		h(hubble), Omo(omegam), Oml(omegal), ww(w){
 	n=1.0;
 	Omnu=0;
 	Nnu=3.0;
 	dndlnk=0.0;
 	gamma=0.55;
+  ww1 = 0.0;
 
+  Omb = 0.02225/h/h;
+      
 	darkenergy=1;
 
 	/* if 2 gamma parameterization is used for dark energy */
@@ -150,8 +153,8 @@ void COSMOLOGY::SetConcordenceCosmology(CosmoParamSet cosmo_p){
 		Omb/=h*h;
 		Oml=1.0-Omo;
 
-		w=-1.0;
-		w1=0.0;
+		ww=-1.0;
+		ww1=0.0;
 		n=1.0;
 		Omnu=0;
 		Nnu=3.0;
@@ -174,8 +177,8 @@ void COSMOLOGY::SetConcordenceCosmology(CosmoParamSet cosmo_p){
     
     Omb = 0.022032/h/h;
     
-    w=-1.0;
-    w1=0.0;
+    ww=-1.0;
+    ww1=0.0;
     n=1.0;
     Omnu=0;
     Nnu=3.0;
@@ -188,7 +191,7 @@ void COSMOLOGY::SetConcordenceCosmology(CosmoParamSet cosmo_p){
     /* if 1 w,w_1 parameterization is used for dark energy */
     
     TFmdm_set_cosm();
-    power_normalize(0.8347);
+    power_normalize(0.829);
     
   }else if(cosmo_p == Planck){
     
@@ -200,8 +203,8 @@ void COSMOLOGY::SetConcordenceCosmology(CosmoParamSet cosmo_p){
     
     Omb = 0.02225/h/h;
     
-    w=-1.0;
-    w1=0.0;
+    ww=-1.0;
+    ww1=0.0;
     n=0.968;
     Omnu=0;
     Nnu=3.0;
@@ -227,8 +230,8 @@ void COSMOLOGY::SetConcordenceCosmology(CosmoParamSet cosmo_p){
 		Omb/=h*h;
 		Oml=1.0-Omo;
 
-		w=-1.0;
-		w1=0.0;
+		ww=-1.0;
+		ww1=0.0;
 		n=1.0;
 		Omnu=0.0;
 		Nnu=3.0;
@@ -273,7 +276,7 @@ void COSMOLOGY::PrintCosmology(short physical) const {
 		cout << "Nnu: " << Nnu << "\n";
   }
   if(darkenergy==2) cout << "darkenery=" << darkenergy << " gamma=" << gamma << "\n";
-  else cout << "darkenery: "<< darkenergy << " w: " << w << " w1: " << w1 << "\n";
+  else cout << "darkenery: "<< darkenergy << " w: " << ww << " w1: " << ww1 << "\n";
 }
 
 /** \ingroup cosmolib
@@ -484,14 +487,14 @@ double COSMOLOGY::adrdz(double x) const{
 }
 
 /** \ingroup cosmolib
- * \brief Same as drdz, but incorporates dark energy through w and w1.
+ * \brief Same as drdz, but incorporates dark energy through ww and ww1.
  */
 
 double drdz_dark_wrapper(double x, void *params){
   return static_cast<CosmoHndl>(params)->COSMOLOGY::drdz_dark(x);
 }
 double COSMOLOGY::drdz_dark(double x) const{
-	return 1.0 / sqrt(Omo*x*x*x+Oml*pow(x,3*(1+w+w1))*exp(-3*w1*(x-1)/x)-(Omo+Oml-1)*x*x);
+	return 1.0 / sqrt(Omo*x*x*x+Oml*pow(x,3*(1+ww+ww1))*exp(-3*ww1*(x-1)/x)-(Omo+Oml-1)*x*x);
 }
 double COSMOLOGY::adrdz_dark(double x) const{
   return drdz_dark(x)/x;
@@ -510,8 +513,8 @@ double COSMOLOGY::coorDist(double zo,double z) const{
   double result, error;
   size_t neval;
   gsl_function F;
-  if( (w ==-1.0) && (w1 == 0.0) )
-    F.function = &drdz_wrapper;
+  if( (ww ==-1.0) && (ww1 == 0.0) )
+    F.function = &drdz_wwrapper;
   else
     F.function = &drdz_dark_wrapper;
   F.params = this;
@@ -520,7 +523,7 @@ double COSMOLOGY::coorDist(double zo,double z) const{
 
   return result*Hubble_length/h;
 #else*/
-	if( (w ==-1.0) && (w1 == 0.0) ) return nintegrateDcos(&COSMOLOGY::drdz,1+zo,1+z,1.0e-9)*Hubble_length/h;
+	if( (ww ==-1.0) && (ww1 == 0.0) ) return nintegrateDcos(&COSMOLOGY::drdz,1+zo,1+z,1.0e-9)*Hubble_length/h;
 	return nintegrateDcos(&COSMOLOGY::drdz_dark,1+zo,1+z,1.0e-9)*Hubble_length/h;
 //#endif
 }
@@ -532,7 +535,7 @@ double COSMOLOGY::radDist(double zo,double z) const {
 	if(zo < z_interp && z < z_interp)
 		return interp(radDist_interp, z) - interp(radDist_interp, zo);
 	
-	if( (w ==-1.0) && (w1 == 0.0) ) return nintegrateDcos(&COSMOLOGY::adrdz,1+zo,1+z,1.0e-9)*Hubble_length/h;
+	if( (ww ==-1.0) && (ww1 == 0.0) ) return nintegrateDcos(&COSMOLOGY::adrdz,1+zo,1+z,1.0e-9)*Hubble_length/h;
 	return nintegrateDcos(&COSMOLOGY::adrdz_dark,1+zo,1+z,1.0e-9)*Hubble_length/h;
 }
 
