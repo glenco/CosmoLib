@@ -142,10 +142,10 @@ public:
     double getNneutrino() const {return Nnu;}
 	
    /// Dark energy equation of state parameter p/rho = w + w_1 (1+z)
-  void setW(double ww){w = ww; 	calc_interp_dist();}
-    double getW() const {return w;}
-  void setW1(double ww){w1 = ww; 	calc_interp_dist();}
-    double getW1() const {return w1;}
+  void setW(double w){ww = w; 	calc_interp_dist();}
+    double getW() const {return ww;}
+  void setW1(double w){ww1 = w; 	calc_interp_dist();}
+    double getW1() const {return ww1;}
     
     /// Running of primordial spectral index, P(k)_primordial \propto pow(k/h,n+dndlnk*log(k)), renormalizes P(k) to keep sig8 fixed
     void setdndlnk(double w){dndlnk = w; power_normalize(sig8);}
@@ -189,10 +189,10 @@ protected:
   double Omnu;
    /// Number of neutrino species
   double Nnu;
-   /// Dark energy equation of state parameter p/rho = w + w_1 (1+z)
-  double w;
-  /// Dark energy equation of state parameter p/rho = w + w_1 (1+z)
-  double w1;
+   /// Dark energy equation of state parameter p/rho = ww + ww_1 (1+z)
+  double ww;
+  /// Dark energy equation of state parameter p/rho = ww + ww_1 (1+z)
+  double ww1;
    /// Running of primordial spectral index, P(k)_primordial \propto pow(k/h,n+dndlnk*log(k))
   double dndlnk;
 

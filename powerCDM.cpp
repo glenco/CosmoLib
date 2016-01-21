@@ -91,8 +91,8 @@ double COSMOLOGY::scalefactor(double rad) const{
   void dir(double,double [],double []);
   double omo,oml;
 
-  assert(w == -1);
-  assert(w1 == 0.0);
+  assert(ww == -1);
+  assert(ww1 == 0.0);
   omo=Omo;
   oml=Oml;
 
