@@ -47,7 +47,8 @@ COSMOLOGY::COSMOLOGY(double omegam,double omegal,double hubble, double w) :
 	dndlnk=0.0;
 	gamma=0.55;
   ww1 = 0.0;
-
+  sig8 = 0.812;
+      
   Omb = 0.02225/h/h;
       
 	darkenergy=1;
@@ -55,84 +56,92 @@ COSMOLOGY::COSMOLOGY(double omegam,double omegal,double hubble, double w) :
 	/* if 2 gamma parameterization is used for dark energy */
 	/* if 1 w,w_1 parameterization is used for dark energy */
 
-	// set parameters for Eisenstein&Hu power spectrum
+  setinternals();
+}
 
-	TFmdm_set_cosm();
-	power_normalize(0.812);
-	// allocate step and weight for gauleg integration
-	ni = 64;
-	xf.resize(ni);
-	wf.resize(ni);
-/*#ifdef ENABLE_GSL
-	double xi, wi;
-	gsl_integration_glfixed_table *t=gsl_integration_glfixed_table_alloc(ni);
-	for(int i=0; i<ni; i++){
-	  gsl_integration_glfixed_point(0.0,1.0,i,&xi,&wi,t);
-	  xf[i] = xi;
-	  wf[i] = wi;
-	}
-	gsl_integration_glfixed_table_free(t);
-#else */
-	gauleg(0.,1.,&xf[0]-1,&wf[0]-1,ni);
-//#endif
-	// construct table of log(1+z), time, and \delta_c for interpolation
-	Utilities::fill_linear(vlz,ni,0.,1.7);
-	double dc;
-	for(int i=0;i<ni;i++){
-	  double z = -1. + pow(10.,vlz[i]);
-	  double Omz=Omegam(z);
-	  if(Omo<1 && Oml==0) dc=1.68647*pow(Omz,0.0185);
-	  if(Omo+Oml==1) dc=1.68647*pow(Omz,0.0055);
-	  vDeltaCz.push_back(dc/Dgrowth(z));
-	  vt.push_back(time(z));
-	}
+COSMOLOGY::COSMOLOGY(const COSMOLOGY &cosmo){
+  
+  h = cosmo.h;
+  Omo = cosmo.Omo;
+  Oml = cosmo.Oml;
+  ww = cosmo.ww;
+  n = cosmo.n;
+  Omnu = cosmo.Omnu;
+  Nnu = cosmo.Nnu;
+  dndlnk = cosmo.dndlnk;
+  gamma = cosmo.gamma;
+  ww1 = cosmo.ww1;
+  sig8 = cosmo.sig8;
+  
+  Omb = 0.02225/h/h;
 
-	// interpolate functions
-      z_interp = 10.0;
-      n_interp = 1024;
-      calc_interp_dist();
+  darkenergy = cosmo.darkenergy;
+
+  setinternals();
 }
 
 COSMOLOGY::COSMOLOGY(CosmoParamSet cosmo_p){
-  // interpolate functions
-  z_interp = 10.0;
-  n_interp = 1024;
   
 	SetConcordenceCosmology(cosmo_p);
 
-	// allocate step and weight for gauleg integration
-	ni = 64;
-	xf.resize(ni);
-	wf.resize(ni);
-/*#ifdef ENABLE_GSL
-	double xi, wi;
-	gsl_integration_glfixed_table *t=gsl_integration_glfixed_table_alloc(ni);
-	for(int i=0; i<ni; i++){
-	  gsl_integration_glfixed_point(0.0,1.0,i,&xi,&wi,t);
-	  xf[i] = xi;
-	  wf[i] = wi;
-	}
-	gsl_integration_glfixed_table_free(t);
-#else */
-	gauleg(0.,1.,&xf[0]-1,&wf[0]-1,ni);
-//#endif
-	// construct table of log(1+z), time, and \delta_c for interpolation
-	Utilities::fill_linear(vlz,ni,0.,1.7);
-	double dc;
-	for(int i=0;i<ni;i++){
-	  double z = -1. + pow(10.,vlz[i]);
-	  double Omz=Omegam(z);
-	  if(Omo<1 && Oml==0) dc=1.68647*pow(Omz,0.0185);
-	  if(Omo+Oml==1) dc=1.68647*pow(Omz,0.0055);
-	  vDeltaCz.push_back(dc/Dgrowth(z));
-	  vt.push_back(time(z));
-	}
-
+  setinternals();
 }
 
 COSMOLOGY::~COSMOLOGY(){
 }
 
+COSMOLOGY& COSMOLOGY::operator=(const COSMOLOGY &cosmo){
+  
+  if(this == &cosmo) return *this;
+
+  h = cosmo.h;
+  Omo = cosmo.Omo;
+  Oml = cosmo.Oml;
+  ww = cosmo.ww;
+  n = cosmo.n;
+  Omnu = cosmo.Omnu;
+  Nnu = cosmo.Nnu;
+  dndlnk = cosmo.dndlnk;
+  gamma = cosmo.gamma;
+  ww1 = cosmo.ww1;
+  
+  Omb = 0.02225/h/h;
+  
+  sig8 = cosmo.sig8;
+  
+  darkenergy = cosmo.darkenergy;
+  
+  setinternals();
+  
+  return *this;
+}
+
+void COSMOLOGY::setinternals(){
+  
+  TFmdm_set_cosm();
+  power_normalize(sig8);
+  // allocate step and weight for gauleg integration
+  ni = 64;
+  xf.resize(ni);
+  wf.resize(ni);
+  gauleg(0.,1.,&xf[0]-1,&wf[0]-1,ni);
+  // construct table of log(1+z), time, and \delta_c for interpolation
+  Utilities::fill_linear(vlz,ni,0.,1.7);
+  double dc;
+  for(int i=0;i<ni;i++){
+    double z = -1. + pow(10.,vlz[i]);
+    double Omz=Omegam(z);
+    if(Omo<1 && Oml==0) dc=1.68647*pow(Omz,0.0185);
+    if(Omo+Oml==1) dc=1.68647*pow(Omz,0.0055);
+    vDeltaCz.push_back(dc/Dgrowth(z));
+    vt.push_back(time(z));
+  }
+  
+  // interpolate functions
+  z_interp = 10.0;
+  n_interp = 1024;
+  calc_interp_dist();
+}
 /** \ingroup cosmolib
  * \brief Sets cosmology to WMAP 2009 model.  This is done automatically in the constructor.
  */
@@ -184,14 +193,12 @@ void COSMOLOGY::SetConcordenceCosmology(CosmoParamSet cosmo_p){
     Nnu=3.0;
     dndlnk=0.0;
     gamma=0.55;
+    sig8 = 0.829;
     
     darkenergy=1;
     
     /* if 2 gamma parameterization is used for dark energy */
     /* if 1 w,w_1 parameterization is used for dark energy */
-    
-    TFmdm_set_cosm();
-    power_normalize(0.829);
     
   }else if(cosmo_p == Planck){
     
@@ -210,14 +217,9 @@ void COSMOLOGY::SetConcordenceCosmology(CosmoParamSet cosmo_p){
     Nnu=3.0;
     dndlnk=0.0;
     gamma=0.55;
+    sig8 = 0.8347;
     
     darkenergy=1;
-    
-    /* if 2 gamma parameterization is used for dark energy */
-    /* if 1 w,w_1 parameterization is used for dark energy */
-    
-    TFmdm_set_cosm();
-    power_normalize(0.8347);
     
 	}else if(cosmo_p == Millennium){
 
@@ -237,16 +239,11 @@ void COSMOLOGY::SetConcordenceCosmology(CosmoParamSet cosmo_p){
 		Nnu=3.0;
 		dndlnk=0.0;
 		gamma=0.55;
+    sig8 = 0.9;
 
 		darkenergy=1;
 
-		TFmdm_set_cosm();
-		power_normalize(0.9);
 	}
-	// set parameters for Eisenstein & Hu power spectrum
-
-  calc_interp_dist();
-
 }
 
 /** \ingroup cosmolib
