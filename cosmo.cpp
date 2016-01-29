@@ -126,6 +126,8 @@ COSMOLOGY& COSMOLOGY::operator=(const COSMOLOGY &cosmo){
 
 void COSMOLOGY::setinternals(){
   
+  init_structure_functions = true;
+
   TFmdm_set_cosm();
   power_normalize(sig8);
   // allocate step and weight for gauleg integration
@@ -150,7 +152,6 @@ void COSMOLOGY::setinternals(){
   n_interp = 1024;
   calc_interp_dist();
   
-  init_structure_functions = true;
 }
 /** \ingroup cosmolib
  * \brief Sets cosmology to WMAP 2009 model.  This is done automatically in the constructor.
@@ -181,12 +182,6 @@ void COSMOLOGY::SetConcordenceCosmology(CosmoParamSet cosmo_p){
 		gamma=0.55;
 
 		darkenergy=1;
-
-		/* if 2 gamma parameterization is used for dark energy */
-		/* if 1 w,w_1 parameterization is used for dark energy */
-
-		TFmdm_set_cosm();
-		power_normalize(0.812);
 
   }else if(cosmo_p == Planck1yr){
     
