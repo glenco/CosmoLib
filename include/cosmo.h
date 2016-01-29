@@ -46,7 +46,10 @@ class COSMOLOGY{
 public:
 
 	COSMOLOGY(CosmoParamSet cosmo_p = WMAP5yr);
-	COSMOLOGY(double omegam,double omegal,double h, double w);
+  /// if justdistances== true
+	COSMOLOGY(double omegam,double omegal,double h, double w
+            ,bool justdistances=false /// if true the internals needed calculate structure formation will not be calculated making constructuion faster
+            );
   COSMOLOGY(const COSMOLOGY &cosmo);
 	~COSMOLOGY();
 
@@ -177,6 +180,8 @@ public:
    double SigmaCrit(double zlens,double zsource) const;
     
 protected:
+  
+  bool init_structure_functions = false;
 
 	/// Hubble paremters in units of 100 km/s/Mpc
   double h;
