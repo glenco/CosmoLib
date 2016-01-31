@@ -18,6 +18,8 @@ double COSMOLOGY::powerCDMz(
 		,double z   /// redshift
 		){
 
+  if(!init_structure_functions) setinternals();
+
   double kn=0.0,kl,powL,powNL,nin;
   double knl,knh,kll,klh,g,a,Omot,Omlt,AA,B,aa,b,V,go;
   int m=0;
@@ -138,6 +140,7 @@ double COSMOLOGY::npow(double k){
  * \brief Linear power spectrum P(k,z)/a^2
  */
 double COSMOLOGY::power_linear(double k,double z){
+  if(!init_structure_functions) setinternals();
 
   if(z==0.0) return powerloc(k,0);
   return pow(Dgrowth(z)*(1+z),2)*powerloc(k,z);
@@ -159,6 +162,8 @@ double COSMOLOGY::powerloc(double k,double z){
  * should not be changed in any other way.
  */
 double COSMOLOGY::power_normalize(double sigma8){
+  if(!init_structure_functions) setinternals();
+    
   double powfactor;
   sig8=sigma8;
   A=1.0;
@@ -185,6 +190,9 @@ double COSMOLOGY::normL(double lgk){
  * The variance is found through directly integrating linear power spectrum.
  */
 double COSMOLOGY::TopHatVarianceR(double R,double z){
+  
+  if(!init_structure_functions) setinternals();
+
 	double ans;
 
 	Rtophat = R;
@@ -199,6 +207,8 @@ double COSMOLOGY::TopHatVarianceR(double R,double z){
  * The variance is found through directly integrating linear power spectrum.
  */
 double COSMOLOGY::TopHatVarianceM(double M,double z){
+  if(!init_structure_functions) setinternals();
+
 	double R = pow(M/rho_crit(0)/Omo,1./3.);
 
 	return TopHatVarianceR(R,z);

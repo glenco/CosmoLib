@@ -46,9 +46,15 @@ class COSMOLOGY{
 public:
 
 	COSMOLOGY(CosmoParamSet cosmo_p = WMAP5yr);
-	COSMOLOGY(double omegam,double omegal,double h, double w);
+  /// if justdistances== true
+	COSMOLOGY(double omegam,double omegal,double h, double w
+            ,bool justdistances=false /// if true the internals needed calculate structure formation will not be calculated making constructuion faster
+            );
+  COSMOLOGY(const COSMOLOGY &cosmo);
 	~COSMOLOGY();
 
+  COSMOLOGY& operator=(const COSMOLOGY &cosmo);
+  
     void SetConcordenceCosmology(CosmoParamSet cosmo_p = WMAP5yr);
     void PrintCosmology(short physical = 0) const;
 
@@ -174,6 +180,8 @@ public:
    double SigmaCrit(double zlens,double zsource) const;
     
 protected:
+  
+  bool init_structure_functions = false;
 
 	/// Hubble paremters in units of 100 km/s/Mpc
   double h;
@@ -274,7 +282,8 @@ protected:
   double y_drag;		 // Ratio of z_equality to z_drag 
   double z_drag;		 // Redshift of the drag epoch
   double z_equality;	 // Redshift of matter-radiation equality
-    
+  
+  void setinternals();
     // in powerEHv2.c
   void TFset_parameters(double omega0hh, double f_baryon, double Tcmb);
   double TFfit_onek(double k, double *tf_baryon, double *tf_cdm);
