@@ -89,10 +89,10 @@ public:
   double rho_crit(double z) const;
   //double drdz_empty(double x);
   double drdz(double x) const;
-  double adrdz(double x) const;
+  //double adrdz(double x) const;
   double drdz_dark(double x) const;
   inline double dark_factor(double x) const;
-  double adrdz_dark(double x) const;
+  //double adrdz_dark(double x) const;
   
   double DeltaVir(double z,int caseunit=0) const;
   double Deltao(double m) const;
