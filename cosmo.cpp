@@ -40,14 +40,13 @@ static double Omo_static, Oml_static;
 
 using namespace std;
 
-COSMOLOGY::COSMOLOGY(double omegam,double omegal,double hubble, double w,bool justdistances) :
-		h(hubble), Omo(omegam), Oml(omegal), ww(w){
+COSMOLOGY::COSMOLOGY(double omegam,double omegal,double hubble, double w, double wa,bool justdistances) :
+		h(hubble), Omo(omegam), Oml(omegal), ww(w) , ww1(wa){
 	n=1.0;
 	Omnu=0;
 	Nnu=3.0;
 	dndlnk=0.0;
 	gamma=0.55;
-  ww1 = 0.0;
   sig8 = 0.812;
       
   Omb = 0.02225/h/h;
@@ -180,7 +179,7 @@ void COSMOLOGY::SetConcordenceCosmology(CosmoParamSet cosmo_p){
 		Nnu=3.0;
 		dndlnk=0.0;
 		gamma=0.55;
-
+        sig8=0.812;
 		darkenergy=1;
 
   }else if(cosmo_p == Planck1yr){
@@ -279,6 +278,41 @@ void COSMOLOGY::PrintCosmology(short physical) const {
   }
   if(darkenergy==2) cout << "darkenery=" << darkenergy << " gamma=" << gamma << "\n";
   else cout << "darkenery: "<< darkenergy << " w: " << ww << " w1: " << ww1 << "\n";
+}
+
+/** \ingroup cosmolib
+ * \brief Print cosmological parameters
+ */
+
+std::string COSMOLOGY::print(short physical) const {
+  
+  std::string out;
+  out = "h: " + std::to_string(h) + " ";
+  out += " n: " + std::to_string(n) + " ";
+  out += " dndlnk: " + std::to_string(dndlnk) + " ";
+  out += " A: " + std::to_string(A) + " ";
+  out += " sig8: " + std::to_string(sig8) + " ";
+  
+  if(physical==0){
+    out += " Omo: " + std::to_string(Omo) + " ";
+    out += " Oml: " + std::to_string(Oml) + " ";
+    out += " Omb: " + std::to_string(Omb) + " ";
+    out += " Omnu: " + std::to_string(Omnu) + " ";
+    out += " Nnu: " + std::to_string(Nnu) + " ";
+  }
+  if(physical==1){
+    out += " Omo hh: " + std::to_string(Omo*h*h) + " ";
+    out += " Oml hh: " + std::to_string(Oml*h*h) + " ";
+    out += " Omb hh: " + std::to_string(Omb*h*h) + " ";
+    out += " Omnu hh: " + std::to_string(Omnu*h*h) + " ";
+    out += " Nnu: " + std::to_string(Nnu) + " ";
+  }
+  if(darkenergy==2) out += " darkenery=" + std::to_string(darkenergy) + " gamma="
+    + std::to_string(gamma) + " ";
+  else out += " darkenery: "+ std::to_string(darkenergy) + " w: " + std::to_string(ww)
+    + " w1: " + std::to_string(ww1) + " ";
+  
+  return out;
 }
 
 /** \ingroup cosmolib
@@ -486,9 +520,6 @@ double COSMOLOGY::drdz(double x) const{
   if(temp<=0.0) return -1.0e30;                   // non-physical values
   return 1.0/sqrt(temp);
 }
-double COSMOLOGY::adrdz(double x) const{
-  return drdz(x)/x;
-}
 
 /** \ingroup cosmolib
  * \brief Same as drdz, but incorporates dark energy through ww and ww1.
@@ -498,11 +529,27 @@ double drdz_dark_wrapper(double x, void *params){
   return static_cast<CosmoHndl>(params)->COSMOLOGY::drdz_dark(x);
 }
 double COSMOLOGY::drdz_dark(double x) const{
-	return 1.0 / sqrt(Omo*x*x*x+Oml*pow(x,3*(1+ww+ww1))*exp(-3*ww1*(x-1)/x)-(Omo+Oml-1)*x*x);
+	return 1.0 / sqrt(Omo*x*x*x+Oml*dark_factor(x)-(Omo+Oml-1)*x*x);
 }
-double COSMOLOGY::adrdz_dark(double x) const{
-  return drdz_dark(x)/x;
+inline double COSMOLOGY::dark_factor(double x) const{
+  if(ww == -1 && ww1 == 0) return 1;
+  return pow(x,3*(1+ww+ww1))*exp(-3*ww1*(x-1)/x);
 }
+
+double COSMOLOGY::ddrdzdOmo(double x) const{
+  double E=drdz_dark(x);
+  return -0.5*(x*x*x-dark_factor(x))*E*E*E;
+}
+double COSMOLOGY::ddrdzdw(double x) const{
+  double E=drdz_dark(x);
+  return -0.5*3*Oml*log(x)*dark_factor(x)*E*E*E;
+}
+
+double COSMOLOGY::ddrdzdw1(double x) const{
+  double E=drdz_dark(x);
+  return -0.5*3*Oml*(log(x) - (x-1)/x)*dark_factor(x)*E*E*E;
+}
+
 
 /** \ingroup cosmolib
  * \brief The coordinate distance in units Mpc.  This is the radial distance found by integrating 1/H(z).  This 
@@ -513,24 +560,25 @@ double COSMOLOGY::coorDist(double zo,double z) const{
 	if(zo < z_interp && z < z_interp)
 		return interp(coorDist_interp, z) - interp(coorDist_interp, zo);
 	
-/*#ifdef ENABLE_GSL
-  double result, error;
-  size_t neval;
-  gsl_function F;
-  if( (ww ==-1.0) && (ww1 == 0.0) )
-    F.function = &drdz_wwrapper;
-  else
-    F.function = &drdz_dark_wrapper;
-  F.params = this;
-  
-  gsl_integration_qng(&F,1+zo,1+z,1e-9,1e-9,&result,&error,&neval);
-
-  return result*Hubble_length/h;
-#else*/
-	if( (ww ==-1.0) && (ww1 == 0.0) ) return nintegrateDcos(&COSMOLOGY::drdz,1+zo,1+z,1.0e-9)*Hubble_length/h;
-	return nintegrateDcos(&COSMOLOGY::drdz_dark,1+zo,1+z,1.0e-9)*Hubble_length/h;
-//#endif
+  if( (ww ==-1.0) && (ww1 == 0.0) ) return Utilities::nintegrateF(drdz_struct(*this),1+zo,1+z,1.0e-9)*Hubble_length/h;
+  return Utilities::nintegrateF(drdzdark_struct(*this),1+zo,1+z,1.0e-9)*Hubble_length/h;
+  //if( (ww ==-1.0) && (ww1 == 0.0) ) return nintegrateDcos(&COSMOLOGY::drdz,1+zo,1+z,1.0e-9)*Hubble_length/h;
+	//return nintegrateDcos(&COSMOLOGY::drdz_dark,1+zo,1+z,1.0e-9)*Hubble_length/h;
 }
+
+double COSMOLOGY::d_coorDist_dOmo(double zo,double z) const{
+  return Utilities::nintegrateF(ddrdzdOmo_struct(*this),1+zo,1+z,1.0e-9)*Hubble_length/h;
+//  return nintegrateDcos(&COSMOLOGY::ddrdzdOmo,1+zo,1+z,1.0e-9)*Hubble_length/h;
+}
+double COSMOLOGY::d_coorDist_dw(double zo,double z) const{
+  return Utilities::nintegrateF(ddrdzdw_struct(*this),1+zo,1+z,1.0e-9)*Hubble_length/h;
+  //return nintegrateDcos(&COSMOLOGY::ddrdzdw,1+zo,1+z,1.0e-9)*Hubble_length/h;
+}
+double COSMOLOGY::d_coorDist_dw1(double zo,double z) const{
+  return Utilities::nintegrateF(ddrdzdw1_struct(*this),1+zo,1+z,1.0e-9)*Hubble_length/h;
+  //return nintegrateDcos(&COSMOLOGY::ddrdzdw1,1+zo,1+z,1.0e-9)*Hubble_length/h;
+}
+
 
 /** \ingroup cosmolib
  * \brief Non-comoving radial distance in units Mpc also known as the lookback time.  This is coorDist only integrated with the scale factor a=1/(1+z).
@@ -539,8 +587,11 @@ double COSMOLOGY::radDist(double zo,double z) const {
 	if(zo < z_interp && z < z_interp)
 		return interp(radDist_interp, z) - interp(radDist_interp, zo);
 	
-	if( (ww ==-1.0) && (ww1 == 0.0) ) return nintegrateDcos(&COSMOLOGY::adrdz,1+zo,1+z,1.0e-9)*Hubble_length/h;
-	return nintegrateDcos(&COSMOLOGY::adrdz_dark,1+zo,1+z,1.0e-9)*Hubble_length/h;
+  if( (ww ==-1.0) && (ww1 == 0.0) ) return Utilities::nintegrateF(adrdz_struct(*this),1+zo,1+z,1.0e-9)*Hubble_length/h;
+  return Utilities::nintegrateF(adrdzdark_struct(*this),1+zo,1+z,1.0e-9)*Hubble_length/h;
+
+//	if( (ww ==-1.0) && (ww1 == 0.0) ) return nintegrateDcos(&COSMOLOGY::adrdz,1+zo,1+z,1.0e-9)*Hubble_length/h;
+//	return nintegrateDcos(&COSMOLOGY::adrdz_dark,1+zo,1+z,1.0e-9)*Hubble_length/h;
 }
 
 /** \ingroup cosmolib
@@ -1135,6 +1186,7 @@ double COSMOLOGY::halo_bias (
 /***************************************************************/
 double COSMOLOGY::nintegrateDcos(pt2MemFunc func, double a,double b,double tols) const
 {
+  
    double ss,dss;
    double s2[JMAXP],h2[JMAXP+1];
    int j;
@@ -1143,12 +1195,12 @@ double COSMOLOGY::nintegrateDcos(pt2MemFunc func, double a,double b,double tols)
    h2[1]=1.0;
    for (j=1;j<=JMAX;j++) {
      s2[j]=trapzdDcoslocal(func,a,b,j,&ss2);
-	if (j>=K) {
-	   polintD(&h2[j-K],&s2[j-K],K,0.0,&ss,&dss);
-	   if(fabs(dss) <= tols*fabs(ss)) return ss;
-	}
-	h2[j+1]=0.25*h2[j];
-	}
+     if (j>=K) {
+       COSMOLOGY::polintD(&h2[j-K],&s2[j-K],K,0.0,&ss,&dss);
+       if(fabs(dss) <= tols*fabs(ss)) return ss;
+     }
+     h2[j+1]=0.25*h2[j];
+   }
    cout << "s2= "; for(j=1;j<=JMAX;j++) cout << s2[j] << " ";
    cout << "\n";
    cout << "Too many steps in routine nintegrateDcos\n";
@@ -1174,6 +1226,40 @@ double COSMOLOGY::trapzdDcoslocal(pt2MemFunc func, double a, double b, int n, do
 
 	return *s2;
    }
+}
+void COSMOLOGY::polintD(double xa[], double ya[], int n, double x, double *y, double *dy) const
+{
+  int i,m,ns=1;
+  double den,dif,dift,ho,hp,w;
+  
+  dif=fabs(x-xa[1]);
+  
+  double *c = new double[n];
+  double *d = new double[n];
+  for (i=1;i<=n;i++) {
+    if ( (dift=fabs(x-xa[i])) < dif) {
+      ns=i;
+      dif=dift;
+    }
+    c[i-1]=ya[i];
+    d[i-1]=ya[i];
+  }
+  *y=ya[ns--];
+  for (m=1;m<n;m++) {
+    for (i=1;i<=n-m;i++) {
+      ho=xa[i]-x;
+      hp=xa[i+m]-x;
+      w=c[i]-d[i-1];
+      if ( (den=ho-hp) == 0.0) throw runtime_error("Error in routine polint");
+      den=w/den;
+      d[i-1]=hp*den;
+      c[i-1]=ho*den;
+    }
+    *y += (*dy=(2*ns < (n-m) ? c[ns] : d[ns-1]));
+    --ns;
+  }
+  delete [] d;
+  delete [] c;
 }
 
 double COSMOLOGY::nintegrateDcos(pt2MemFuncNonConst func, double a,double b,double tols)

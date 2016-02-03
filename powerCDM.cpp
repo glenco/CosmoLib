@@ -2,6 +2,7 @@
 #include <nrD.h>
 #include <cosmo.h>
 #include <assert.h>
+#include "utilities.h"
 
 static double omo, oml, hh;
 
@@ -169,7 +170,10 @@ double COSMOLOGY::power_normalize(double sigma8){
   A=1.0;
   Rtophat = 8;
   ztmp = 0;
-  powfactor=9*nintegrateDcos(&COSMOLOGY::normL,log(1.0e-3),log(1.0e4),1.0e-9)/(2*pi*pi);
+  
+  powfactor=9*Utilities::nintegrateF(normL_struct(*this),log(1.0e-3),log(1.0e4),1.0e-9)/(2*pi*pi);
+
+//  powfactor=9*nintegrateDcos(&COSMOLOGY::normL,log(1.0e-3),log(1.0e4),1.0e-9)/(2*pi*pi);
   A=sigma8*sigma8/powfactor;
   return powfactor;
 }
@@ -198,7 +202,9 @@ double COSMOLOGY::TopHatVarianceR(double R,double z){
 	Rtophat = R;
 	ztmp = z;
 
-	ans = 9*nintegrateDcos(&COSMOLOGY::normL,log(1.0e-3),log(1.0e4),1.0e-9)/(2*pi*pi);
+  ans=9*Utilities::nintegrateF(normL_struct(*this),log(1.0e-3),log(1.0e4),1.0e-9)/(2*pi*pi);
+  
+	//ans = 9*nintegrateDcos(&COSMOLOGY::normL,log(1.0e-3),log(1.0e4),1.0e-9)/(2*pi*pi);
 	return pow(Dgrowth(z)*(1+z),2)*ans;
 }
 /** \ingroup cosmolib
