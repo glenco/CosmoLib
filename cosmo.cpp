@@ -179,7 +179,7 @@ void COSMOLOGY::SetConcordenceCosmology(CosmoParamSet cosmo_p){
 		Nnu=3.0;
 		dndlnk=0.0;
 		gamma=0.55;
-
+        sig8=0.812;
 		darkenergy=1;
 
   }else if(cosmo_p == Planck1yr){
