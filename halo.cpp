@@ -140,3 +140,16 @@ double HALOCalculator:: getConcentration(
 
 		return 0;
 }
+
+/** \brief returns the fraction of halo+galaxy in stars according to from Moster et al. 2010ApJ...710..903M
+ */
+double HALOCalculator::MosterStellarMassFraction(
+                                       double Mtotal /// total mass of halo+galaxy in solar masses
+){
+  static const double mo=7.3113e10,M1=2.8575e10,gam1=7.17,gam2=0.201,be=0.557;
+  // from Moster et al. 2010ApJ...710..903M
+  
+  return mo*pow(Mtotal/M1,gam1)
+  /pow(1+pow(Mtotal/M1,be),(gam1-gam2)/be)/Mtotal;
+}
+
