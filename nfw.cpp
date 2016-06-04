@@ -49,6 +49,17 @@ double NFW_Utility::NFW_Vr(
 
 	return sqrt( (log(1+cons*x) -cons*x/(1+cons*x) ) /f/x)*NFW_V200(M200,R200);
 }
+/// Mass within a radius x in Msun
+double NFW_Utility::NFW_M(
+                           double x       /// radius , r/R_200
+                           ,double cons    /// concentration = R_200/R_s
+                           ,double M200    /// Mass
+                           ,double R200    /// Radius
+){
+  double f = log(1+cons) - cons/(1+cons);
+  
+  return M200*(log(1+cons*x) -cons*x/(1+cons*x) )/f;
+}
 /// central over-density of nfw halo
 double NFW_Utility::NFW_deltac(
 		double cons    /// concentration = R_200/R_s
