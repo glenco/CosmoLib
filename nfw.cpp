@@ -54,7 +54,6 @@ double NFW_Utility::NFW_M(
                            double x       /// radius , r/R_200
                            ,double cons    /// concentration = R_200/R_s
                            ,double M200    /// Mass
-                           ,double R200    /// Radius
 ){
   double f = log(1+cons) - cons/(1+cons);
   

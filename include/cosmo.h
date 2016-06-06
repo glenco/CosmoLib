@@ -390,7 +390,7 @@ public:
   double NFW_V200(double M200,double R200);
   double NFW_Vmax(double cons,double M200,double R200);
   double NFW_Vr(double x,double cons,double M200,double R200);
-  double NFW_M(double x,double cons,double M200,double R200);
+  double NFW_M(double x,double cons,double M200);
   double NFW_deltac(double cons);
   double NFW_Concentration(double Vmax,double M200,double R200);
   double NFW_rho(double cons,double x);
