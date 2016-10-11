@@ -86,7 +86,7 @@ public:
   
   double scalefactor(double rad) const;
   double Omegam(double z) const;
-  double rho_crit(double z) const;
+  double rho_crit_comoving(double z) const;
   //double drdz_empty(double x);
   double drdz(double x) const;
   //double adrdz(double x) const;

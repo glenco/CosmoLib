@@ -215,7 +215,7 @@ double COSMOLOGY::TopHatVarianceR(double R,double z){
 double COSMOLOGY::TopHatVarianceM(double M,double z){
   if(!init_structure_functions) setinternals();
 
-	double R = pow(M/rho_crit(0)/Omo,1./3.);
+	double R = pow(M/rho_crit_comoving(0)/Omo,1./3.);
 
 	return TopHatVarianceR(R,z);
 }
@@ -241,7 +241,6 @@ double COSMOLOGY::powerEH(double k,double z){
  */
 
 double COSMOLOGY::powerEHv2(double k){
-  CosmoHndl cosmo_old;
   double Trans;
   double baryon_piece,cdm_piece;
  
