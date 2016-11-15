@@ -247,7 +247,26 @@ void COSMOLOGY::SetConcordenceCosmology(CosmoParamSet cosmo_p){
 
 		darkenergy=1;
 
-	}
+  }else if (cosmo_p == BigMultiDark){
+    
+    Oml = 0.692885;
+    Omo = 1-Oml;
+    h = 0.677700;
+    
+    Omb = 0.022032/h/h;
+    
+    ww=-1.0;
+    ww1=0.0;
+    n=1.0;
+    Omnu=0;
+    Nnu=3.0;
+    dndlnk=0.0;
+    gamma=0.55;
+    sig8 = 0.829;
+    
+    darkenergy=1;
+
+  }
 }
 
 /** \ingroup cosmolib
@@ -624,8 +643,11 @@ double COSMOLOGY::lumDist(double zo,double z) const{
  */
 double COSMOLOGY::invCoorDist(double d) const
 {
-	return invert(coorDist_interp, d);
+  return invert(coorDist_interp, d);
 }
+/** \ingroup cosmolib
+ * \brief The inverse of the coordinate distance in units Mpc, works within interpolation range.
+ */
 
 /** \ingroup cosmolib
  * \brief The inverse of the radial distance in units Mpc, works within interpolation range.
