@@ -613,7 +613,7 @@ double COSMOLOGY::angDist(double zo,double z) const{
 }
 
 /** \ingroup cosmolib
- * \brief The luminosity distance in units Mpc
+ * \brief The bolometric luminosity distance in units Mpc
  */
 double COSMOLOGY::lumDist(double zo,double z) const{
 	return pow(1+z,2)*angDist(zo,z);
