@@ -1147,12 +1147,21 @@ double Deltao_wrapper(double m, void *params){
   return static_cast<CosmoHndl>(params)->COSMOLOGY::Deltao(m);
 }
 
-double COSMOLOGY::Deltao(double m) const{
+double COSMOLOGY::delta_c() const{
   double dc;
   dc=1.68647;
   if(Omo<1 && Oml==0) dc*=pow(Omo,0.0185);
   if(Omo+Oml==1) dc*=pow(Omo,0.0055);
-  /*  return dc*pow(m/1.0e10,-0.25); */
+
+  return dc;
+}
+
+double COSMOLOGY::Deltao(double m) const{
+  /*double dc = delta_c();
+  dc=1.68647;
+  if(Omo<1 && Oml==0) dc*=pow(Omo,0.0185);
+  if(Omo+Oml==1) dc*=pow(Omo,0.0055);
+    return dc*pow(m/1.0e10,-0.25); */
   return f4(6.005e14*pow(h*Omo,3))/f4(m*h*h*h*h*Omo*Omo);
 }
 
