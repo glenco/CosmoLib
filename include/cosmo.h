@@ -94,6 +94,9 @@ public:
   inline double dark_factor(double x) const;
   //double adrdz_dark(double x) const;
   
+  /// the critical over density
+  double delta_c() const;
+  
   double DeltaVir(double z,int caseunit=0) const;
   double Deltao(double m) const;
   double time(double z) const;

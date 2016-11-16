@@ -51,7 +51,7 @@ namespace Utilities{
    * larger than the largest, the result is either -1 or n-1.
    */
   template <class T>
-  int locate (const std::vector<T> &v, const T x)
+  int long locate (const std::vector<T> &v, const T x)
   {
     size_t n = v.size ();
     
