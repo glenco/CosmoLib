@@ -22,7 +22,20 @@ typedef double PosType;
 typedef unsigned long ULONG;
 #endif
 
+template <typename T> int sgn(T val) {
+  return (T(0) < val) - (val < T(0));
+}
+
+
 namespace Utilities{
+  
+  inline void print_date(){
+    time_t now = time(0);
+    struct tm date = *localtime(&now);
+    std::cout << date.tm_hour << ":" << date.tm_min << "   " << date.tm_mday << "/" << date.tm_mon << "/" << date.tm_year + 1900 << std::endl;
+  }
+
+  
   const double nXbin=64.;
   
   /** \ingroup Utill

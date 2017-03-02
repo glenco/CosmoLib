@@ -241,7 +241,7 @@ double COSMOLOGY::powerEH(double k,double z){
  */
 
 double COSMOLOGY::powerEHv2(double k){
-  CosmoHndl cosmo_old;
+  //CosmoHndl cosmo_old;
   double Trans;
   double baryon_piece,cdm_piece;
  
