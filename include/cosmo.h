@@ -83,6 +83,7 @@ public:
   
   double invCoorDist(double d) const;
   double invRadDist(double d) const;
+  double invComovingDist(double d) const;
   
   double scalefactor(double rad) const;
   double Omegam(double z) const;

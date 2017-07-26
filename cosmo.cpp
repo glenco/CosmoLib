@@ -646,6 +646,16 @@ double COSMOLOGY::invCoorDist(double d) const
   return invert(coorDist_interp, d);
 }
 /** \ingroup cosmolib
+ * \brief The inverse of the angular size distance in units Mpc, works within interpolation range.
+ */
+double COSMOLOGY::invComovingDist(double d) const
+{
+  if(Omo+Oml==1) invCoorDist(d);
+  double Rcurve = rcurve();
+  if((Omo+Oml)<1.0) return invert(coorDist_interp, Rcurve*asinh(d/Rcurve) );
+  return invert(coorDist_interp,Rcurve*asin(d/Rcurve) );
+}
+/** \ingroup cosmolib
  * \brief The inverse of the coordinate distance in units Mpc, works within interpolation range.
  */
 
@@ -1383,7 +1393,7 @@ void COSMOLOGY::calc_interp_dist()
 	// prepare vectors
 	redshift_interp.resize(n_interp+1);
 	coorDist_interp.resize(n_interp+1);
-	radDist_interp.resize(n_interp+1);
+  radDist_interp.resize(n_interp+1);
 	
 	// step size going like square root
 	double dz = z_interp/(n_interp*n_interp);
