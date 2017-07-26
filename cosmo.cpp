@@ -639,7 +639,7 @@ double COSMOLOGY::lumDist(double zo,double z) const{
 }
 
 /** \ingroup cosmolib
- * \brief The inverse of the coordinate distance in units Mpc, works within interpolation range.
+ * \brief The inverse of the coordinate distance in units Mpc, returning redshift. It works within interpolation range.
  */
 double COSMOLOGY::invCoorDist(double d) const
 {
@@ -650,7 +650,7 @@ double COSMOLOGY::invCoorDist(double d) const
  */
 
 /** \ingroup cosmolib
- * \brief The inverse of the radial distance in units Mpc, works within interpolation range.
+ * \brief The inverse of the radial distance in units Mpc, returning redshift. It works within interpolation range.
  */
 double COSMOLOGY::invRadDist(double d) const
 {
