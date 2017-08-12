@@ -19,18 +19,22 @@
 //TODO: Change to physical length units !!!!
 class HALOCalculator{
 public:
-    HALOCalculator (COSMOLOGY *co, double mass, double redshift);
-    double getRvir(int caseunit=0);
-    double getR200();
-    double getConcentration(int caseunit=0,double alpha0=-0.1);
-    double getFormationTime(double f=0.5);
-    double getFormationRedshift(double f=0.5);
+  HALOCalculator (COSMOLOGY *co, double mass, double redshift);
+  
+  double getMass(){return m;}
+  double getZ(){return z;}
+  
+  double getRvir(int caseunit=0);
+  double getR200();
+  double getConcentration(int caseunit=0,double alpha0=-0.1);
+  double getFormationTime(double f=0.5);
+  double getFormationRedshift(double f=0.5);
   
   static double MosterStellarMassFraction(double Mtotal);
-
-    void reset(double,double);
-    virtual ~HALOCalculator ();
-
+  
+  void reset(double,double);
+  virtual ~HALOCalculator ();
+  
 protected:
     COSMOLOGY *co;   // cosmological model
     double m;        // halo mass
