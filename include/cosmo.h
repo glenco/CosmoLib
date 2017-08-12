@@ -102,11 +102,21 @@ public:
   double Deltao(double m) const;
   double time(double z) const;
   double nonlinMass(double z) const;
-  
+
   // Stuff having to do with the power spectrum
   double power_normalize(double sigma8);
+  /** \ingroup comolib
+   * \brief Linear power spectrum P(k,z)/a^2
+   */
   double power_linear(double k,double z);
   double Dgrowth(double z) const;
+  /** \ingroup cosmolib
+   * \brief  powerCDM.c calculates the nonlinear P(k,z)/a(r)^2
+   *
+   * The method of Peacock & Dodds 1996 is used to convert the linear
+   * power spectrum into the nonlinear one.
+   * This could be updated to a more recent nonlinear power spectrum
+   */
   double powerCDMz(double k,double z);
   double psdfdm(double z,double m,int caseunit=0);
   double halo_bias (double m, double z, int t=0);
