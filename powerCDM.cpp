@@ -241,3 +241,30 @@ double COSMOLOGY::powerEHv2(double k){
 }
 
 
+double COSMOLOGY::CorrelationFunction(double radius,double redshift
+                                      ,double k_max,double k_min){
+  
+  CorrFunctorType func(this,1.0,redshift);
+  
+  if(k_max < k_min) std::swap(k_min,k_max);
+
+  
+  double a = pi/radius/2;
+    
+  func.r = radius;
+    
+  double kmin = k_min;
+  double kmax = std::min(a,k_max);
+  double tmp,ans=0;
+  do{
+    tmp = Utilities::nintegrate<CorrFunctorType,double>(func,kmin,kmax,1.0e-4);
+    ans += tmp;
+    kmin = kmax;
+    kmax = std::min(kmax + a,k_max);
+  }while(fabs(tmp/ans) > 1.0e-4);
+    
+  return ans;
+  
+}
+
+

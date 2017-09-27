@@ -110,6 +110,7 @@ public:
    */
   double power_linear(double k,double z);
   double Dgrowth(double z) const;
+  
   /** \ingroup cosmolib
    * \brief  powerCDM.c calculates the nonlinear P(k,z)/a(r)^2
    *
@@ -123,6 +124,38 @@ public:
   double stdfdm(double z,double m,int caseunit=0);
   double powerlawdfdm(double z,double m,double alpha,int caseunit=0);
   double haloNumberDensity(double m,double z,double a, int t,double alpha = 0.0);
+  
+  /** \brief Dark matter correlation function 
+   *
+   *  This integrates powerCDMz() to get the correlation function as a function of comoving radius.
+   *  Care should be taken that the right range of k is integrated over if the radius is very small or large.
+   */
+  double CorrelationFunction(double radius,double redshift
+                      ,double k_max = 100,double k_min = 1.0e-3);
+
+  struct CorrFunctorType{
+    CorrFunctorType(COSMOLOGY *cosmo,double radius,double redshift)
+    : cosmology(cosmo),z(redshift),r(radius)
+    {
+      norm = 0.5/pi/pi/(1+z)/(1+z);
+    };
+    
+    COSMOLOGY *cosmology;
+    double z;
+    double r;
+    
+    double norm;
+    
+    double operator () (double k) {
+      
+      double rk = r*k;
+      double jo = sin(rk)/rk;
+      if(rk < 1.0e-3) jo = 1.0;
+      
+      return norm*jo*k*k*cosmology->powerCDMz(k,z);
+    }
+  };
+
   
   double haloNumberDensityOnSky (double m,double z1,double z2,int t,double alpha = 0.0);
   double haloNumberInBufferedCone (double mass ,double z1,double z2,double fov,double buffer ,int type ,double alpha=0.0);
