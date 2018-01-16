@@ -40,20 +40,20 @@ void HALOCalculator::reset(double mr,double zr){
 }
 
 /** \ingroup cosmolib
- * \brief Virial radius of the halo in Mpc
+ * \brief Virial radius of the halo in physical Mpc
  */
 double HALOCalculator:: getRvir(
 		      int caseunit    /// by default uses the Brayan and Norman fit, if equal to 1 uses the fit by Felix and Stoer
 		      ){
-  double d=co->DeltaVir(z,caseunit)*co->rho_crit(z);
+  double d=co->DeltaVir(z,caseunit)*co->rho_crit_comoving(z);
   return pow( 3*m/(4*M_PI*d), 0.3333 )/(1+z);
 }
 
 /** \ingroup cosmolib
- * \brief Radius in Mpc at which the enclosed density reach 200 times the critical value
+ * \brief Radius in physical Mpc at which the enclosed density reach 200 times the critical value at that redshift
  */
 double HALOCalculator:: getR200(){
-  double d=200.0*co->rho_crit(z);
+  double d=200.0*co->rho_crit_comoving(z);
   return pow( 3*m/(4*M_PI*d), 0.3333 )/(1+z);
 }
 

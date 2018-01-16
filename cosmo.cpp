@@ -520,7 +520,7 @@ double COSMOLOGY::Dgrowth(double z) const{
 /** \ingroup cosmolib
  * \brief comoving critical density in M_sun/Mpc^3
  */
-double COSMOLOGY::rho_crit(double z) const {
+double COSMOLOGY::rho_crit_comoving(double z) const {
   return CRITD2*h*h*( Omo*pow(1+z,3)+Oml-(Omo+Oml-1)*pow(1+z,2) )/pow(1+z,3);
 }
 
@@ -707,7 +707,7 @@ double COSMOLOGY::psdfdm(
   double nu = pow(dc/Dg/sig,2);
   switch (caseunit){
   case 1:
-	  return -Omo*rho_crit(0)*(sig8*dsigdM(m))/sig*(sqrt(2/M_PI)*sqrt(nu)*exp(-0.5*nu))/m;
+	  return -Omo*rho_crit_comoving(0)*(sig8*dsigdM(m))/sig*(sqrt(2/M_PI)*sqrt(nu)*exp(-0.5*nu))/m;
 	  break;
   default:
 	  return -(sig8*dsigdM(m))/sig*(sqrt(2/M_PI)*sqrt(nu)*exp(-0.5*nu));
@@ -746,7 +746,7 @@ double COSMOLOGY::stdfdm(
   double nu = aST*pow(dc/Dg/sig,2);
   switch (caseunit){
   	  case 1:
-  		  return -Omo*rho_crit(0)*(sig8*dsigdM(m))/sig*(AST*(1+1/pow(nu,pST))*sqrt(nu/M_PI/2)*exp(-0.5*nu))/m;
+  		  return -Omo*rho_crit_comoving(0)*(sig8*dsigdM(m))/sig*(AST*(1+1/pow(nu,pST))*sqrt(nu/M_PI/2)*exp(-0.5*nu))/m;
   		  break;
   	  case 2:
   	          nu = m*sqrt(aST);
@@ -775,7 +775,7 @@ double COSMOLOGY::powerlawdfdm(
 	double alpha0 = 1./3.;
 	switch (caseunit){
 		case 1:
-			return Omo*rho_crit(0)*0.6*alpha0/2.*sqrt(2/M_PI)*pow(mr,alpha)*exp(-0.5*pow(mr*pow((1+z),3./2.),alpha0*1.3))/m/m;
+			return Omo*rho_crit_comoving(0)*0.6*alpha0/2.*sqrt(2/M_PI)*pow(mr,alpha)*exp(-0.5*pow(mr*pow((1+z),3./2.),alpha0*1.3))/m/m;
 			break;
 		default:
 			return 0.6*alpha0/2.*sqrt(2/M_PI)*pow(mr,alpha)*exp(-0.5*pow(mr*pow((1+z),3./2.),alpha0*1.3))/m/m;

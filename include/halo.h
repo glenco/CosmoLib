@@ -19,6 +19,7 @@
 //TODO: Change to physical length units !!!!
 class HALOCalculator{
 public:
+
   HALOCalculator (COSMOLOGY *co, double mass, double redshift);
   
   double getMass(){return m;}
