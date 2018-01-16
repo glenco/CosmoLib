@@ -29,16 +29,18 @@
  */
 class POWERCDMHM{
   public:
-  POWERCDMHM (COSMOLOGY *co, double redshift, double minHalomass, double sigma=0.25,int cmRelation=0,double slope=-0.1);
-  double nonlinpowerCDMHM(double kappa);
-  double nonlinpowerCDMHM1Halo(double kappa);
-  double nonlinpowerCDMHM2Halo(double kappa);
+  POWERCDMHM(COSMOLOGY *co, double redshift, double minHalomass, double sigma=0.25,int cmRelation=0,double slope=-0.1);
+  
+  double nonlinpowerCDMHM(double k);
+  double nonlinpowerCDMHM1Halo(double k);
+  double nonlinpowerCDMHM2Halo(double k);
   double nonlinKAPPApowerCDMHM(double l, double zs);
   double nonlinKAPPApowerCDMHM1Halo(double l, double zs);
   double nonlinKAPPApowerCDMHM2Halo(double l, double zs);
   double linKAPPApowerCDMHM(double l, double zs);
   double nonlinfitKAPPApowerCDMHM(double l, double zs);
   virtual ~POWERCDMHM ();
+  
   protected:
   gsl_function intPk1,intPk2;
   double Pklin,Pk1,Pk2;

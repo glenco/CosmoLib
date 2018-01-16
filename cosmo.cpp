@@ -247,7 +247,26 @@ void COSMOLOGY::SetConcordenceCosmology(CosmoParamSet cosmo_p){
 
 		darkenergy=1;
 
-	}
+  }else if (cosmo_p == BigMultiDark){
+    
+    Oml = 0.692885;
+    Omo = 1-Oml;
+    h = 0.677700;
+    
+    Omb = 0.022032/h/h;
+    
+    ww=-1.0;
+    ww1=0.0;
+    n=1.0;
+    Omnu=0;
+    Nnu=3.0;
+    dndlnk=0.0;
+    gamma=0.55;
+    sig8 = 0.829;
+    
+    darkenergy=1;
+
+  }
 }
 
 /** \ingroup cosmolib
@@ -613,22 +632,35 @@ double COSMOLOGY::angDist(double zo,double z) const{
 }
 
 /** \ingroup cosmolib
- * \brief The luminosity distance in units Mpc
+ * \brief The bolometric luminosity distance in units Mpc
  */
 double COSMOLOGY::lumDist(double zo,double z) const{
 	return pow(1+z,2)*angDist(zo,z);
 }
 
 /** \ingroup cosmolib
- * \brief The inverse of the coordinate distance in units Mpc, works within interpolation range.
+ * \brief The inverse of the coordinate distance in units Mpc, returning redshift. It works within interpolation range.
  */
 double COSMOLOGY::invCoorDist(double d) const
 {
-	return invert(coorDist_interp, d);
+  return invert(coorDist_interp, d);
 }
+/** \ingroup cosmolib
+ * \brief The inverse of the angular size distance in units Mpc, works within interpolation range.
+ */
+double COSMOLOGY::invComovingDist(double d) const
+{
+  if(Omo+Oml==1) invCoorDist(d);
+  double Rcurve = rcurve();
+  if((Omo+Oml)<1.0) return invert(coorDist_interp, Rcurve*asinh(d/Rcurve) );
+  return invert(coorDist_interp,Rcurve*asin(d/Rcurve) );
+}
+/** \ingroup cosmolib
+ * \brief The inverse of the coordinate distance in units Mpc, works within interpolation range.
+ */
 
 /** \ingroup cosmolib
- * \brief The inverse of the radial distance in units Mpc, works within interpolation range.
+ * \brief The inverse of the radial distance in units Mpc, returning redshift. It works within interpolation range.
  */
 double COSMOLOGY::invRadDist(double d) const
 {
@@ -1125,12 +1157,21 @@ double Deltao_wrapper(double m, void *params){
   return static_cast<CosmoHndl>(params)->COSMOLOGY::Deltao(m);
 }
 
-double COSMOLOGY::Deltao(double m) const{
+double COSMOLOGY::delta_c() const{
   double dc;
   dc=1.68647;
   if(Omo<1 && Oml==0) dc*=pow(Omo,0.0185);
   if(Omo+Oml==1) dc*=pow(Omo,0.0055);
-  /*  return dc*pow(m/1.0e10,-0.25); */
+
+  return dc;
+}
+
+double COSMOLOGY::Deltao(double m) const{
+  /*double dc = delta_c();
+  dc=1.68647;
+  if(Omo<1 && Oml==0) dc*=pow(Omo,0.0185);
+  if(Omo+Oml==1) dc*=pow(Omo,0.0055);
+    return dc*pow(m/1.0e10,-0.25); */
   return f4(6.005e14*pow(h*Omo,3))/f4(m*h*h*h*h*Omo*Omo);
 }
 
@@ -1352,7 +1393,7 @@ void COSMOLOGY::calc_interp_dist()
 	// prepare vectors
 	redshift_interp.resize(n_interp+1);
 	coorDist_interp.resize(n_interp+1);
-	radDist_interp.resize(n_interp+1);
+  radDist_interp.resize(n_interp+1);
 	
 	// step size going like square root
 	double dz = z_interp/(n_interp*n_interp);

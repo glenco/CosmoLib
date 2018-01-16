@@ -30,7 +30,7 @@
 
 #ifndef cosmo_declare
 
-enum CosmoParamSet {WMAP5yr,Millennium,Planck1yr,Planck};
+enum CosmoParamSet {WMAP5yr,Millennium,Planck1yr,Planck,BigMultiDark};
 
 /** \ingroup cosmolib
  *
@@ -83,6 +83,7 @@ public:
   
   double invCoorDist(double d) const;
   double invRadDist(double d) const;
+  double invComovingDist(double d) const;
   
   double scalefactor(double rad) const;
   double Omegam(double z) const;
@@ -94,21 +95,67 @@ public:
   inline double dark_factor(double x) const;
   //double adrdz_dark(double x) const;
   
+  /// the critical over density
+  double delta_c() const;
+  
   double DeltaVir(double z,int caseunit=0) const;
   double Deltao(double m) const;
   double time(double z) const;
   double nonlinMass(double z) const;
-  
+
   // Stuff having to do with the power spectrum
   double power_normalize(double sigma8);
+  /** \ingroup comolib
+   * \brief Linear power spectrum P(k,z)/a^2
+   */
   double power_linear(double k,double z);
   double Dgrowth(double z) const;
+  
+  /** \ingroup cosmolib
+   * \brief  powerCDM.c calculates the nonlinear P(k,z)/a(r)^2
+   *
+   * The method of Peacock & Dodds 1996 is used to convert the linear
+   * power spectrum into the nonlinear one.
+   * This could be updated to a more recent nonlinear power spectrum
+   */
   double powerCDMz(double k,double z);
   double psdfdm(double z,double m,int caseunit=0);
   double halo_bias (double m, double z, int t=0);
   double stdfdm(double z,double m,int caseunit=0);
   double powerlawdfdm(double z,double m,double alpha,int caseunit=0);
   double haloNumberDensity(double m,double z,double a, int t,double alpha = 0.0);
+  
+  /** \brief Dark matter correlation function 
+   *
+   *  This integrates powerCDMz() to get the correlation function as a function of comoving radius.
+   *  Care should be taken that the right range of k is integrated over if the radius is very small or large.
+   */
+  double CorrelationFunction(double radius,double redshift
+                      ,double k_max = 100,double k_min = 1.0e-3);
+
+  struct CorrFunctorType{
+    CorrFunctorType(COSMOLOGY *cosmo,double radius,double redshift)
+    : cosmology(cosmo),z(redshift),r(radius)
+    {
+      norm = 0.5/pi/pi/(1+z)/(1+z);
+    };
+    
+    COSMOLOGY *cosmology;
+    double z;
+    double r;
+    
+    double norm;
+    
+    double operator () (double k) {
+      
+      double rk = r*k;
+      double jo = sin(rk)/rk;
+      if(rk < 1.0e-3) jo = 1.0;
+      
+      return norm*jo*k*k*cosmology->powerCDMz(k,z);
+    }
+  };
+
   
   double haloNumberDensityOnSky (double m,double z1,double z2,int t,double alpha = 0.0);
   double haloNumberInBufferedCone (double mass ,double z1,double z2,double fov,double buffer ,int type ,double alpha=0.0);

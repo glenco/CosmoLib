@@ -6,13 +6,6 @@
 
 static double omo, oml, hh;
 
-/** \ingroup cosmolib
-* \brief  powerCDM.c calculates the nonlinear P(k,z)/a(r)^2
-*
-* The method of Peacock & Dodds 1996 is used to convert the linear 
-* power spectrum into the nonlinear one.
-* This could be updated to a more recent nonlinear power spectrum
-*/
 
 double COSMOLOGY::powerCDMz(
 		double k    /// scale in the Fourier space
@@ -137,9 +130,6 @@ double COSMOLOGY::npow(double k){
     -0.5*qt*(3.89+qt*(5.1842e2+qt*(4.8831e2+8.1088e3*qt)))/( 1+qt*(3.89+qt*(2.5921e2+qt*(1.6277e2+2.0272e3*qt))) );
 }
 
-/** \ingroup comolib
- * \brief Linear power spectrum P(k,z)/a^2
- */
 double COSMOLOGY::power_linear(double k,double z){
   if(!init_structure_functions) setinternals();
 
@@ -241,12 +231,40 @@ double COSMOLOGY::powerEH(double k,double z){
  */
 
 double COSMOLOGY::powerEHv2(double k){
+
   double Trans;
   double baryon_piece,cdm_piece;
  
   Trans=TFfit_onek(k, &baryon_piece, &cdm_piece);
   //printf("trans=%e A=%e h=%e n=%e\n",Trans,A,h,n);
   return A*pow(k/h,n+dndlnk*log(k))*Trans*Trans/pow(h/3.0e3,3);
+}
+
+
+double COSMOLOGY::CorrelationFunction(double radius,double redshift
+                                      ,double k_max,double k_min){
+  
+  CorrFunctorType func(this,1.0,redshift);
+  
+  if(k_max < k_min) std::swap(k_min,k_max);
+
+  
+  double a = pi/radius/2;
+    
+  func.r = radius;
+    
+  double kmin = k_min;
+  double kmax = std::min(a,k_max);
+  double tmp,ans=0;
+  do{
+    tmp = Utilities::nintegrate<CorrFunctorType,double>(func,kmin,kmax,1.0e-4);
+    ans += tmp;
+    kmin = kmax;
+    kmax = std::min(kmax + a,k_max);
+  }while(fabs(tmp/ans) > 1.0e-4);
+    
+  return ans;
+  
 }
 
 
