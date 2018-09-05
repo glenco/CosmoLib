@@ -844,12 +844,12 @@ double COSMOLOGY::totalMassDensityinHalos(
   for (int i=0;i<ni;i++){
 	  x=(z2-z1)*xf[i]+z1;
 	  d=coorDist(0.0,x);
-	  v=4.0*pi*d*d*drdz(1+x)*Hubble_length/h;
+	  v=4.0*PI*d*d*drdz(1+x)*Hubble_length/h;
 	  c=haloNumberDensity(m_min,x,1.0,type,alpha);
 	  n+=wf[i]*v*c;
   }
   
-  return  n*(z2-z1)/(4*pi*pow(angDist(0,z),2));
+  return  n*(z2-z1)/(4*PI*pow(angDist(0,z),2));
 
 
 /*
@@ -859,7 +859,7 @@ double COSMOLOGY::totalMassDensityinHalos(
 	tmp_a = 1.0;
 
 
-	return nintegrateDcos(&COSMOLOGY::dNdz,z1,z2,1.0e-3)/(4*pi*pow(angDist(0,z),2));
+	return nintegrateDcos(&COSMOLOGY::dNdz,z1,z2,1.0e-3)/(4*PI*pow(angDist(0,z),2));
   */
 }
 
@@ -883,7 +883,7 @@ double COSMOLOGY::haloNumberDensityOnSky (
   for (int i=0;i<ni;i++){
 	  x=(z2-z1)*xf[i]+z1;
 	  d=coorDist(0.0,x);
-	  v=4.0*pi*d*d*drdz(1+x)*Hubble_length/h;
+	  v=4.0*PI*d*d*drdz(1+x)*Hubble_length/h;
 	  c=haloNumberDensity(mass,x,0.0,type,alpha);
 	  n+=wf[i]*v*c;
   }
@@ -925,8 +925,8 @@ double COSMOLOGY::haloNumberInBufferedCone (
 
 	for (int i=0;i<ni;i++){
 	  z=(z2-z1)*xf[i]+z1;
-	  d=sqrt(fov/pi)*coorDist(0.0,z) + buffer*(1+z);
-	  v= pi*d*d*drdz(1+z)*Hubble_length/h;
+	  d=sqrt(fov/PI)*coorDist(0.0,z) + buffer*(1+z);
+	  v= PI*d*d*drdz(1+z)*Hubble_length/h;
 	  c=haloNumberDensity(mass,z,0.0,type,alpha);
 	  n+=wf[i]*v*c;
 	}
@@ -957,8 +957,8 @@ double COSMOLOGY::haloMassInBufferedCone (
 
 	for (int i=0;i<ni;i++){
 	  z=(z2-z1)*xf[i]+z1;
-	  d=sqrt(fov/pi)*coorDist(0.0,z) + buffer*(1+z);
-	  v= pi*d*d*drdz(1+z)*Hubble_length/h;
+	  d=sqrt(fov/PI)*coorDist(0.0,z) + buffer*(1+z);
+	  v= PI*d*d*drdz(1+z)*Hubble_length/h;
 	  c=haloNumberDensity(mass,z,1.0,type,alpha);
 	  n+=wf[i]*v*c;
 	}
@@ -969,7 +969,7 @@ double COSMOLOGY::haloMassInBufferedCone (
  * Total halo number (tmp_a=0) or mass (tmp_a=1) in solar masses in a redshift bin for the entire sphere.
  */
 double COSMOLOGY::dNdz(double z){
-  return 4.0*pi*pow(coorDist(0,z),2)*haloNumberDensity(tmp_mass,z,tmp_a,tmp_type,tmp_alpha)*drdz(1+z)*Hubble_length/h;
+  return 4.0*PI*pow(coorDist(0,z),2)*haloNumberDensity(tmp_mass,z,tmp_a,tmp_type,tmp_alpha)*drdz(1+z)*Hubble_length/h;
 }
 
 /** \ingroup cosmolib
@@ -1455,6 +1455,6 @@ double COSMOLOGY::invert(const std::vector<double>& table, double f_z) const
 }
 
 double COSMOLOGY::SigmaCrit(double zlens,double zsource) const {
-  return angDist(0,zsource)/angDist(0,zlens)/angDist(zlens,zsource)/(4*pi*Grav);
+  return angDist(0,zsource)/angDist(0,zlens)/angDist(zlens,zsource)/(4*PI*Grav);
 }
 

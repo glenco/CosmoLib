@@ -161,9 +161,9 @@ double COSMOLOGY::power_normalize(double sigma8){
   Rtophat = 8;
   ztmp = 0;
   
-  powfactor=9*Utilities::nintegrateF(normL_struct(*this),log(1.0e-3),log(1.0e4),1.0e-9)/(2*pi*pi);
+  powfactor=9*Utilities::nintegrateF(normL_struct(*this),log(1.0e-3),log(1.0e4),1.0e-9)/(2*PI*PI);
 
-//  powfactor=9*nintegrateDcos(&COSMOLOGY::normL,log(1.0e-3),log(1.0e4),1.0e-9)/(2*pi*pi);
+//  powfactor=9*nintegrateDcos(&COSMOLOGY::normL,log(1.0e-3),log(1.0e4),1.0e-9)/(2*PI*PI);
   A=sigma8*sigma8/powfactor;
   return powfactor;
 }
@@ -192,9 +192,9 @@ double COSMOLOGY::TopHatVarianceR(double R,double z){
 	Rtophat = R;
 	ztmp = z;
 
-  ans=9*Utilities::nintegrateF(normL_struct(*this),log(1.0e-3),log(1.0e4),1.0e-9)/(2*pi*pi);
+  ans=9*Utilities::nintegrateF(normL_struct(*this),log(1.0e-3),log(1.0e4),1.0e-9)/(2*PI*PI);
   
-	//ans = 9*nintegrateDcos(&COSMOLOGY::normL,log(1.0e-3),log(1.0e4),1.0e-9)/(2*pi*pi);
+	//ans = 9*nintegrateDcos(&COSMOLOGY::normL,log(1.0e-3),log(1.0e4),1.0e-9)/(2*PI*PI);
 	return pow(Dgrowth(z)*(1+z),2)*ans;
 }
 /** \ingroup cosmolib
@@ -249,7 +249,7 @@ double COSMOLOGY::CorrelationFunction(double radius,double redshift
   if(k_max < k_min) std::swap(k_min,k_max);
 
   
-  double a = pi/radius/2;
+  double a = PI/radius/2;
     
   func.r = radius;
     

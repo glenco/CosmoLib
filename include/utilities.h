@@ -67,6 +67,7 @@ namespace Utilities{
   int long locate (const std::vector<T> &v, const T x)
   {
     size_t n = v.size ();
+    if(n==0) return -1;
     
     if (x == v[0])
       return 0;

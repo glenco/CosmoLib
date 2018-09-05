@@ -325,7 +325,7 @@ double POWERCDMHM:: linKAPPApowerCDMHM(double l, double zs){
   return p;
 }
 
-double POWERCDMHM:: nonlinfitKAPPApowerCDMHM(double l, double zs){
+double POWERCDMHM::nonlinfitKAPPApowerCDMHM(double l, double zs){
   if(Init) Initweight(zs);
   double as=(zs>0.0)?1.0/(1.0+zs):tiny;
   gauleg(as,1.,xf-1,wf-1,nn2);

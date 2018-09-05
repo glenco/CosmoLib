@@ -8,8 +8,8 @@
 #include <gsl/gsl_deriv.h>
 #endif
 
-#ifndef pi
-#define pi  3.141593
+#ifndef PI
+#define PI  3.141593
 #endif
 
 #ifndef Grav
@@ -137,7 +137,7 @@ public:
     CorrFunctorType(COSMOLOGY *cosmo,double radius,double redshift)
     : cosmology(cosmo),z(redshift),r(radius)
     {
-      norm = 0.5/pi/pi/(1+z)/(1+z);
+      norm = 0.5/PI/PI/(1+z)/(1+z);
     };
     
     COSMOLOGY *cosmology;
