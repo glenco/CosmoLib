@@ -32,6 +32,8 @@
 
 enum CosmoParamSet {WMAP5yr,Millennium,Planck1yr,Planck,BigMultiDark};
 
+std::ostream &operator<<(std::ostream &os, CosmoParamSet p);
+
 /** \ingroup cosmolib
  *
  * \brief The cosmology and all the functions required to calculated quantities based on the cosmology.

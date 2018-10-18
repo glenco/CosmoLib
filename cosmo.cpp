@@ -38,6 +38,31 @@ double *xp,**yp,dxsav;
 static double alph_static;  /* DR-distance parameter */
 static double Omo_static, Oml_static;
 
+std::ostream &operator<<(std::ostream &os, CosmoParamSet p){
+  switch (p) {
+    case WMAP5yr :
+      os << "WMAP5yr";
+      break;
+    case Millennium :
+      os << "Millennium";
+      break;
+    case Planck1yr :
+      os << "Planck1yr";
+      break;
+    case Planck :
+      os << "Planck";
+      break;
+    case  BigMultiDark :
+      os << "BigMultiDark";
+      break;
+    default:
+      os << "????";
+      break;
+  }
+  
+  return os;
+}
+
 using namespace std;
 
 COSMOLOGY::COSMOLOGY(double omegam,double omegal,double hubble, double w, double wa,bool justdistances) :
