@@ -675,7 +675,7 @@ double COSMOLOGY::invCoorDist(double d) const
  */
 double COSMOLOGY::invComovingDist(double d) const
 {
-  if(Omo+Oml==1) invCoorDist(d);
+  if(Omo+Oml==1) return invCoorDist(d);
   double Rcurve = rcurve();
   if((Omo+Oml)<1.0) return invert(coorDist_interp, Rcurve*asinh(d/Rcurve) );
   return invert(coorDist_interp,Rcurve*asin(d/Rcurve) );
