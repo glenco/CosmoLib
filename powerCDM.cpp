@@ -165,6 +165,8 @@ double COSMOLOGY::power_normalize(double sigma8){
 
 //  powfactor=9*nintegrateDcos(&COSMOLOGY::normL,log(1.0e-3),log(1.0e4),1.0e-9)/(2*PI*PI);
   A=sigma8*sigma8/powfactor;
+  
+  cosmo_set = none;
   return powfactor;
 }
 

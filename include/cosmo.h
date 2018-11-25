@@ -30,7 +30,7 @@
 
 #ifndef cosmo_declare
 
-enum CosmoParamSet {WMAP5yr,Millennium,Planck1yr,Planck,BigMultiDark};
+enum CosmoParamSet {WMAP5yr,Millennium,Planck1yr,Planck,BigMultiDark,none};
 
 std::ostream &operator<<(std::ostream &os, CosmoParamSet p);
 
@@ -57,7 +57,9 @@ public:
   
   COSMOLOGY& operator=(const COSMOLOGY &cosmo);
   
-  void SetConcordenceCosmology(CosmoParamSet cosmo_p = WMAP5yr);
+  // returns the parameter set if any
+  CosmoParamSet ParamSet(){return cosmo_set;}
+  
   void PrintCosmology(short physical = 0) const;
   std::string print(short physical= 0) const;
   
@@ -175,56 +177,56 @@ public:
   
   /// Hubble paremters in units of 100 km/s/Mpc, renormalizes P(k) to keep sig8 fixed
   void sethubble(double ht){ h = ht; TFmdm_set_cosm();
-    power_normalize(sig8); 	calc_interp_dist();}
+    power_normalize(sig8); 	calc_interp_dist(); cosmo_set = none;}
   double gethubble() const {return h;}
   /// Hubble parameter in 1/Mpc units
   double getHubble() const {return 100*h/lightspeed;}
   
   /// Primordial spectral index, renormalizes P(k) to keep sig8 fixed
-  void setindex(double nn){ n = nn;  power_normalize(sig8);}
+  void setindex(double nn){ n = nn;  power_normalize(sig8); cosmo_set = none;}
   double getindex() const { return n;}
   
   /// Omega matter, renormalizes P(k) to keep sig8 fixed
-  void setOmega_matter(double Omega_matter,bool FLAT = false){Omo = Omega_matter; if(FLAT) Oml = 1-Omo ; TFmdm_set_cosm(); power_normalize(sig8); calc_interp_dist();}
+  void setOmega_matter(double Omega_matter,bool FLAT = false){Omo = Omega_matter; if(FLAT) Oml = 1-Omo ; TFmdm_set_cosm(); power_normalize(sig8); calc_interp_dist(); cosmo_set = none;}
   double getOmega_matter() const {return Omo;}
   
   /// Omega lambda, renormalizes P(k) to keep sig8 fixed
-  void setOmega_lambda(double Omega_lambda,bool FLAT = false){Oml = Omega_lambda;  if(FLAT) Oml = 1-Omo ; TFmdm_set_cosm(); power_normalize(sig8); calc_interp_dist();}
+  void setOmega_lambda(double Omega_lambda,bool FLAT = false){Oml = Omega_lambda;  if(FLAT) Oml = 1-Omo ; TFmdm_set_cosm(); power_normalize(sig8); calc_interp_dist(); cosmo_set = none;}
   double getOmega_lambda() const {return Oml;}
   
   /// Omega baryon, renormalizes P(k) to keep sig8 fixed
-  void setOmega_baryon(double Omega_baryon){Omb = Omega_baryon; TFmdm_set_cosm(); power_normalize(sig8); calc_interp_dist();
+  void setOmega_baryon(double Omega_baryon){Omb = Omega_baryon; TFmdm_set_cosm(); power_normalize(sig8); calc_interp_dist(); cosmo_set = none;
   }
   double getOmega_baryon() const {return Omb;}
   
   /// Omega neutrino, renormalizes P(k) to keep sig8 fixed
-  void setOmega_neutrino(double Omega_neutrino){Omnu = Omega_neutrino; TFmdm_set_cosm(); power_normalize(sig8); 	calc_interp_dist();
+  void setOmega_neutrino(double Omega_neutrino){Omnu = Omega_neutrino; TFmdm_set_cosm(); power_normalize(sig8); 	calc_interp_dist(); cosmo_set = none;
   }
   double getOmega_neutrino() const {return Omnu;}
   
   /// Number of neutrino species, renormalizes P(k) to keep sig8 fixed
-  void setNneutrino(double Nneutrino){Nnu = Nneutrino; TFmdm_set_cosm(); power_normalize(sig8);}
+  void setNneutrino(double Nneutrino){Nnu = Nneutrino; TFmdm_set_cosm(); power_normalize(sig8); cosmo_set = none;}
   double getNneutrino() const {return Nnu;}
   
   /// Dark energy equation of state parameter p/rho = w + w_1 (1+z)
-  void setW(double w){ww = w; 	calc_interp_dist();}
+  void setW(double w){ww = w; 	calc_interp_dist(); cosmo_set = none;}
   double getW() const {return ww;}
-  void setW1(double w){ww1 = w; 	calc_interp_dist();}
+  void setW1(double w){ww1 = w; 	calc_interp_dist(); cosmo_set = none;}
   double getW1() const {return ww1;}
   
   /// Running of primordial spectral index, P(k)_primordial \propto pow(k/h,n+dndlnk*log(k)), renormalizes P(k) to keep sig8 fixed
-  void setdndlnk(double w){dndlnk = w; power_normalize(sig8);}
+  void setdndlnk(double w){dndlnk = w; power_normalize(sig8); cosmo_set = none;}
   double getdndlnk() const {return dndlnk;}
   
   /// Alternative to w for dark energy/ alt. grav. structure evolution
-  void setgamma(double gamm){gamma = gamm;}
+  void setgamma(double gamm){gamma = gamm; cosmo_set = none;}
   double getgamma() const {return gamma;}
   // If physical = 1 all Omega are Omega*h^2 otherwise they have the usual definitions.
   // 2 gamma parameterization is used for dark energy
-  void setDEtype(short tt){darkenergy = tt;}
+  void setDEtype(short tt){darkenergy = tt; cosmo_set = none;}
   short getDEtype() const {return darkenergy;}
   
-  void setSigma8(double my_sig8){power_normalize(my_sig8);}
+  void setSigma8(double my_sig8){power_normalize(my_sig8); cosmo_set = none;}
   double getSigma8() const {return sig8;}
   
   
@@ -239,6 +241,9 @@ public:
   double SigmaCrit(double zlens,double zsource) const;
   
 protected:
+  void SetConcordenceCosmology(CosmoParamSet cosmo_p);
+  
+  CosmoParamSet cosmo_set = none;
   
   // structure rappers to make integration thread safe
   struct drdz_struct{
