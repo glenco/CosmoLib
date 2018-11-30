@@ -115,8 +115,10 @@ COSMOLOGY::COSMOLOGY(const COSMOLOGY &cosmo){
 COSMOLOGY::COSMOLOGY(CosmoParamSet cosmo_p){
   
 	SetConcordenceCosmology(cosmo_p);
-
+  
   setinternals();
+  
+  cosmo_set = cosmo_p;
 }
 
 COSMOLOGY::~COSMOLOGY(){
@@ -183,6 +185,7 @@ void COSMOLOGY::setinternals(){
 void COSMOLOGY::SetConcordenceCosmology(CosmoParamSet cosmo_p){
 
 
+  cosmo_set = cosmo_p;
 	if(cosmo_p == WMAP5yr){
 		// set cosmological parameters to standard WMAP 5r values
 		// Komatsu et al. 2009, ApJ 180, 330
@@ -300,6 +303,7 @@ void COSMOLOGY::SetConcordenceCosmology(CosmoParamSet cosmo_p){
 
 void COSMOLOGY::PrintCosmology(short physical) const {
 
+  cout << "parameters set :" << cosmo_set << "\n";
 	cout << "h: " << h << "\n";
 	cout << "n: " << n << "\n";
 	cout << "dndlnk: " << dndlnk << "\n";

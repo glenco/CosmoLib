@@ -367,6 +367,38 @@ namespace Utilities{
     return 0.0;
   }
 
+  /// simple one dimensional bisection search for the point where func(x) = fvalue
+  template <class F,typename T>
+  double bisection_search(
+    F &func      /// fuction or functor that takes and returns a T type
+    ,T fvalue    /// value of function to be found
+    ,T x1       /// x1 and x2 must bracket the value
+    ,T x2
+    ,T xacc    /// accuracy to which x is found
+    ){
+    int Nmax = 100000000,count=0;
+    
+    T f1 = func(x1) - fvalue;
+    T f2 = func(x2) - fvalue;
+    if( f1/f2 > 0 ){
+      throw std::invalid_argument("not bracketed");
+    }
+    while( fabs(x1-x2) > xacc && count < Nmax ){
+      ++count;
+      T xnew = (x1 + x2)/2;
+      T fnew = func(xnew) - fvalue;
+      if( fnew/f1 < 0 ){
+        x2 = xnew;
+        f2 = fnew;
+      }else{
+        x1 = xnew;
+        f1 = fnew;
+      }
+    }
+    
+    return (x1+x2)/2;
+  }
+    
   
 }
 #endif /* UTILITIES_H_ */
