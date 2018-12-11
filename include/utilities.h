@@ -398,7 +398,57 @@ namespace Utilities{
     
     return (x1+x2)/2;
   }
-    
+  //**********************************************************
+  //*** some routines for statistics of vectors **************
+  //**********************************************************
+  /// find maximum and minimum of a vector
+  template <typename T>
+  void vector_maxmin(const std::vector<T> &v,T &max,T &min ){
+    max = min = v[0];
+    for(T d : v){
+      max = (max > d) ? max : d;
+      min = (min < d) ? min : d;
+    }
+  }
   
+  /// find mean of a vector
+  template <typename T>
+  T vector_mean(const std::vector<T> &v){
+    T ans = 0;
+    for(T a : v) ans += a;
+    return ans/v.size();
+  }
+  
+  /// find mean of a vector
+  template <typename T>
+  T vector_variance(const std::vector<T> &v){
+    T m = vector_mean(v);
+    T ans = 0;
+    for(T a : v) ans += (a - m)*(a - m);
+    return ans/(v.size() - 1);
+  }
+  
+  // Pearson's correlation coefficient
+  template <typename T>
+  T vector_correlation(const std::vector<T> &v1,const std::vector<T> &v2){
+    size_t N = v1.size();
+    if(v2.size() != N){
+      throw std::invalid_argument("vectors are not the same size");
+    }
+    
+    T m1 = vector_mean(v1);
+    T m2 = vector_mean(v2);
+    T var1 = vector_variance(v1);
+    T var2 = vector_variance(v2);
+    
+    T ans = 0;
+    for(size_t i = 0 ; i < N ; ++i){
+      ans += (v1[i]-m1)*(v2[i]-m2);
+    }
+    ans /= (N-1)*sqrt(var1*var2);
+    
+    return ans;
+  }
+
 }
 #endif /* UTILITIES_H_ */
