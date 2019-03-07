@@ -608,6 +608,8 @@ double COSMOLOGY::coorDist(double zo,double z) const{
 	if(zo < z_interp && z < z_interp)
 		return interp(coorDist_interp, z) - interp(coorDist_interp, zo);
 	
+  if(zo > z) return 0;
+  
   if( (ww ==-1.0) && (ww1 == 0.0) ) return Utilities::nintegrateF(drdz_struct(*this),1+zo,1+z,1.0e-9)*Hubble_length/h;
   return Utilities::nintegrateF(drdzdark_struct(*this),1+zo,1+z,1.0e-9)*Hubble_length/h;
   //if( (ww ==-1.0) && (ww1 == 0.0) ) return nintegrateDcos(&COSMOLOGY::drdz,1+zo,1+z,1.0e-9)*Hubble_length/h;
@@ -616,7 +618,7 @@ double COSMOLOGY::coorDist(double zo,double z) const{
 
 double COSMOLOGY::d_coorDist_dOmo(double zo,double z) const{
   return Utilities::nintegrateF(ddrdzdOmo_struct(*this),1+zo,1+z,1.0e-9)*Hubble_length/h;
-//  return nintegrateDcos(&COSMOLOGY::ddrdzdOmo,1+zo,1+z,1.0e-9)*Hubble_length/h;
+  //return nintegrateDcos(&COSMOLOGY::ddrdzdOmo,1+zo,1+z,1.0e-9)*Hubble_length/h;
 }
 double COSMOLOGY::d_coorDist_dw(double zo,double z) const{
   return Utilities::nintegrateF(ddrdzdw_struct(*this),1+zo,1+z,1.0e-9)*Hubble_length/h;
