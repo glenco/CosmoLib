@@ -398,6 +398,9 @@ namespace Utilities{
     
     return (x1+x2)/2;
   }
+  
+  /// namespace for functions that are useful for statistics
+  namespace stats{
   //**********************************************************
   //*** some routines for statistics of vectors **************
   //**********************************************************
@@ -449,6 +452,110 @@ namespace Utilities{
     
     return ans;
   }
+  
+  template <typename T>
+  class Accumulater{
+  public:
+    Accumulater(int size):
+    sum(0),count(0),N(size)
+    {
+      products.resize(N*N,0);
+      sums.resize(N,0);
+    }
+    
+    /// add another sample
+    void add(const std::vector<T> &v){
+      if(v.size() != N ) throw std::invalid_argument("wrong size vector");
+      for(T a : v) sum += a;
+      
+      for(size_t i = 0 ; i < N ; ++i){
+        sums[i] += v[i];
+        for(size_t j = 0 ; j < N ; ++j){
+          products[j + i*N] += v[i]*v[j];
+        }
+      }
+      ++count;
+    }
 
+    /// add another sample
+    void add(T a){
+      if(1 != N ) throw std::invalid_argument("wrong size vector");
+      sum += a;
+      
+      sums[0] += a;
+      products[0] += a*a;
+      ++count;
+    }
+
+    /// mean of all elements
+    T mean(){
+      T sum = 0;
+      for(auto d : sums) sum += d;
+      return sum/count/N;
+    }
+    /// the mean of element i of the vectors
+    T mean(size_t i){return sums[i]/count;}
+    void means(std::vector<T> &mm){
+      mm = sums;
+      for(T &m : mm) m /= count;
+    }
+    
+    /// the covariance between element i and element j
+    T covariance(size_t i,size_t j){
+      return (products[j + i*N] - sums[i]*sums[j]/count)/(count - 1);
+    }
+    
+    void variances(std::vector<T> &mm){
+      mm.resize(N);
+      for(size_t i=0 ; i < N ; ++i){
+        mm[i] = covariance(i,i);
+      }
+    }
+    
+    T ave_variances(){
+      T ans = 0;
+      for(size_t i=0 ; i < N ; ++i){
+        ans += covariance(i,i);
+      }
+      return ans/N;
+    }
+    
+    /// the full covariance matrix
+    void cov_matrix(std::vector<T> &mm){
+      mm.resize(N*N);
+      for(size_t i = 0 ; i<N ; ++i){
+        T avi = sums[i]/count;
+        for(size_t j = i ; j<N ; ++j){
+          size_t k = i + j*N;
+          mm[k] = (products[k] - avi*sums[j])/(count - 1);
+          mm[j + i*N] = mm[k];
+        }
+      }
+    }
+    
+    void cov_matrix_normalized(std::vector<T> &mm){
+      std::vector<T> var;
+      variances(var);
+      
+      mm.resize(N*N);
+      for(size_t i = 0 ; i<N ; ++i){
+        T avi = sums[i]/count;
+        for(size_t j = i ; j<N ; ++j){
+          size_t k = i + j*N;
+          mm[k] = (products[k] - avi*sums[j])/(count - 1)/sqrt( var[i]*var[j] );
+          mm[j + i*N] = mm[k];
+        }
+      }
+    }
+    
+  private:
+    T sum;
+    std::vector<T> products;
+    std::vector<T> sums;
+    size_t count;
+    size_t N;
+  };
+
+  }
 }
 #endif /* UTILITIES_H_ */
