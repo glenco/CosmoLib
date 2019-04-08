@@ -146,7 +146,59 @@ namespace Utilities{
     *index = jl;
     return;
   }
-  
+    /** \brief Finds the element of a vector given a sorted index of the vector.
+     *
+     *  The vector v does not need to be sorted, but the index does with Utiltites::sort_index(),
+     * Utilities::sort_index_decending() or in some other way.
+     *
+     *  returns the index of v that is the largest value that is <= value
+     */
+    
+    template<typename T>
+    size_t locate(const std::vector<T> &v                      /// vector to search, does not need to be sorted
+                  ,const std::vector<size_t> &sorted_index     /// sorted index for v, could be assending or decending
+                  ,T value                                     /// value to be matched
+                  ,size_t &rank                                /// index in sorted_index
+    ){
+        size_t n = v.size();
+        
+        if(n<=1) return 0;
+        
+        if(n != sorted_index.size() ){
+            std::cerr << "sorted_index is the wrong size." << std::endl;
+            throw std::invalid_argument("wrong size");
+        }
+        
+        long imin=0,imax=v.size()-1;
+        double fmax = v[sorted_index[imax]];
+        double fmin = v[sorted_index[imin]];
+        if(fmin > fmax){
+            std::swap(imin,imax);
+            std::swap(fmin,fmax);
+        }
+        
+        if(value <= fmin) return sorted_index[imin];
+        if(value >= fmax) return sorted_index[imax];
+        
+        size_t icurrent = (imax+imin)/2;
+        double fcurrent = v[sorted_index[icurrent]];
+        
+        while ( abs(imax-imin) > 1 ) {
+            if(fcurrent > value){
+                fmax = fcurrent;
+                imax = icurrent;
+            }else{
+                fmin = fcurrent;
+                imin = icurrent;
+            }
+            icurrent = (imax+imin)/2;
+            fcurrent = v[sorted_index[icurrent]];
+        }
+        
+        rank=imin;
+        return sorted_index[imin];
+    }
+
   /// Returns the index of the element of v that is closest to x.  v must be sorted.
   template <class T>
   size_t closest (const std::vector<T> &v, const T x)
