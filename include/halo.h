@@ -12,7 +12,7 @@
 #include <math.h>
 #include <cosmo.h>
 #include <utilities.h>
-/** \ingroup cosmolib
+/**
  * \brief Class for calculating the properties of NFW dark matter halos 
  *        at a specified redshift and mass.
  */

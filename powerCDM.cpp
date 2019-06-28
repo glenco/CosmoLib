@@ -77,7 +77,7 @@ double COSMOLOGY::powerCDMz(
   return 19.739*powNL/(k*k*k*a*a);
 }
 
-/** \ingroup cosmolib 
+/**  
  * \brief The scale factor, a = 1/(1+z), as a function of radius in Mpc
  */
 
@@ -118,7 +118,7 @@ void dir(double r,double a[],double dadr[]){
 //	dzdD[1] = (1+z[1])/( drdz(1+z[1]) - angDist(0,z[1]) );
 //}
 
-/** \ingroup cosmolib
+/** 
  * \brief Logorithmic slope of the power spectrum
  */
 double COSMOLOGY::npow(double k){
@@ -137,7 +137,7 @@ double COSMOLOGY::power_linear(double k,double z){
   return pow(Dgrowth(z)*(1+z),2)*powerloc(k,z);
 }
 
-/** \ingroup cosmolib
+/** 
  * \brief The linear power spectrum without growth factor
  * growth factor should be normalized to 1 at z=0
  */
@@ -146,7 +146,7 @@ double COSMOLOGY::powerloc(double k,double z){
   if(Omnu == 0.0) return powerEHv2(k);
   return powerEH(k,z);
 }
-/** \ingroup cosmolib
+/** 
  * \brief Set the linear normalization for the power spectrum.
  *
  * This function keeps the internal normalization parameters in sync.  The normalization
@@ -180,7 +180,7 @@ double COSMOLOGY::normL(double lgk){
 
   return k*k*k*powerloc(k,ztmp)*win*win;
 }
-/** \ingroup cosmolib
+/** 
  * \brief Variance within a spherical top-hat filter of size R (Mpc), \f$ S(R)=\sigma^2(R) \f$, at redshift z.
  *
  * The variance is found through directly integrating linear power spectrum.
@@ -199,7 +199,7 @@ double COSMOLOGY::TopHatVarianceR(double R,double z){
 	//ans = 9*nintegrateDcos(&COSMOLOGY::normL,log(1.0e-3),log(1.0e4),1.0e-9)/(2*PI*PI);
 	return pow(Dgrowth(z)*(1+z),2)*ans;
 }
-/** \ingroup cosmolib
+/** 
  * \brief Variance within a spherical top-hat filter at mass scale M at redshift z.
  *
  * The variance is found through directly integrating linear power spectrum.
@@ -212,7 +212,7 @@ double COSMOLOGY::TopHatVarianceM(double M,double z){
 	return TopHatVarianceR(R,z);
 }
 
-/** \ingroup cosmolib
+/** 
  * \brief The power spectrum from Eisinstein & Hu with neutrinos but no BAO
  */
 double COSMOLOGY::powerEH(double k,double z){
@@ -227,7 +227,7 @@ double COSMOLOGY::powerEH(double k,double z){
 }
 
 
-/** \ingroup comolib
+/** 
  * \brief This is the power spectrum from Eisinstein & Hu 
  * with BAO but no neutrinos  
  */

@@ -38,7 +38,7 @@ namespace Utilities{
   
   const double nXbin=64.;
   
-  /** \ingroup Utill
+  /**
    * Fills a vector with equidistant points from [min, max].
    */
   template <class T>
@@ -48,7 +48,7 @@ namespace Utilities{
       v[i] = min + (max - min) * T (i)/T (n-1);
   }
   
-  /** \ingroup Utill
+  /**
    * Fills a vector with logarithmically equidistant points from [min, max].
    */
   template <class T>
@@ -58,7 +58,7 @@ namespace Utilities{
       v[i] = exp ( log (min) + ( log (max) - log (min) ) * T (i)/T (n-1) );
   }
   
-  /** \ingroup Utill
+  /**
    * Locates the element of the given vector which, together with the following
    * element, brackets the given number. If x is smaller than the smallest entry or
    * larger than the largest, the result is either -1 or n-1.
@@ -88,7 +88,7 @@ namespace Utilities{
     
     return jl;
   }
-  /** \ingroup Utill
+  /**
    * Locates the element of the given vector which, together with the following
    * element, brackets the given number. If x is smaller than the smallest entry or
    * larger than the largest, the result is either -1 or n-1.

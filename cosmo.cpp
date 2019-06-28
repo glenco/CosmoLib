@@ -179,7 +179,7 @@ void COSMOLOGY::setinternals(){
   calc_interp_dist();
   
 }
-/** \ingroup cosmolib
+/** 
  * \brief Sets cosmology to WMAP 2009 model.  This is done automatically in the constructor.
  */
 void COSMOLOGY::SetConcordenceCosmology(CosmoParamSet cosmo_p){
@@ -297,7 +297,7 @@ void COSMOLOGY::SetConcordenceCosmology(CosmoParamSet cosmo_p){
   }
 }
 
-/** \ingroup cosmolib
+/** 
  * \brief Print cosmological parameters 
  */
 
@@ -328,7 +328,7 @@ void COSMOLOGY::PrintCosmology(short physical) const {
   else cout << "darkenery: "<< darkenergy << " w: " << ww << " w1: " << ww1 << "\n";
 }
 
-/** \ingroup cosmolib
+/** 
  * \brief Print cosmological parameters
  */
 
@@ -363,7 +363,7 @@ std::string COSMOLOGY::print(short physical) const {
   return out;
 }
 
-/** \ingroup cosmolib
+/** 
  * \brief see if cosmologies are identical
  */
 
@@ -377,7 +377,7 @@ int cosmo_compare(COSMOLOGY *cos1, COSMOLOGY *cos2){
 		  *(cos1->getNneutrino() == cos2->getNneutrino());
 }
 
-/** \ingroup cosmolib
+/** 
  * \brief Copy a cosmology
  */
 
@@ -399,7 +399,7 @@ void cosmo_copy(CosmoHndl cos1, CosmoHndl cos2){
 	cos1->power_normalize(cos2->getSigma8());
 }
 
-/** \ingroup cosmolib
+/** 
  * \brief Curvature radius in Mpc
  */
 
@@ -417,14 +417,14 @@ double COSMOLOGY::DpropDz(double z){
 }
 
 
-/** \ingroup cosmolib
+/** 
  * \brief Matter density parameter at redshift z
  */
 double COSMOLOGY::Omegam(double z) const{
 	return Omo*pow(1+z,3)/( Omo*pow(1+z,3)+(1-Omo-Oml)*pow(1+z,2)+Oml );
 }
 
-/** \ingroup cosmolib
+/** 
  * \brief Comoving Dyer-Roeder angular size distance for lambda=0
  */
 double COSMOLOGY::DRradius(double zo,double z,double pfrac){
@@ -464,7 +464,7 @@ double COSMOLOGY::DRradius(double zo,double z,double pfrac){
     return 0;
 }
 
-/** \ingroup cosmolib
+/** 
  * \brief Comoving Dyer-Roeder angular size distance for lambda=0 and pfrac = 1 (all matter in particles)
  */
 double COSMOLOGY::DRradius2(double zo,double z){
@@ -526,7 +526,7 @@ void ders(double z,double Da[],double dDdz[]){
   dDdz[2]=-3*Da[2]/(1+z) - (0.5*(Omo_static-2*Oml_static*pow(1+z,-3))*Da[2]+alph_static*Omo_static*Da[1]/(1+z) )/(1+z*Omo_static+(pow(1+z,-2)-1)*Oml_static);
 }
 
-/** \ingroup cosmolib
+/** 
  * \brief Linear growth factor normalized to 1 at z=0
  */
 
@@ -546,14 +546,14 @@ double COSMOLOGY::Dgrowth(double z) const{
 	  return a*g/go;
   }
 }
-/** \ingroup cosmolib
+/** 
  * \brief comoving critical density in M_sun/Mpc^3
  */
 double COSMOLOGY::rho_crit_comoving(double z) const {
   return CRITD2*h*h*( Omo*pow(1+z,3)+Oml-(Omo+Oml-1)*pow(1+z,2) )/pow(1+z,3);
 }
 
-/** \ingroup cosmolib
+/** 
  * \brief The derivative of the comoving radial distance with respect to redshift in units of Ho^-1, x=1+z
  */
 
@@ -569,7 +569,7 @@ double COSMOLOGY::drdz(double x) const{
   return 1.0/sqrt(temp);
 }
 
-/** \ingroup cosmolib
+/** 
  * \brief Same as drdz, but incorporates dark energy through ww and ww1.
  */
 
@@ -599,7 +599,7 @@ double COSMOLOGY::ddrdzdw1(double x) const{
 }
 
 
-/** \ingroup cosmolib
+/** 
  * \brief The coordinate distance in units Mpc.  This is the radial distance found by integrating 1/H(z).  This 
  *  is NOT the comoving angular size distance if the universe is not flat.
  */
@@ -630,7 +630,7 @@ double COSMOLOGY::d_coorDist_dw1(double zo,double z) const{
 }
 
 
-/** \ingroup cosmolib
+/** 
  * \brief Non-comoving radial distance in units Mpc also known as the lookback time.  This is coorDist only integrated with the scale factor a=1/(1+z).
  */
 double COSMOLOGY::radDist(double zo,double z) const {
@@ -644,7 +644,7 @@ double COSMOLOGY::radDist(double zo,double z) const {
 //	return nintegrateDcos(&COSMOLOGY::adrdz_dark,1+zo,1+z,1.0e-9)*Hubble_length/h;
 }
 
-/** \ingroup cosmolib
+/** 
  * \brief The angular size distance in units Mpc
  *
  *  Converts angles to proper distance NOT comoving distance.
@@ -662,21 +662,21 @@ double COSMOLOGY::angDist(double zo,double z) const{
   return Rcur*sin(coorDist(zo,z)/Rcur)/(1+z);
 }
 
-/** \ingroup cosmolib
+/** 
  * \brief The bolometric luminosity distance in units Mpc
  */
 double COSMOLOGY::lumDist(double zo,double z) const{
 	return pow(1+z,2)*angDist(zo,z);
 }
 
-/** \ingroup cosmolib
+/** 
  * \brief The inverse of the coordinate distance in units Mpc, returning redshift. It works within interpolation range.
  */
 double COSMOLOGY::invCoorDist(double d) const
 {
   return invert(coorDist_interp, d);
 }
-/** \ingroup cosmolib
+/** 
  * \brief The inverse of the angular size distance in units Mpc, works within interpolation range.
  */
 double COSMOLOGY::invComovingDist(double d) const
@@ -686,11 +686,11 @@ double COSMOLOGY::invComovingDist(double d) const
   if((Omo+Oml)<1.0) return invert(coorDist_interp, Rcurve*asinh(d/Rcurve) );
   return invert(coorDist_interp,Rcurve*asin(d/Rcurve) );
 }
-/** \ingroup cosmolib
+/** 
  * \brief The inverse of the coordinate distance in units Mpc, works within interpolation range.
  */
 
-/** \ingroup cosmolib
+/** 
  * \brief The inverse of the radial distance in units Mpc, returning redshift. It works within interpolation range.
  */
 double COSMOLOGY::invRadDist(double d) const
@@ -698,7 +698,7 @@ double COSMOLOGY::invRadDist(double d) const
 	return invert(radDist_interp, d);
 }
 
-/** \ingroup cosmolib
+/** 
  * \brief Incorporates curvature for angular size distance.
  */
 double COSMOLOGY::gradius(
@@ -712,7 +712,7 @@ double COSMOLOGY::gradius(
   return R*sin(rd/R);
 }
 
-/**  \ingroup cosmolib
+/**  
 *  \brief Press-Schechter halo mass function - default \f$ \frac{1}{\overline{\rho}_{comoving}}\frac{dN}{d\ln M} \f$ i.e. fraction of mass or
 *  if caseunit==1 the \f$ \frac{dN}{dlogM} \f$
 */
@@ -745,7 +745,7 @@ double COSMOLOGY::psdfdm(
   }
 }
 
-/** \ingroup cosmolib
+/** 
  * \brief Sheth-Tormen mass function
  */
 
@@ -788,7 +788,7 @@ double COSMOLOGY::stdfdm(
   }
 }
 
-/** \ingroup cosmolib
+/** 
  *  \brief Power-law mass function
  */
 
@@ -813,7 +813,7 @@ double COSMOLOGY::powerlawdfdm(
 	}
 }
 
-/** \ingroup cosmolib
+/** 
  * \brief The cumulative comoving number density of haloes with mass larger than m
  * (in solar masses) at redshift z; if the dummy argument a is given, the mass function
  * times m^a is integrated. If a is omitted, a default of zero is assumed. The dummy
@@ -855,7 +855,7 @@ double COSMOLOGY::haloNumberDensity(
 	return n*(lm2-lm1);
 }
 
-/** \ingroup cosmolib
+/** 
  * \brief The halo total surface mass density in haloes with mass larger than m_min (solar masses)
  * in the redshift bin [z1,z2] and projected to redhisft z
  * in solar mass / proper Mpc^2
@@ -895,7 +895,7 @@ double COSMOLOGY::totalMassDensityinHalos(
 }
 
 
-/** \ingroup cosmolib
+/** 
  * \brief Number of halos with mass larger than m (in solar masses)
  * between redshifts z1 and z2 per square degree.
  */
@@ -934,7 +934,7 @@ double COSMOLOGY::haloNumberDensityOnSky (
   return nintegrateDcos(&COSMOLOGY::dNdz,z1,z2,1.0e-3)/41253.;
 */
 }
-/**\ingroup cosmolib
+/**
  * \brief The number of halos in a buffered cone between redshift z1 and z2.
  *
  * A buffered cone is a cone with an extra perpendicular fixed physical distance added (area(z) = pi*(\theta D + buffer*(1+z))^2).
@@ -964,7 +964,7 @@ double COSMOLOGY::haloNumberInBufferedCone (
 	return n*(z2-z1);
 }
 
-/**\ingroup cosmolib
+/**
  * \brief Total mass contained in halos in a buffered cone between redshift z1 and z2.
  *
  * A buffered cone is a cone with an extra perpendicular fixed physical distance added (area(z) = pi*(\theta D + buffer*(1+z))^2).
@@ -1003,7 +1003,7 @@ double COSMOLOGY::dNdz(double z){
   return 4.0*PI*pow(coorDist(0,z),2)*haloNumberDensity(tmp_mass,z,tmp_a,tmp_type,tmp_alpha)*drdz(1+z)*Hubble_length/h;
 }
 
-/** \ingroup cosmolib
+/** 
  * \brief Mass variance \f$ S(m)=\sigma^2(m) \f$.  This uses a fitting
  * formula for the CDM model which might not be perfectly accurate.  See
  * TopHatVarianceR() for an alternative.
@@ -1016,7 +1016,7 @@ double COSMOLOGY::TopHatVariance(double m) const{
 }
 
 
-/** \ingroup cosmolib
+/** 
  * \brief Derivative of \f$ \sigma(m) \f$ in CDM model
  */
 double COSMOLOGY::dsigdM(double m){
@@ -1035,7 +1035,7 @@ double COSMOLOGY::dsigdM(double m){
 #endif
 }
 
-/** \ingroup cosmolib
+/** 
  * \brief Virial overdensity
  */
 double COSMOLOGY:: DeltaVir(
@@ -1067,7 +1067,7 @@ double COSMOLOGY:: DeltaVir(
 	}
 }
 
-/** \ingroup cosmolib
+/** 
  * \brief Return the redshift  given \f$ \delta_c/D_+ \f$
  */
 double COSMOLOGY::getZfromDeltaC(double dc){
@@ -1093,7 +1093,7 @@ double COSMOLOGY::getZfromDeltaC(double dc){
 	  else return -1 + pow(10,(f*vlz[i+1]+(1-f)*vlz[i]));
 }
 
-/** \ingroup cosmolib
+/** 
  * \brief Return the time from the Big Bang in Gyr given
  * \f$ \delta_c/D_+ \f$
  */
@@ -1125,7 +1125,7 @@ double COSMOLOGY::timeEarly(double a) const{
 	return 2.0/3.0*a*sqrt(a)/sqrt(Omo)*((1-2*r)*sqrt(1+r)+2*r*sqrt(r));
 }
 
-/** \ingroup cosmolib
+/** 
  * \brief Return the time from the Big Bang in Gyr at a given redshift z
  */
 double COSMOLOGY::time(double z) const{
@@ -1179,7 +1179,7 @@ double COSMOLOGY::nonlinMass(double z) const{
 	  return pow(10.,lm0);
 }
 
-/** \ingroup cosmolib
+/** 
  * \brief \f$ \sigma(m) \f$: the rms top-hat power in standard CDM model, normalized to sig8
  *
  */
@@ -1210,7 +1210,7 @@ double  COSMOLOGY::f4(double u) const{
   return 8.6594e-12*pow(u,0.67)*pow( 1+pow( 3.5*pow(u,-0.1) +1.628e9*pow(u,-0.63),0.255) ,3.92157);
 }
 
-/** \ingroup cosmolib
+/** 
  * \brief Halo bias, uses formalism by Mo-White
  *
  * by default it gives the halo bias by Mo-White

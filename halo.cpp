@@ -6,7 +6,7 @@
  */
 #include <halo.h>
 
- /** \ingroup cosmolib
+ /** 
   * \brief Constructor initializing a NFW-halo
   */
 HALOCalculator::HALOCalculator (
@@ -30,7 +30,7 @@ void HALOCalculator::Set_Parameters(){
 
 HALOCalculator::~HALOCalculator () {}
 
-/** \ingroup cosmolib
+/** 
  * \brief Reset halo mass and redshift
  */
 void HALOCalculator::reset(double mr,double zr){
@@ -39,7 +39,7 @@ void HALOCalculator::reset(double mr,double zr){
 	Set_Parameters();
 }
 
-/** \ingroup cosmolib
+/** 
  * \brief Virial radius of the halo in physical Mpc
  */
 double HALOCalculator:: getRvir(
@@ -49,7 +49,7 @@ double HALOCalculator:: getRvir(
   return pow( 3*m/(4*M_PI*d), 0.3333 )/(1+z);
 }
 
-/** \ingroup cosmolib
+/** 
  * \brief Radius in physical Mpc at which the enclosed density reach 200 times the critical value at that redshift
  */
 double HALOCalculator:: getR200(){
@@ -57,7 +57,7 @@ double HALOCalculator:: getR200(){
   return pow( 3*m/(4*M_PI*d), 0.3333 )/(1+z);
 }
 
-/** \ingroup cosmolib
+/** 
  * \brief The median redshift at which the main halo progenitor assembles
  * 50% of the halo mass, if 0<f<1 is given, is returned the redshift at which
  * this fraction is assembled
@@ -70,7 +70,7 @@ double HALOCalculator:: getFormationRedshift(double f){
 	return co->getZfromDeltaC(deltacz);
 }
 
-/** \ingroup cosmolib
+/** 
  * \brief The median time at which the main halo progenitor assembles
  * 50% of the halo mass, if 0<f<1 is given, is returned the redshift at which
  * this fraction is assembled
@@ -83,7 +83,7 @@ double HALOCalculator:: getFormationTime(double f){
 	return co->getTimefromDeltaC(deltacz);
 }
 
-/** \ingroup cosmolib
+/** 
  * \brief The halo concentration according to Zhao et al. 2009 is returned,
  * if the integer 1 is given the concentration according to Munoz-Cuartas et al. 2011 is returned
  * if 2 the concentration according to Giocoli et al. 2012 is returned
