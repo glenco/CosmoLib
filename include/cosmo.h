@@ -8,6 +8,8 @@
 #ifdef ENABLE_GSL
 #include <gsl/gsl_integration.h>
 #include <gsl/gsl_deriv.h>
+#include <cmath>
+
 #endif
 
 #ifndef PI
@@ -19,7 +21,7 @@
 #endif
 
 #ifndef lightspeed
-#define lightspeed 2.99792458e5
+#define lightspeed 2.99792458e5  // km / s
 #endif
 
 #ifndef error_message
@@ -36,7 +38,7 @@ enum CosmoParamSet {WMAP5yr,Millennium,Planck1yr,Planck,BigMultiDark,none};
 
 std::ostream &operator<<(std::ostream &os, CosmoParamSet p);
 
-/** \ingroup cosmolib
+/**
  *
  * \brief The cosmology and all the functions required to calculated quantities based on the cosmology.
  *
@@ -111,13 +113,13 @@ public:
 
   // Stuff having to do with the power spectrum
   double power_normalize(double sigma8);
-  /** \ingroup comolib
+  /**
    * \brief Linear power spectrum P(k,z)/a^2
    */
   double power_linear(double k,double z);
   double Dgrowth(double z) const;
   
-  /** \ingroup cosmolib
+  /** 
    * \brief  powerCDM.c calculates the nonlinear P(k,z)/a(r)^2
    *
    * The method of Peacock & Dodds 1996 is used to convert the linear

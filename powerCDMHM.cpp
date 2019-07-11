@@ -170,7 +170,7 @@ double POWERCDMHM::weight (double z0){
       (a0-wgf.ai[i])+wgf.wi[i];
 }
 
-/** \ingroup cosmolib
+/** 
  * \brief Initialize cosmological models and integration to compute the non linear matter power spectrum using the halo model
  */
 POWERCDMHM::POWERCDMHM(COSMOLOGY *_co      /// pointer to cosmology
@@ -204,7 +204,7 @@ POWERCDMHM::POWERCDMHM(COSMOLOGY *_co      /// pointer to cosmology
   wf=new float[nn2];
 }
 
-/** \ingroup cosmolib
+/** 
  * \brief Return the non linear matter power spectrum calculated using the halo model
  */
 double POWERCDMHM::nonlinpowerCDMHM(double _k){
@@ -216,7 +216,7 @@ double POWERCDMHM::nonlinpowerCDMHM(double _k){
   return Pk1+Pk2;
 }
 
-/** \ingroup cosmolib
+/** 
  * \brief Return the 1Halo term of the non linear matter power spectrum calculated using the halo model
  */
 double POWERCDMHM::nonlinpowerCDMHM1Halo(double _k){
@@ -224,7 +224,7 @@ double POWERCDMHM::nonlinpowerCDMHM1Halo(double _k){
   gsl_integration_qag (&intPk1,log10(minmass),log10(maxmass),tiny,tiny,limit,key,work,&Pk1,&err);
   return Pk1;
 }
-/** \ingroup cosmolib
+/** 
  * \brief Return the 2Halo term of the non linear matter power spectrum calculated using the halo model
  */
 double POWERCDMHM::nonlinpowerCDMHM2Halo(double _k){

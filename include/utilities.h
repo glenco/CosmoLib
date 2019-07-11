@@ -38,7 +38,7 @@ namespace Utilities{
   
   const double nXbin=64.;
   
-  /** \ingroup Utill
+  /**
    * Fills a vector with equidistant points from [min, max].
    */
   template <class T>
@@ -48,7 +48,7 @@ namespace Utilities{
       v[i] = min + (max - min) * T (i)/T (n-1);
   }
   
-  /** \ingroup Utill
+  /**
    * Fills a vector with logarithmically equidistant points from [min, max].
    */
   template <class T>
@@ -58,7 +58,7 @@ namespace Utilities{
       v[i] = exp ( log (min) + ( log (max) - log (min) ) * T (i)/T (n-1) );
   }
   
-  /** \ingroup Utill
+  /**
    * Locates the element of the given vector which, together with the following
    * element, brackets the given number. If x is smaller than the smallest entry or
    * larger than the largest, the result is either -1 or n-1.
@@ -88,7 +88,7 @@ namespace Utilities{
     
     return jl;
   }
-  /** \ingroup Utill
+  /**
    * Locates the element of the given vector which, together with the following
    * element, brackets the given number. If x is smaller than the smallest entry or
    * larger than the largest, the result is either -1 or n-1.
@@ -146,7 +146,59 @@ namespace Utilities{
     *index = jl;
     return;
   }
-  
+    /** \brief Finds the element of a vector given a sorted index of the vector.
+     *
+     *  The vector v does not need to be sorted, but the index does with Utiltites::sort_index(),
+     * Utilities::sort_index_decending() or in some other way.
+     *
+     *  returns the index of v that is the largest value that is <= value
+     */
+    
+    template<typename T>
+    size_t locate(const std::vector<T> &v                      /// vector to search, does not need to be sorted
+                  ,const std::vector<size_t> &sorted_index     /// sorted index for v, could be assending or decending
+                  ,T value                                     /// value to be matched
+                  ,size_t &rank                                /// index in sorted_index
+    ){
+        size_t n = v.size();
+        
+        if(n<=1) return 0;
+        
+        if(n != sorted_index.size() ){
+            std::cerr << "sorted_index is the wrong size." << std::endl;
+            throw std::invalid_argument("wrong size");
+        }
+        
+        long imin=0,imax=v.size()-1;
+        double fmax = v[sorted_index[imax]];
+        double fmin = v[sorted_index[imin]];
+        if(fmin > fmax){
+            std::swap(imin,imax);
+            std::swap(fmin,fmax);
+        }
+        
+        if(value <= fmin) return sorted_index[imin];
+        if(value >= fmax) return sorted_index[imax];
+        
+        size_t icurrent = (imax+imin)/2;
+        double fcurrent = v[sorted_index[icurrent]];
+        
+        while ( abs(imax-imin) > 1 ) {
+            if(fcurrent > value){
+                fmax = fcurrent;
+                imax = icurrent;
+            }else{
+                fmin = fcurrent;
+                imin = icurrent;
+            }
+            icurrent = (imax+imin)/2;
+            fcurrent = v[sorted_index[icurrent]];
+        }
+        
+        rank=imin;
+        return sorted_index[imin];
+    }
+
   /// Returns the index of the element of v that is closest to x.  v must be sorted.
   template <class T>
   size_t closest (const std::vector<T> &v, const T x)
@@ -398,7 +450,164 @@ namespace Utilities{
     
     return (x1+x2)/2;
   }
-    
   
+  /// namespace for functions that are useful for statistics
+  namespace stats{
+  //**********************************************************
+  //*** some routines for statistics of vectors **************
+  //**********************************************************
+  /// find maximum and minimum of a vector
+  template <typename T>
+  void vector_maxmin(const std::vector<T> &v,T &max,T &min ){
+    max = min = v[0];
+    for(T d : v){
+      max = (max > d) ? max : d;
+      min = (min < d) ? min : d;
+    }
+  }
+  
+  /// find mean of a vector
+  template <typename T>
+  T vector_mean(const std::vector<T> &v){
+    T ans = 0;
+    for(T a : v) ans += a;
+    return ans/v.size();
+  }
+  
+  /// find mean of a vector
+  template <typename T>
+  T vector_variance(const std::vector<T> &v){
+    T m = vector_mean(v);
+    T ans = 0;
+    for(T a : v) ans += (a - m)*(a - m);
+    return ans/(v.size() - 1);
+  }
+  
+  // Pearson's correlation coefficient
+  template <typename T>
+  T vector_correlation(const std::vector<T> &v1,const std::vector<T> &v2){
+    size_t N = v1.size();
+    if(v2.size() != N){
+      throw std::invalid_argument("vectors are not the same size");
+    }
+    
+    T m1 = vector_mean(v1);
+    T m2 = vector_mean(v2);
+    T var1 = vector_variance(v1);
+    T var2 = vector_variance(v2);
+    
+    T ans = 0;
+    for(size_t i = 0 ; i < N ; ++i){
+      ans += (v1[i]-m1)*(v2[i]-m2);
+    }
+    ans /= (N-1)*sqrt(var1*var2);
+    
+    return ans;
+  }
+  
+  template <typename T>
+  class Accumulater{
+  public:
+    Accumulater(int size):
+    sum(0),count(0),N(size)
+    {
+      products.resize(N*N,0);
+      sums.resize(N,0);
+    }
+    
+    /// add another sample
+    void add(const std::vector<T> &v){
+      if(v.size() != N ) throw std::invalid_argument("wrong size vector");
+      for(T a : v) sum += a;
+      
+      for(size_t i = 0 ; i < N ; ++i){
+        sums[i] += v[i];
+        for(size_t j = 0 ; j < N ; ++j){
+          products[j + i*N] += v[i]*v[j];
+        }
+      }
+      ++count;
+    }
+
+    /// add another sample
+    void add(T a){
+      if(1 != N ) throw std::invalid_argument("wrong size vector");
+      sum += a;
+      
+      sums[0] += a;
+      products[0] += a*a;
+      ++count;
+    }
+
+    /// mean of all elements
+    T mean(){
+      T sum = 0;
+      for(auto d : sums) sum += d;
+      return sum/count/N;
+    }
+    /// the mean of element i of the vectors
+    T mean(size_t i){return sums[i]/count;}
+    void means(std::vector<T> &mm){
+      mm = sums;
+      for(T &m : mm) m /= count;
+    }
+    
+    /// the covariance between element i and element j
+    T covariance(size_t i,size_t j){
+      return (products[j + i*N] - sums[i]*sums[j]/count)/(count - 1);
+    }
+    
+    void variances(std::vector<T> &mm){
+      mm.resize(N);
+      for(size_t i=0 ; i < N ; ++i){
+        mm[i] = covariance(i,i);
+      }
+    }
+    
+    T ave_variances(){
+      T ans = 0;
+      for(size_t i=0 ; i < N ; ++i){
+        ans += covariance(i,i);
+      }
+      return ans/N;
+    }
+    
+    /// the full covariance matrix
+    void cov_matrix(std::vector<T> &mm){
+      mm.resize(N*N);
+      for(size_t i = 0 ; i<N ; ++i){
+        T avi = sums[i]/count;
+        for(size_t j = i ; j<N ; ++j){
+          size_t k = i + j*N;
+          mm[k] = (products[k] - avi*sums[j])/(count - 1);
+          mm[j + i*N] = mm[k];
+        }
+      }
+    }
+    
+    void cov_matrix_normalized(std::vector<T> &mm){
+      std::vector<T> var;
+      variances(var);
+      
+      mm.resize(N*N);
+      for(size_t i = 0 ; i<N ; ++i){
+        T avi = sums[i]/count;
+        for(size_t j = i ; j<N ; ++j){
+          size_t k = i + j*N;
+          mm[k] = (products[k] - avi*sums[j])/(count - 1)/sqrt( var[i]*var[j] );
+          mm[j + i*N] = mm[k];
+        }
+      }
+    }
+    
+  private:
+    T sum;
+    std::vector<T> products;
+    std::vector<T> sums;
+    size_t count;
+    size_t N;
+  };
+
+  }
 }
 #endif /* UTILITIES_H_ */
