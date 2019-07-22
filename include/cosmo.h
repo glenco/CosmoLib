@@ -32,7 +32,7 @@
 
 #ifndef cosmo_declare
 
-enum CosmoParamSet {WMAP5yr,Millennium,Planck1yr,Planck,BigMultiDark,none};
+enum CosmoParamSet {WMAP5yr,Millennium,Planck1yr,Planck,Planck18,BigMultiDark,none};
 
 std::ostream &operator<<(std::ostream &os, CosmoParamSet p);
 

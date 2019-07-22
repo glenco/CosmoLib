@@ -253,7 +253,28 @@ void COSMOLOGY::SetConcordenceCosmology(CosmoParamSet cosmo_p){
     
     darkenergy=1;
     
-	}else if(cosmo_p == Millennium){
+  }else if(cosmo_p == Planck18){
+    
+    // Final Planck cosmology Aghanim, 2018
+    
+    Omo = 0.315;
+    Oml = 1-Omo;
+    h = 0.674;
+    
+    Omb = 0.02224/h/h;
+    
+    ww=-1.0;
+    ww1=0.0;
+    n=0.965;
+    Omnu=0;
+    Nnu=3.0;
+    dndlnk=0.0;
+    gamma=0.55;
+    sig8 = 0.811;
+    
+    darkenergy=1;
+    
+  }else if(cosmo_p == Millennium){
 
 		// The cosmology used in the Millennium simulations
 
