@@ -49,8 +49,11 @@ std::ostream &operator<<(std::ostream &os, CosmoParamSet p){
     case Planck1yr :
       os << "Planck1yr";
       break;
-    case Planck :
-      os << "Planck";
+    case Planck15 :
+      os << "Planck15";
+      break;
+    case Planck18 :
+      os << "Planck18";
       break;
     case  BigMultiDark :
       os << "BigMultiDark";
