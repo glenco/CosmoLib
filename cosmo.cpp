@@ -232,7 +232,7 @@ void COSMOLOGY::SetConcordenceCosmology(CosmoParamSet cosmo_p){
     /* if 2 gamma parameterization is used for dark energy */
     /* if 1 w,w_1 parameterization is used for dark energy */
     
-  }else if(cosmo_p == Planck){
+  }else if(cosmo_p == Planck15){
     
     // Final Planck cosmology Ade et al. 2015
     
