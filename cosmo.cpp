@@ -69,7 +69,7 @@ std::ostream &operator<<(std::ostream &os, CosmoParamSet p){
 using namespace std;
 
 COSMOLOGY::COSMOLOGY(double omegam,double omegal,double hubble, double w, double wa,bool justdistances) :
-		h(hubble), Omo(omegam), Oml(omegal), ww(w) , ww1(wa){
+		cosmo_set(none),init_structure_functions(false), h(hubble), Omo(omegam), Oml(omegal), ww(w) , ww1(wa){
 	n=1.0;
 	Omnu=0;
 	Nnu=3.0;
@@ -111,11 +111,14 @@ COSMOLOGY::COSMOLOGY(const COSMOLOGY &cosmo){
   Omb = 0.02225/h/h;
 
   darkenergy = cosmo.darkenergy;
+  init_structure_functions = cosmo.init_structure_functions;
+  cosmo_set = cosmo.cosmo_set;
 
   setinternals();
 }
 
-COSMOLOGY::COSMOLOGY(CosmoParamSet cosmo_p){
+COSMOLOGY::COSMOLOGY(CosmoParamSet cosmo_p):init_structure_functions(false)
+{
   
 	SetConcordenceCosmology(cosmo_p);
   
@@ -147,7 +150,9 @@ COSMOLOGY& COSMOLOGY::operator=(const COSMOLOGY &cosmo){
   sig8 = cosmo.sig8;
   
   darkenergy = cosmo.darkenergy;
-  
+  init_structure_functions = cosmo.init_structure_functions;
+  cosmo_set = cosmo.cosmo_set;
+
   setinternals();
   
   return *this;

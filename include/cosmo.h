@@ -245,7 +245,7 @@ public:
 protected:
   void SetConcordenceCosmology(CosmoParamSet cosmo_p);
   
-  CosmoParamSet cosmo_set = none;
+  CosmoParamSet cosmo_set;
   
   // structure rappers to make integration thread safe
   struct drdz_struct{
@@ -295,7 +295,7 @@ protected:
     COSMOLOGY const &cos;
   };
 
-  bool init_structure_functions = false;
+  bool init_structure_functions;
   
   /// Hubble paremters in units of 100 km/s/Mpc
   double h;
