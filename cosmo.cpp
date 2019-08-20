@@ -49,8 +49,11 @@ std::ostream &operator<<(std::ostream &os, CosmoParamSet p){
     case Planck1yr :
       os << "Planck1yr";
       break;
-    case Planck :
-      os << "Planck";
+    case Planck15 :
+      os << "Planck15";
+      break;
+    case Planck18 :
+      os << "Planck18";
       break;
     case  BigMultiDark :
       os << "BigMultiDark";
@@ -66,7 +69,7 @@ std::ostream &operator<<(std::ostream &os, CosmoParamSet p){
 using namespace std;
 
 COSMOLOGY::COSMOLOGY(double omegam,double omegal,double hubble, double w, double wa,bool justdistances) :
-		h(hubble), Omo(omegam), Oml(omegal), ww(w) , ww1(wa){
+		cosmo_set(none),init_structure_functions(false), h(hubble), Omo(omegam), Oml(omegal), ww(w) , ww1(wa){
 	n=1.0;
 	Omnu=0;
 	Nnu=3.0;
@@ -108,11 +111,14 @@ COSMOLOGY::COSMOLOGY(const COSMOLOGY &cosmo){
   Omb = 0.02225/h/h;
 
   darkenergy = cosmo.darkenergy;
+  init_structure_functions = cosmo.init_structure_functions;
+  cosmo_set = cosmo.cosmo_set;
 
   setinternals();
 }
 
-COSMOLOGY::COSMOLOGY(CosmoParamSet cosmo_p){
+COSMOLOGY::COSMOLOGY(CosmoParamSet cosmo_p):init_structure_functions(false)
+{
   
 	SetConcordenceCosmology(cosmo_p);
   
@@ -144,7 +150,9 @@ COSMOLOGY& COSMOLOGY::operator=(const COSMOLOGY &cosmo){
   sig8 = cosmo.sig8;
   
   darkenergy = cosmo.darkenergy;
-  
+  init_structure_functions = cosmo.init_structure_functions;
+  cosmo_set = cosmo.cosmo_set;
+
   setinternals();
   
   return *this;
@@ -232,7 +240,7 @@ void COSMOLOGY::SetConcordenceCosmology(CosmoParamSet cosmo_p){
     /* if 2 gamma parameterization is used for dark energy */
     /* if 1 w,w_1 parameterization is used for dark energy */
     
-  }else if(cosmo_p == Planck){
+  }else if(cosmo_p == Planck15){
     
     // Final Planck cosmology Ade et al. 2015
     
@@ -253,7 +261,28 @@ void COSMOLOGY::SetConcordenceCosmology(CosmoParamSet cosmo_p){
     
     darkenergy=1;
     
-	}else if(cosmo_p == Millennium){
+  }else if(cosmo_p == Planck18){
+    
+    // Final Planck cosmology Aghanim, 2018
+    
+    Omo = 0.315;
+    Oml = 1-Omo;
+    h = 0.674;
+    
+    Omb = 0.02224/h/h;
+    
+    ww=-1.0;
+    ww1=0.0;
+    n=0.965;
+    Omnu=0;
+    Nnu=3.0;
+    dndlnk=0.0;
+    gamma=0.55;
+    sig8 = 0.811;
+    
+    darkenergy=1;
+    
+  }else if(cosmo_p == Millennium){
 
 		// The cosmology used in the Millennium simulations
 
