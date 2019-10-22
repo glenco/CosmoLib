@@ -24,7 +24,7 @@
 
 #ifndef error_message
 #define error_message
-#define ERROR_MESSAGE() std::cout << "ERROR: file: " << __FILE__ << " line: " << __LINE__ << std::endl;
+#define ERROR_MESSAGE() std::cerr << "ERROR: file: " << __FILE__ << " line: " << __LINE__ << std::endl;
 #endif
 
 #define CRITD 2.49783e18    /* critical density / Ho^2 solar/Mpc */
