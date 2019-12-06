@@ -265,11 +265,11 @@ void COSMOLOGY::SetConcordenceCosmology(CosmoParamSet cosmo_p){
     
     // Final Planck cosmology Aghanim, 2018
     
+    h = 0.674;
     Omo = 0.315;
     Oml = 1-Omo;
-    h = 0.674;
-    
-    Omb = 0.02224/h/h;
+   
+    Omb = 0.0224/h/h;
     
     ww=-1.0;
     ww1=0.0;
