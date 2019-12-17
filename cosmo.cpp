@@ -434,7 +434,7 @@ void cosmo_copy(CosmoHndl cos1, CosmoHndl cos2){
 
 double COSMOLOGY::rcurve() const{
   if(Omo+Oml != 1.0){
-    return Hubble_length/(h*sqrt(fabs(1-Omo-Oml)));  /** curviture scale **/
+    return Hubble_length/(h*sqrt(fabs(1-Omo-Oml)));  /** curvature scale **/
   }
   return 0;
 }
