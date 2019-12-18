@@ -210,12 +210,19 @@ POWERCDMHM::POWERCDMHM(COSMOLOGY *_co      /// pointer to cosmology
  *     This actually apears to be P(k)/2/pi/pi
  */
 double POWERCDMHM::nonlinpowerCDMHM(double _k){
-  k=_k;///co->gethubble();
-  Pklin = co->power_linear(k*co->gethubble(),0.)/(1+z)/(1+z)*pow(co->gethubble(),3);
-  gsl_integration_qag (&intPk1,log10(minmass),log10(maxmass),tiny,tiny,limit,key,work,&Pk1,&err);
-  gsl_integration_qag (&intPk2,log10(minmass),log10(maxmass),tiny,tiny,limit,key,work,&Pk2,&err);
+
+  double h3 = co->gethubble();
+  h3 = h3*h3*h3;
+  
+  k=_k; //*co->gethubble();
+  Pklin = co->power_linear(_k,z)/(1+z)/(1+z);//*h3;
+  gsl_integration_qag (&intPk1,log10(minmass),log10(maxmass)
+                       ,tiny,tiny,limit,key,work,&Pk1,&err);
+  gsl_integration_qag (&intPk2,log10(minmass),log10(maxmass)
+                       ,tiny,tiny,limit,key,work,&Pk2,&err);
   Pk2 = Pk2*Pk2*Pklin/Pk20;
-  return (Pk1+Pk2)*PI;// / co->gethubble();
+
+  return (Pk1/h3 + Pk2); // * PI;
 }
 
 /** 
