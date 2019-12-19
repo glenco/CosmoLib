@@ -214,7 +214,7 @@ double POWERCDMHM::nonlinpowerCDMHM(double _k){
   double h3 = co->gethubble();
   h3 = h3*h3*h3;
   
-  k=_k; //*co->gethubble();
+  k=_k;// *co->gethubble();
   Pklin = co->power_linear(_k,z)/(1+z)/(1+z);//*h3;
   gsl_integration_qag (&intPk1,log10(minmass),log10(maxmass)
                        ,tiny,tiny,limit,key,work,&Pk1,&err);

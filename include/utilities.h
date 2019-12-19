@@ -337,6 +337,7 @@ namespace Utilities{
     }
     std::cout << "s2= "; for(int j=1;j<=JMAX;j++) std::cout << s2[j] << "  ";
     std::cout << std::endl << "Too many steps in routine nintegrate<>\n";
+    throw std::invalid_argument("Too many steps in routine nintegrate<>");
     return 0.0;
   }
 
@@ -442,6 +443,7 @@ namespace Utilities{
     }
     std::cout << "s2= "; for(int j=1;j<=JMAX;j++) std::cout << s2[j] << "  ";
     std::cout << std::endl << "Too many steps in routine nintegrate<>\n";
+    throw std::invalid_argument("Too many steps in routine nintegrate<>");
     return 0.0;
   }
 
