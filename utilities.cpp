@@ -52,15 +52,4 @@ PosType InterpolateYvec(std:: vector<PosType> &x, std:: vector<PosType> &y,PosTy
 	else return f*y[i+1]+(1-f)*y[i];
 }
 
-PosType median(std:: vector<PosType> vec){
-  typedef std:: vector<PosType>::size_type vec_sz;
-  vec_sz size = vec.size();
-  if (size == 0){
-    // std:: cout << "median of an empty vector" << std:: endl;
-    return 0;
-  }
-  sort(vec.begin(), vec.end());
-  vec_sz mid = size/2;
-  return size % 2 == 0 ? (vec[mid] + vec[mid-1]) / 2 : vec[mid];
-}
 }

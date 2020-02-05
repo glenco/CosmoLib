@@ -220,7 +220,33 @@ namespace Utilities{
   
   PosType fmaxi(PosType a,PosType b);
   
-  PosType median(std:: vector<PosType> vec); 
+  /// find median of vector
+  template <typename T>
+  T median(std::vector<T> vec){
+    size_t size = vec.size();
+    if (size == 0){
+      // std:: cout << "median of an empty vector" << std:: endl;
+      return 0;
+    }
+    sort(vec.begin(), vec.end());
+    size_t mid = size/2;
+    return size % 2 == 0 ? (vec[mid] + vec[mid-1]) / 2 : vec[mid];
+  }
+  
+  /// find the maximum and minimum of a vector
+  template <typename T>
+  void range(std::vector<T> vec,T &max,T &min){
+    if(vec.size() == 0){
+      max = min = NAN;
+      return;
+    }
+    max = min = vec[0];
+    for(T a : vec){
+      if(a > max) max = a;
+      if(a < min) min = a;
+    }
+  }
+
   
   /// interpolation
   template <typename T>
