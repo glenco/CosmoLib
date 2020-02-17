@@ -628,10 +628,6 @@ double COSMOLOGY::ddrdzdw1(double x) const{
 }
 
 
-/** 
- * \brief The coordinate distance in units Mpc.  This is the radial distance found by integrating 1/H(z).  This 
- *  is NOT the comoving angular size distance if the universe is not flat.
- */
 double COSMOLOGY::coorDist(double zo,double z) const{
 	// interpolation
 	if(zo < z_interp && z < z_interp)
@@ -659,9 +655,7 @@ double COSMOLOGY::d_coorDist_dw1(double zo,double z) const{
 }
 
 
-/** 
- * \brief Non-comoving radial distance in units Mpc also known as the lookback time.  This is coorDist only integrated with the scale factor a=1/(1+z).
- */
+
 double COSMOLOGY::radDist(double zo,double z) const {
 	if(zo < z_interp && z < z_interp)
 		return interp(radDist_interp, z) - interp(radDist_interp, zo);

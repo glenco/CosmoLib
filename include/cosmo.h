@@ -68,8 +68,15 @@ public:
   // Lengths
   double rcurve() const;
   //double emptyDist(double zo,double z);
+  /**
+  * \brief The coordinate distance in units Mpc.  This is the radial distance found by integrating 1/H(z).  This
+  *  is NOT the comoving angular size distance if the universe is not flat.
+  */
   double coorDist(double zo,double z) const;
   double coorDist(double z) const {return coorDist(0,z);}
+  /**
+  * \brief Non-comoving radial distance in units Mpc also known as the lookback time.  This is coorDist only integrated with the scale factor a=1/(1+z).
+  */
   double radDist(double zo,double z) const;
   double radDist(double z) const {return radDist(0,z);}
   double angDist(double zo,double z) const;
@@ -155,7 +162,7 @@ public:
     double operator () (double k) {
       
       double rk = r*k;
-      double jo = sin(rk)/rk;
+      double jo = std::sin(rk)/rk;
       if(rk < 1.0e-3) jo = 1.0;
       
       return norm*jo*k*k*cosmology->powerCDMz(k,z);
