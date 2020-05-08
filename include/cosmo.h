@@ -32,9 +32,10 @@
 
 #ifndef cosmo_declare
 
-enum CosmoParamSet {WMAP5yr,Millennium,Planck1yr,Planck15,Planck18,BigMultiDark,none};
+enum CosmoParamSet {WMAP5yr,Millennium,Planck1yr,Planck15,Planck18,BigMultiDark,Uchuu,none};
 
-std::ostream &operator<<(std::ostream &os, CosmoParamSet p);
+std::string to_string(const CosmoParamSet &p);
+std::ostream &operator<<(std::ostream &os,const CosmoParamSet &p);
 
 /**
  *
@@ -61,7 +62,8 @@ public:
   
   // returns the parameter set if any
   CosmoParamSet ParamSet(){return cosmo_set;}
-  
+  void ParamSet(std::string &s);
+
   void PrintCosmology(short physical = 0) const;
   std::string print(short physical= 0) const;
   

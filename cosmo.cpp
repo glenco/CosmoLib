@@ -38,33 +38,36 @@ double *xp,**yp,dxsav;
 static double alph_static;  /* DR-distance parameter */
 static double Omo_static, Oml_static;
 
-std::ostream &operator<<(std::ostream &os, CosmoParamSet p){
+std::string to_string(const CosmoParamSet &p){
   switch (p) {
     case WMAP5yr :
-      os << "WMAP5yr";
+      return "WMAP5yr";
       break;
     case Millennium :
-      os << "Millennium";
+      return "Millennium";
       break;
     case Planck1yr :
-      os << "Planck1yr";
+      return "Planck1yr";
       break;
     case Planck15 :
-      os << "Planck15";
+      return "Planck15";
       break;
     case Planck18 :
-      os << "Planck18";
+      return "Planck18";
       break;
-    case  BigMultiDark :
-      os << "BigMultiDark";
+    case BigMultiDark :
+      return "BigMultiDark";
       break;
     default:
-      os << "????";
+      return "NoSet";
       break;
   }
-  
-  return os;
 }
+
+std::ostream &operator<<(std::ostream &os,const CosmoParamSet &p){
+  return os << to_string(p);
+}
+
 
 using namespace std;
 
@@ -241,26 +244,47 @@ void COSMOLOGY::SetConcordenceCosmology(CosmoParamSet cosmo_p){
     /* if 1 w,w_1 parameterization is used for dark energy */
     
   }else if(cosmo_p == Planck15){
-    
-    // Final Planck cosmology Ade et al. 2015
-    
-    Omo = 0.308;
-    Oml = 1-Omo;
-    h = 0.678;
-    
-    Omb = 0.02225/h/h;
-    
-    ww=-1.0;
-    ww1=0.0;
-    n=0.968;
-    Omnu=0;
-    Nnu=3.0;
-    dndlnk=0.0;
-    gamma=0.55;
-    sig8 = 0.8347;
-    
-    darkenergy=1;
-    
+       
+       // Final Planck cosmology Ade et al. 2015
+       
+       Omo = 0.308;
+       Oml = 1-Omo;
+       h = 0.678;
+       
+       Omb = 0.02225/h/h;
+       
+       ww=-1.0;
+       ww1=0.0;
+       n=0.968;
+       Omnu=0;
+       Nnu=3.0;
+       dndlnk=0.0;
+       gamma=0.55;
+       sig8 = 0.8347;
+       
+       darkenergy=1;
+       
+    }else if(cosmo_p == Uchuu){
+       
+       // Final Planck cosmology Ade et al. 2015
+       
+       Omo = 0.3089;
+       Oml = 1-Omo;
+       h = 0.6774;
+       
+       Omb = 0.02230/h/h;
+       
+       ww=-1.0;
+       ww1=0.0;
+       n=0.9667;
+       Omnu=0;
+       Nnu=3.0;
+       dndlnk=0.0;
+       gamma=0.55;
+       sig8 = 0.8159;
+       
+       darkenergy=1;
+       
   }else if(cosmo_p == Planck18){
     
     // Final Planck cosmology Aghanim, 2018
