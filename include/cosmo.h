@@ -164,7 +164,7 @@ public:
     double operator () (double k) {
       
       double rk = r*k;
-      double jo = std::sin(rk)/rk;
+      double jo = sin(rk)/rk;
       if(rk < 1.0e-3) jo = 1.0;
       
       return norm*jo*k*k*cosmology->powerCDMz(k,z);
