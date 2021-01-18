@@ -15,7 +15,7 @@
 #endif
 
 #ifndef Grav
-#define Grav 4.7788e-20  // Newton's over c^2 in Mpc / Msun
+#define Grav 4.7788e-20  // Newton's constant over c^2 in Mpc / Msun
 #endif
 
 #ifndef lightspeed
@@ -448,7 +448,7 @@ typedef COSMOLOGY *CosmoHndl;
  */
 class NFW_Utility {
 public:
-  NFW_Utility(){return;}
+  NFW_Utility(){}
   ~NFW_Utility(){};
   
   // methods for NFW profile
