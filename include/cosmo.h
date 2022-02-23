@@ -9,7 +9,6 @@
 #include <gsl/gsl_integration.h>
 #include <gsl/gsl_deriv.h>
 #include <cmath>
-
 #endif
 
 #ifndef PI
@@ -17,7 +16,7 @@
 #endif
 
 #ifndef Grav
-#define Grav 4.7788e-20  // Newton's over c^2 in Mpc / Msun
+#define Grav 4.7788e-20  // Newton's constant over c^2 in Mpc / Msun
 #endif
 
 #ifndef lightspeed
@@ -34,10 +33,11 @@
 
 #ifndef cosmo_declare
 
-enum class CosmoParamSet {WMAP5yr,Millennium,Planck1yr,Planck15,Planck18,BigMultiDark,none};
+/// sets of cosmological paremeters for specific simulations and observations
+enum class CosmoParamSet {WMAP5yr,Millennium,Planck1yr,Planck15,Planck18,BigMultiDark,Uchuu,none};
 
-std::ostream &operator<<(std::ostream &os, CosmoParamSet p);
-std::string to_string(CosmoParamSet p);
+std::string to_string(const CosmoParamSet &p);
+std::ostream &operator<<(std::ostream &os,const CosmoParamSet &p);
 
 /**
  *
@@ -64,15 +64,23 @@ public:
   
   // returns the parameter set if any
   CosmoParamSet ParamSet(){return cosmo_set;}
-  
+  void ParamSet(std::string &s);
+
   void PrintCosmology(short physical = 0) const;
   std::string print(short physical= 0) const;
   
   // Lengths
   double rcurve() const;
   //double emptyDist(double zo,double z);
+  /**
+  * \brief The coordinate distance in units Mpc.  This is the radial distance found by integrating 1/H(z).  This
+  *  is NOT the comoving angular size distance if the universe is not flat.
+  */
   double coorDist(double zo,double z) const;
   double coorDist(double z) const {return coorDist(0,z);}
+  /**
+  * \brief Non-comoving radial distance in units Mpc also known as the lookback time.  This is coorDist only integrated with the scale factor a=1/(1+z).
+  */
   double radDist(double zo,double z) const;
   double radDist(double z) const {return radDist(0,z);}
   double angDist(double zo,double z) const;
@@ -442,7 +450,7 @@ typedef COSMOLOGY *CosmoHndl;
  */
 class NFW_Utility {
 public:
-  NFW_Utility(){return;}
+  NFW_Utility(){}
   ~NFW_Utility(){};
   
   // methods for NFW profile

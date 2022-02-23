@@ -178,7 +178,7 @@ POWERCDMHM::POWERCDMHM(COSMOLOGY *_co      /// pointer to cosmology
 		       ,double _minmass    /// minimum mass in the integral
 		       ,double _sigmalnC   /// log-normal scatter in the c-m relation as fixed halo mass
 		       ,int _cmRelation     /// c-m relation model to use, see halo.cpp
-		       ,double _slopeCM    /// for power law cm relation it sets the slope
+		       ,double _slopeCM    /// for power law c-m relation it sets the slope
 		       ){
   //co(_co), z(_z), minmass(_minmass), sigmalnC(_sigmalnC){
   gsl_error_handler_t * old_handler=gsl_set_error_handler_off();
@@ -206,14 +206,23 @@ POWERCDMHM::POWERCDMHM(COSMOLOGY *_co      /// pointer to cosmology
 
 /** 
  * \brief Return the non linear matter power spectrum calculated using the halo model
+ *
+ *     This actually apears to be P(k)/2/pi/pi
  */
 double POWERCDMHM::nonlinpowerCDMHM(double _k){
-  k=_k;
-  Pklin = co->power_linear(k*co->gethubble(),0.)/(1+z)/(1+z)*pow(co->gethubble(),3);
-  gsl_integration_qag (&intPk1,log10(minmass),log10(maxmass),tiny,tiny,limit,key,work,&Pk1,&err);
-  gsl_integration_qag (&intPk2,log10(minmass),log10(maxmass),tiny,tiny,limit,key,work,&Pk2,&err);
+
+  double h3 = co->gethubble();
+  h3 = h3*h3*h3;
+  
+  k=_k;// *co->gethubble();
+  Pklin = co->power_linear(_k,z)/(1+z)/(1+z);//*h3;
+  gsl_integration_qag (&intPk1,log10(minmass),log10(maxmass)
+                       ,tiny,tiny,limit,key,work,&Pk1,&err);
+  gsl_integration_qag (&intPk2,log10(minmass),log10(maxmass)
+                       ,tiny,tiny,limit,key,work,&Pk2,&err);
   Pk2 = Pk2*Pk2*Pklin/Pk20;
-  return Pk1+Pk2;
+
+  return (Pk1/h3 + Pk2); // * PI;
 }
 
 /** 

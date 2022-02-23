@@ -103,7 +103,7 @@ double COSMOLOGY::scalefactor(double rad) const{
 	  odeintD(a-1,1,0.0,rad,1.0e-6,rad/5,rad/1000,&nok,&nbad,dir,bsstepD);
   }
   if(a[0] < 100){
-	  std::cout << "COSMOLOGY::scalefactor() should be updated to do high redshift!" << std::endl;
+	  std::cerr << "COSMOLOGY::scalefactor() should be updated to do high redshift!" << std::endl;
 	  exit(1);
   }
   return a[0];

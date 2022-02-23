@@ -43,7 +43,7 @@ void HALOCalculator::reset(double mr,double zr){
  * \brief Virial radius of the halo in physical Mpc
  */
 double HALOCalculator:: getRvir(
-		      int caseunit    /// by default uses the Brayan and Norman fit, if equal to 1 uses the fit by Felix and Stoer
+		      int caseunit  /// by default uses the Brayan and Norman fit, if equal to 1 uses the fit by Felix and Stoer
 		      ){
   double d=co->DeltaVir(z,caseunit)*co->rho_crit_comoving(z);
   return pow( 3*m/(4*M_PI*d), 0.3333 )/(1+z);

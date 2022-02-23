@@ -34,6 +34,7 @@ class POWERCDMHM{
   double nonlinpowerCDMHM(double k);
   double nonlinpowerCDMHM1Halo(double k);
   double nonlinpowerCDMHM2Halo(double k);
+  
   double nonlinKAPPApowerCDMHM(double l, double zs);
   double nonlinKAPPApowerCDMHM1Halo(double l, double zs);
   double nonlinKAPPApowerCDMHM2Halo(double l, double zs);

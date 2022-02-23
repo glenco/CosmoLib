@@ -64,9 +64,9 @@ namespace Utilities{
    * larger than the largest, the result is either -1 or n-1.
    */
   template <class T>
-  int long locate (const std::vector<T> &v, const T x)
+  long locate (const std::vector<T> &v, const T x)
   {
-    size_t n = v.size ();
+    long n = v.size ();
     if(n==0) return -1;
     
     if (x == v[0])
@@ -74,12 +74,12 @@ namespace Utilities{
     if (x == v[n-1])
       return n-1;
     
-    int jl = -1;
-    int ju = n;
+    long jl = -1;
+    long ju = n;
     bool as = (v[n-1] >= v[0]);
     while (ju-jl > 1)
     {
-      int jm = (ju+jl)/2;
+      long jm = (ju+jl)/2;
       if ((x >= v[jm]) == as)
         jl=jm;
       else
@@ -94,22 +94,22 @@ namespace Utilities{
    * larger than the largest, the result is either -1 or n-1.
    */
   template <class T,class F>
-  int locate (const std::vector<T> &v,F x,std::function<bool (F ,const T &)> less_than)
+  long locate (const std::vector<T> &v,F x,std::function<bool (F ,const T &)> less_than)
   {
-    size_t n = v.size ();
+    long n = v.size ();
     
     if (less_than(x,v[0]))
       return -1;
     if (!less_than(x,v[n-1]))
       return n-1;
     
-    int jl = -1;
-    int ju = n;
+    long jl = -1;
+    long ju = n;
     
     
     while (ju-jl > 1)
     {
-      int jm = (ju+jl)/2;
+      long jm = (ju+jl)/2;
       if ( less_than(x,v[jm]) )
         ju=jm;
       else
@@ -131,12 +131,12 @@ namespace Utilities{
       return;
     }
     
-    int jl = -1;
-    int ju = n;
+    long jl = -1;
+    long ju = n;
     bool as = (v[n-1] >= v[0]);
     while (ju-jl > 1)
     {
-      int jm = (ju+jl)/2;
+      long jm = (ju+jl)/2;
       if ((x >= v[jm]) == as)
         jl=jm;
       else
@@ -337,6 +337,7 @@ namespace Utilities{
     }
     std::cout << "s2= "; for(int j=1;j<=JMAX;j++) std::cout << s2[j] << "  ";
     std::cout << std::endl << "Too many steps in routine nintegrate<>\n";
+    throw std::invalid_argument("Too many steps in routine nintegrate<>");
     return 0.0;
   }
 
@@ -442,6 +443,7 @@ namespace Utilities{
     }
     std::cout << "s2= "; for(int j=1;j<=JMAX;j++) std::cout << s2[j] << "  ";
     std::cout << std::endl << "Too many steps in routine nintegrate<>\n";
+    throw std::invalid_argument("Too many steps in routine nintegrate<>");
     return 0.0;
   }
 

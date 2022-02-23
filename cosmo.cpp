@@ -38,36 +38,8 @@ double *xp,**yp,dxsav;
 static double alph_static;  /* DR-distance parameter */
 static double Omo_static, Oml_static;
 
-std::ostream &operator<<(std::ostream &os, CosmoParamSet p){
+std::string to_string(const CosmoParamSet &p){
   switch (p) {
-    case CosmoParamSet::WMAP5yr :
-      os << "WMAP5yr";
-      break;
-    case CosmoParamSet::Millennium :
-      os << "Millennium";
-      break;
-    case CosmoParamSet::Planck1yr :
-      os << "Planck1yr";
-      break;
-    case CosmoParamSet::Planck15 :
-      os << "Planck15";
-      break;
-    case CosmoParamSet::Planck18 :
-      os << "Planck18";
-      break;
-    case  CosmoParamSet::BigMultiDark :
-      os << "BigMultiDark";
-      break;
-    default:
-      os << "????";
-      break;
-  }
-  
-  return os;
-}
-
-std::string to_string(CosmoParamSet p){
-      switch (p) {
     case CosmoParamSet::WMAP5yr :
       return "WMAP5yr";
       break;
@@ -83,14 +55,20 @@ std::string to_string(CosmoParamSet p){
     case CosmoParamSet::Planck18 :
       return "Planck18";
       break;
-    case  CosmoParamSet::BigMultiDark :
-      return "BigMultiDark";
-      break;
+    case CosmoParamSet::BigMultiDark :
+        return "BigMultiDark";
+        break;
+    case CosmoParamSet::Uchuu :
+          return "Uchuu";
+          break;
     default:
-      return "????";
+      return "NoSet";
       break;
-      }
-      
+  }
+}
+
+std::ostream &operator<<(std::ostream &os,const CosmoParamSet &p){
+  return os << to_string(p);
 }
 
 using namespace std;
@@ -268,26 +246,47 @@ void COSMOLOGY::SetConcordenceCosmology(CosmoParamSet cosmo_p){
     /* if 1 w,w_1 parameterization is used for dark energy */
     
   }else if(cosmo_p == CosmoParamSet::Planck15){
-    
-    // Final Planck cosmology Ade et al. 2015
-    
-    Omo = 0.308;
-    Oml = 1-Omo;
-    h = 0.678;
-    
-    Omb = 0.02225/h/h;
-    
-    ww=-1.0;
-    ww1=0.0;
-    n=0.968;
-    Omnu=0;
-    Nnu=3.0;
-    dndlnk=0.0;
-    gamma=0.55;
-    sig8 = 0.8347;
-    
-    darkenergy=1;
-    
+       
+       // Final Planck cosmology Ade et al. 2015
+       
+       Omo = 0.308;
+       Oml = 1-Omo;
+       h = 0.678;
+       
+       Omb = 0.02225/h/h;
+       
+       ww=-1.0;
+       ww1=0.0;
+       n=0.968;
+       Omnu=0;
+       Nnu=3.0;
+       dndlnk=0.0;
+       gamma=0.55;
+       sig8 = 0.8347;
+       
+       darkenergy=1;
+       
+    }else if(cosmo_p == CosmoParamSet::Uchuu){
+       
+       // Final Planck cosmology Ade et al. 2015
+       
+       Omo = 0.3089;
+       Oml = 1-Omo;
+       h = 0.6774;
+       
+       Omb = 0.02230/h/h;
+       
+       ww=-1.0;
+       ww1=0.0;
+       n=0.9667;
+       Omnu=0;
+       Nnu=3.0;
+       dndlnk=0.0;
+       gamma=0.55;
+       sig8 = 0.8159;
+       
+       darkenergy=1;
+       
   }else if(cosmo_p == CosmoParamSet::Planck18){
     
     // Final Planck cosmology Aghanim, 2018
@@ -461,7 +460,7 @@ void cosmo_copy(CosmoHndl cos1, CosmoHndl cos2){
 
 double COSMOLOGY::rcurve() const{
   if(Omo+Oml != 1.0){
-    return Hubble_length/(h*sqrt(fabs(1-Omo-Oml)));  /** curviture scale **/
+    return Hubble_length/(h*sqrt(fabs(1-Omo-Oml)));  /** curvature scale **/
   }
   return 0;
 }
@@ -655,10 +654,6 @@ double COSMOLOGY::ddrdzdw1(double x) const{
 }
 
 
-/** 
- * \brief The coordinate distance in units Mpc.  This is the radial distance found by integrating 1/H(z).  This 
- *  is NOT the comoving angular size distance if the universe is not flat.
- */
 double COSMOLOGY::coorDist(double zo,double z) const{
 	// interpolation
 	if(zo < z_interp && z < z_interp)
@@ -686,9 +681,7 @@ double COSMOLOGY::d_coorDist_dw1(double zo,double z) const{
 }
 
 
-/** 
- * \brief Non-comoving radial distance in units Mpc also known as the lookback time.  This is coorDist only integrated with the scale factor a=1/(1+z).
- */
+
 double COSMOLOGY::radDist(double zo,double z) const {
 	if(zo < z_interp && z < z_interp)
 		return interp(radDist_interp, z) - interp(radDist_interp, zo);
