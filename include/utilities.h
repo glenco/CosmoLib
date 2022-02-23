@@ -485,7 +485,8 @@ namespace Utilities{
   /// find maximum and minimum of a vector
   template <typename T>
   void vector_maxmin(const std::vector<T> &v,T &max,T &min ){
-    max = min = v[0];
+
+      max = min = v[0];
     for(T d : v){
       max = (max > d) ? max : d;
       min = (min < d) ? min : d;
