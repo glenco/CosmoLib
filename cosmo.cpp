@@ -40,22 +40,22 @@ static double Omo_static, Oml_static;
 
 std::string to_string(const CosmoParamSet &p){
   switch (p) {
-    case WMAP5yr :
+    case CosmoParamSet::WMAP5yr :
       return "WMAP5yr";
       break;
-    case Millennium :
+    case CosmoParamSet::Millennium :
       return "Millennium";
       break;
-    case Planck1yr :
+    case CosmoParamSet::Planck1yr :
       return "Planck1yr";
       break;
-    case Planck15 :
+    case CosmoParamSet::Planck15 :
       return "Planck15";
       break;
-    case Planck18 :
+    case CosmoParamSet::Planck18 :
       return "Planck18";
       break;
-    case BigMultiDark :
+    case CosmoParamSet::BigMultiDark :
       return "BigMultiDark";
       break;
     default:
@@ -72,7 +72,7 @@ std::ostream &operator<<(std::ostream &os,const CosmoParamSet &p){
 using namespace std;
 
 COSMOLOGY::COSMOLOGY(double omegam,double omegal,double hubble, double w, double wa,bool justdistances) :
-		cosmo_set(none),init_structure_functions(false), h(hubble), Omo(omegam), Oml(omegal), ww(w) , ww1(wa){
+		cosmo_set(CosmoParamSet::none),init_structure_functions(false), h(hubble), Omo(omegam), Oml(omegal), ww(w) , ww1(wa){
 	n=1.0;
 	Omnu=0;
 	Nnu=3.0;
@@ -197,7 +197,7 @@ void COSMOLOGY::SetConcordenceCosmology(CosmoParamSet cosmo_p){
 
 
   cosmo_set = cosmo_p;
-	if(cosmo_p == WMAP5yr){
+	if(cosmo_p == CosmoParamSet::WMAP5yr){
 		// set cosmological parameters to standard WMAP 5r values
 		// Komatsu et al. 2009, ApJ 180, 330
 		// does not set power spectrum normalization
@@ -221,7 +221,7 @@ void COSMOLOGY::SetConcordenceCosmology(CosmoParamSet cosmo_p){
         sig8=0.812;
 		darkenergy=1;
 
-  }else if(cosmo_p == Planck1yr){
+  }else if(cosmo_p == CosmoParamSet::Planck1yr){
     
     Oml = 0.6817;
     Omo = 1-Oml;
@@ -243,7 +243,7 @@ void COSMOLOGY::SetConcordenceCosmology(CosmoParamSet cosmo_p){
     /* if 2 gamma parameterization is used for dark energy */
     /* if 1 w,w_1 parameterization is used for dark energy */
     
-  }else if(cosmo_p == Planck15){
+  }else if(cosmo_p == CosmoParamSet::Planck15){
        
        // Final Planck cosmology Ade et al. 2015
        
@@ -264,7 +264,7 @@ void COSMOLOGY::SetConcordenceCosmology(CosmoParamSet cosmo_p){
        
        darkenergy=1;
        
-    }else if(cosmo_p == Uchuu){
+    }else if(cosmo_p == CosmoParamSet::Uchuu){
        
        // Final Planck cosmology Ade et al. 2015
        
@@ -285,7 +285,7 @@ void COSMOLOGY::SetConcordenceCosmology(CosmoParamSet cosmo_p){
        
        darkenergy=1;
        
-  }else if(cosmo_p == Planck18){
+  }else if(cosmo_p == CosmoParamSet::Planck18){
     
     // Final Planck cosmology Aghanim, 2018
     
@@ -306,7 +306,7 @@ void COSMOLOGY::SetConcordenceCosmology(CosmoParamSet cosmo_p){
     
     darkenergy=1;
     
-  }else if(cosmo_p == Millennium){
+  }else if(cosmo_p == CosmoParamSet::Millennium){
 
 		// The cosmology used in the Millennium simulations
 
@@ -328,7 +328,7 @@ void COSMOLOGY::SetConcordenceCosmology(CosmoParamSet cosmo_p){
 
 		darkenergy=1;
 
-  }else if (cosmo_p == BigMultiDark){
+  }else if (cosmo_p == CosmoParamSet::BigMultiDark){
     
     Oml = 0.692885;
     Omo = 1-Oml;

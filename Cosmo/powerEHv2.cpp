@@ -227,7 +227,7 @@ double COSMOLOGY::TFfit_onek(double k, double *tf_baryon, double *tf_cdm)
     return T_full;
 }
 
-/* ======================= Approximate forms =========================== */
+/* ---------------------== Approximate forms --------------------------- */
 
 /*
 double TFsound_horizon_fit(double omega0, double f_baryon, double hubble)
@@ -300,7 +300,7 @@ double TFnowiggles(double omega0, double f_baryon, double hubble,
     return T_nowiggles_L0/(T_nowiggles_L0+T_nowiggles_C0*DSQR(q_eff));
 }
 */
-/* ======================= Zero Baryon Formula =========================== */
+/* ---------------------== Zero Baryon Formula --------------------------- */
 /*
 double TFzerobaryon(double omega0, double hubble, double Tcmb, double k_hmpc)
 // Input: omega0 -- CDM density, in units of critical density
