@@ -90,19 +90,19 @@ void TFfit_hmpc(double omega0, double f_baryon, double hubble, double Tcmb,
     return;
 }
 
-/* ------------------------ FITTING FORMULAE ROUTINES ----------------- */
-
-/* There are two routines here.  TFset_parameters() sets all the scalar
-parameters, while TFfit_onek() calculates the transfer function for a 
-given wavenumber k.  TFfit_onek() may be called many times after a single
-call to TFset_parameters() */
-
-/* Global variables -- We've left many of the intermediate results as 
-global variables in case you wish to access them, e.g. by declaring
-them as extern variables in your main program. */
-/* Note that all internal scales are in Mpc, without any Hubble constants! */
-
-/* Convenience from Numerical Recipes in C, 2nd edition */
+// ------------------------ FITTING FORMULAE ROUTINES -----------------
+//
+/// * There are two routines here.  TFset_parameters() sets all the scalar
+//parameters, while TFfit_onek() calculates the transfer function for a
+//given wavenumber k.  TFfit_onek() may be called many times after a single
+//call to TFset_parameters() */
+//
+///* Global variables -- We've left many of the intermediate results as
+//global variables in case you wish to access them, e.g. by declaring
+//them as extern variables in your main program. */
+// Note that all internal scales are in Mpc, without any Hubble constants!
+//
+// Convenience from Numerical Recipes in C, 2nd edition
 //static double sqrarg;
 //#define SQR(a) ((sqrarg=(a)) == 0.0 ? 0.0 : sqrarg*sqrarg)
 static double cubearg;

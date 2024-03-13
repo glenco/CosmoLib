@@ -655,7 +655,9 @@ double COSMOLOGY::ddrdzdw1(double x) const{
 
 
 double COSMOLOGY::coorDist(double zo,double z) const{
-	// interpolation
+  assert(zo >= 0);
+   assert(z >= 0);
+    // interpolation
 	if(zo < z_interp && z < z_interp)
 		return interp(coorDist_interp, z) - interp(coorDist_interp, zo);
 	
@@ -1124,8 +1126,8 @@ double COSMOLOGY::getZfromDeltaC(double dc){
 
 	  if(dc>vDeltaCz[ni-1]) return -1+pow(10.,vlz[ni-1]);
 	  if(dc<vDeltaCz[0]) return -1+pow(10.,vlz[0]);
-    int i = Utilities::locate (vDeltaCz,dc);
-	  i = min (max (i,0), int (ni)-2);
+    long i = Utilities::locate (vDeltaCz,dc);
+	  i = std::min(std::max<long>(i,0), long (ni)-2);
 	  double f=(dc-vDeltaCz[i])/(vDeltaCz[i+1]-vDeltaCz[i]);
 	  if(i>1 && i<n-2){
 		  // cubic interpolation
@@ -1151,8 +1153,8 @@ double COSMOLOGY::getTimefromDeltaC(double dc){
 
 	  if(dc>vDeltaCz[ni-1]) return vt[ni-1];
 	  if(dc<vDeltaCz[0]) return vt[0];
-    int i = Utilities::locate (vDeltaCz,dc);
-	  i = min (max (i,0), int (ni)-2);
+    long i = Utilities::locate (vDeltaCz,dc);
+	  i = std::min(std::max<long>(i,0), long (ni)-2);
 	  double f=(dc-vDeltaCz[i])/(vDeltaCz[i+1]-vDeltaCz[i]);
 	  if(i>1 && i<n-2){
 		  // cubic interpolation
@@ -1509,6 +1511,7 @@ double COSMOLOGY::interp(const std::vector<double> & table, double z) const
 	if (i == n_interp)
 		return table.back();
 	
+  std::cerr << " z = " << z << std::endl;
 	// out of range
 	throw std::out_of_range("redshift out of interpolation range");
 }

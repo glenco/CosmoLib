@@ -26,6 +26,15 @@ template <typename T> int sgn(T val) {
   return (T(0) < val) - (val < T(0));
 }
 
+template <class T>
+inline T min(T x,T y){
+  return (x < y) ? x : y;
+};
+template <class T>
+inline T max(T x,T y){
+  return (x > y) ? x : y;
+};
+
 
 namespace Utilities{
   
