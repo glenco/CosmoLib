@@ -48,6 +48,7 @@ the user may access them in an external program, via "extern" declarations. */
 /* Convenience from Numerical Recipes in C, 2nd edition */
 static double sqrarg;
 #define SQR(a) ((sqrarg=(a)) == 0.0 ? 0.0 : sqrarg*sqrarg)
+//#define SQR(a) ((a)*(a))
 
 /* ------------------------- Global Variables ------------------------ */
 
@@ -270,4 +271,4 @@ cosmology held in the global variables. */
     return TFmdm_onek_mpc(kk*h);
 }
 
-#undef SQR(a)
+#undef SQR

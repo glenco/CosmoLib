@@ -1,12 +1,7 @@
-#include <iostream>
-#include <vector>
-#include <memory>
-#include <cstdlib>
-#include <cstddef>
+
 #ifdef ENABLE_GSL
 #include <gsl/gsl_integration.h>
 #include <gsl/gsl_deriv.h>
-#include <cmath>
 #endif
 
 #ifndef PI
@@ -29,7 +24,15 @@
 #define CRITD 2.49783e18    /* critical density / Ho^2 solar/Mpc */
 #define CRITD2 2.7752543e11 /* critical density / h^2 M_sun/Mpc^3 */
 
-#ifndef cosmo_declare
+#ifndef cosmo_declared
+#define cosmo_declared
+
+#include <iostream>
+#include <vector>
+#include <memory>
+#include <cstdlib>
+#include <cstddef>
+#include <cmath>
 
 /// sets of cosmological paremeters for specific simulations and observations
 enum class CosmoParamSet {WMAP5yr,Millennium,Planck1yr,Planck15,Planck18,BigMultiDark,Uchuu,none};
@@ -37,9 +40,7 @@ enum class CosmoParamSet {WMAP5yr,Millennium,Planck1yr,Planck15,Planck18,BigMult
 std::string to_string(const CosmoParamSet &p);
 std::ostream &operator<<(std::ostream &os,const CosmoParamSet &p);
 
-/**
- *
- * \brief The cosmology and all the functions required to calculated quantities based on the cosmology.
+/***  \brief The cosmology and all the functions required to calculated quantities based on the cosmology.
  *
  * This class is used to store the cosmological parameters, calculate cosmological distances, calculate
  * the power spectrum of density fluctuations and the mass function of halos.
