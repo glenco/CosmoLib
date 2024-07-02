@@ -26,6 +26,15 @@ template <typename T> int sgn(T val) {
   return (T(0) < val) - (val < T(0));
 }
 
+template <class T>
+inline T min(T x,T y){
+  return (x < y) ? x : y;
+};
+template <class T>
+inline T max(T x,T y){
+  return (x > y) ? x : y;
+};
+
 
 namespace Utilities{
   
@@ -487,7 +496,8 @@ namespace Utilities{
   /// find maximum and minimum of a vector
   template <typename T>
   void vector_maxmin(const std::vector<T> &v,T &max,T &min ){
-    max = min = v[0];
+
+      max = min = v[0];
     for(T d : v){
       max = (max > d) ? max : d;
       min = (min < d) ? min : d;

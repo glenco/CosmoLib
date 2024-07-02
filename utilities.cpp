@@ -22,13 +22,19 @@ PosType fmaxi(PosType a,PosType b){
   if(a>b)return a;
   return b;
 }
-
+long lmin(long a,long b){
+  return (a < b) ? a : b;
+  }
+long lmax(long a,long b){
+  return (a > b) ? a : b;
+}
+  
 /**
  * Interpolate (cubic interpolation) the value of a function
  * \f$ y=y(x) \f$ given xi
  */
 PosType InterpolateYvec(std:: vector<PosType> &x, std:: vector<PosType> &y,PosType xi){
-	int n=x.size();
+	long n=x.size();
 	if(x[n-1]>x[0]){
 		if(xi>x[n-1]) return y[n-1];
 		if(xi<x[0]) return y[0];
@@ -37,8 +43,8 @@ PosType InterpolateYvec(std:: vector<PosType> &x, std:: vector<PosType> &y,PosTy
 		if(xi<x[n-1]) return y[n-1];
 		if(xi>x[0]) return y[0];
 	}
-	int i = locate (x,xi);
-	i = std::min (std::max (i,0), int (n)-2);
+	long i = locate (x,xi);
+	i = lmin (lmax (i,0), int (n)-2);
 	PosType f=(xi-x[i])/(x[i+1]-x[i]);
 	if(i>1 && i<n-2){
 		PosType a0,a1,a2,a3,f2;

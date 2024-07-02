@@ -1,4 +1,11 @@
 
+#include <iostream>
+#include <vector>
+#include <memory>
+#include <cstdlib>
+#include <cstddef>
+#include <math.h>
+
 #ifdef ENABLE_GSL
 #include <gsl/gsl_integration.h>
 #include <gsl/gsl_deriv.h>

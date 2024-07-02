@@ -3,6 +3,7 @@
 #include <nr.h>
 #include <nrutil.h>
 #include "utilities.h"
+#include <algorithm>
 
 /**
   This  code reconstructs  the  non-linear dark  matter power  spectrum
@@ -102,7 +103,7 @@ double int1H (double m, void *ip){
   m = pow(10.,m);
   HALOCalculator ha(co,m,z);  
   double c = ha.getConcentration(cmRelation,slopeCM);
-  double uk = ukNFW(m,c);
+  //double uk = ukNFW(m,c);
   struct Glob g; 
   // dp1 - mass
   // dp2 - mean concentration
@@ -164,7 +165,7 @@ double POWERCDMHM::weight (double z1, double z2){
 
 double POWERCDMHM::weight (double z0){
   double a0=1.0/(1.0+z0);
-  int i=Utilities::locate<double> (wgf.ai, a0);
+  long i=Utilities::locate<double> (wgf.ai, a0);
   i=std::min(std::max(i,0),nn-2);
   return (wgf.wi[i+1]-wgf.wi[i])/(wgf.ai[i+1]-wgf.ai[i])*
       (a0-wgf.ai[i])+wgf.wi[i];
