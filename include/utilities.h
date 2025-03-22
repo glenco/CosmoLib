@@ -580,7 +580,7 @@ namespace Utilities{
     /// mean of all elements
     T mean(){
       T sum = 0;
-      for(auto d : sums) sum += d;
+      for(auto &d : sums) sum += d;
       return sum/count/N;
     }
     /// the mean of element i of the vectors
