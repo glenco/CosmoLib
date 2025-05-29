@@ -35,6 +35,15 @@ inline T max(T x,T y){
   return (x > y) ? x : y;
 };
 
+// avoiding pow() function, which is slow
+template <class T>
+inline T sqr(T x){
+  return x*x;
+};
+template <class T>
+inline T cube(T x){
+  return x*x*x;
+};
 
 namespace Utilities{
   
