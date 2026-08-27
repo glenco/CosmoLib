@@ -1090,13 +1090,13 @@ double COSMOLOGY::dsigdM(double m){
  */
 double COSMOLOGY:: DeltaVir(
 		double z         /// redshift
-		,int caseunit    /// by default uses the Brayan and Norman fit, if equal to 1 uses the fit by Felix Stšhr
+		,int caseunit    /// by default uses the Brayan and Norman fit, if equal to 1 uses the fit by Felix Stohr
 		) const{
 	double omz = Omegam(z);
 	double af,bf;
 	switch (caseunit){
 		case 1:
-		// Felix Stšhr fit
+		// Felix Stohr fit
 			af=0.7076;
 			bf=0.4403;
 		    if (Oml<1e-4){
