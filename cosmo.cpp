@@ -113,8 +113,7 @@ COSMOLOGY::COSMOLOGY(const COSMOLOGY &cosmo){
   ww1 = cosmo.ww1;
   sig8 = cosmo.sig8;
   
-  Omb = 0.02225/h/h;
-
+  Omb = cosmo.Omb;
   darkenergy = cosmo.darkenergy;
   init_structure_functions = cosmo.init_structure_functions;
   cosmo_set = cosmo.cosmo_set;
