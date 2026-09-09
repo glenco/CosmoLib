@@ -113,8 +113,7 @@ COSMOLOGY::COSMOLOGY(const COSMOLOGY &cosmo){
   ww1 = cosmo.ww1;
   sig8 = cosmo.sig8;
   
-  Omb = 0.02225/h/h;
-
+  Omb = cosmo.Omb;
   darkenergy = cosmo.darkenergy;
   init_structure_functions = cosmo.init_structure_functions;
   cosmo_set = cosmo.cosmo_set;
@@ -1085,13 +1084,13 @@ double COSMOLOGY::dsigdM(double m){
  */
 double COSMOLOGY:: DeltaVir(
 		double z         /// redshift
-		,int caseunit    /// by default uses the Brayan and Norman fit, if equal to 1 uses the fit by Felix St�hr
+		,int caseunit    /// by default uses the Brayan and Norman fit, if equal to 1 uses the fit by Felix Stohr
 		) const{
 	double omz = Omegam(z);
 	double af,bf;
 	switch (caseunit){
 		case 1:
-		// Felix St�hr fit
+		// Felix Stohr fit
 			af=0.7076;
 			bf=0.4403;
 		    if (Oml<1e-4){
