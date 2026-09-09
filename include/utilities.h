@@ -35,6 +35,15 @@ inline T max(T x,T y){
   return (x > y) ? x : y;
 };
 
+// avoiding pow() function, which is slow
+template <class T>
+inline T sqr(T x){
+  return x*x;
+};
+template <class T>
+inline T cube(T x){
+  return x*x*x;
+};
 
 namespace Utilities{
   
@@ -580,7 +589,7 @@ namespace Utilities{
     /// mean of all elements
     T mean(){
       T sum = 0;
-      for(auto d : sums) sum += d;
+      for(auto &d : sums) sum += d;
       return sum/count/N;
     }
     /// the mean of element i of the vectors
