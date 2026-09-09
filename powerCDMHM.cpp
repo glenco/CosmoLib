@@ -1,9 +1,3 @@
-#include <powerCDMHM.h>
-#include <nrD.h>
-#include <nr.h>
-#include <nrutil.h>
-#include "utilities.h"
-#include <algorithm>
 
 /**
   This  code reconstructs  the  non-linear dark  matter power  spectrum
@@ -12,6 +6,15 @@
 */
 
 #ifdef ENABLE_GSL
+#ifndef _ENABLE_GSL_
+#define _ENABLE_GSL_
+
+#include <powerCDMHM.h>
+#include <nrD.h>
+#include <nr.h>
+#include <nrutil.h>
+#include "utilities.h"
+#include <algorithm>
 
 const double tiny = 1.e-4;
 const double CRITDD = 2.7752543e+11;
@@ -166,7 +169,7 @@ double POWERCDMHM::weight (double z1, double z2){
 double POWERCDMHM::weight (double z0){
   double a0=1.0/(1.0+z0);
   long i=Utilities::locate<double> (wgf.ai, a0);
-  i=std::min(std::max(i,0),nn-2);
+  i=std::min<long>(std::max<long>(i,0),nn-2);
   return (wgf.wi[i+1]-wgf.wi[i])/(wgf.ai[i+1]-wgf.ai[i])*
       (a0-wgf.ai[i])+wgf.wi[i];
 }
@@ -361,4 +364,5 @@ POWERCDMHM:: ~POWERCDMHM(){
   delete[] wf;
 };
 
+#endif
 #endif

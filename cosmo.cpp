@@ -695,11 +695,7 @@ double COSMOLOGY::radDist(double zo,double z) const {
 //	return nintegrateDcos(&COSMOLOGY::adrdz_dark,1+zo,1+z,1.0e-9)*Hubble_length/h;
 }
 
-/** 
- * \brief The angular size distance in units Mpc
- *
- *  Converts angles to proper distance NOT comoving distance.
- */
+
 
 double COSMOLOGY::angDist(double zo,double z) const{
   double Rcur;
@@ -713,9 +709,7 @@ double COSMOLOGY::angDist(double zo,double z) const{
   return Rcur*sin(coorDist(zo,z)/Rcur)/(1+z);
 }
 
-/** 
- * \brief The bolometric luminosity distance in units Mpc
- */
+
 double COSMOLOGY::lumDist(double zo,double z) const{
 	return pow(1+z,2)*angDist(zo,z);
 }

@@ -89,8 +89,17 @@ public:
   */
   double radDist(double zo,double z) const;
   double radDist(double z) const {return radDist(0,z);}
+  /**
+   * \brief The angular size distance in units Mpc
+   *
+   *  Converts angles to proper distance NOT comoving distance.
+   *  Comoving angular size distance is 1+z times this
+   */
   double angDist(double zo,double z) const;
   double angDist(double z) const {return angDist(0,z);}
+  /**
+   * \brief The bolometric luminosity distance in units Mpc
+   */
   double lumDist(double zo,double z) const;
   double lumDist(double z) const {return lumDist(0,z);}
   
@@ -247,7 +256,6 @@ public:
   
   void setSigma8(double my_sig8){power_normalize(my_sig8); cosmo_set = CosmoParamSet::none;}
   double getSigma8() const {return sig8;}
-  
   
   void dzdangDist(double D,double z[],double dzdD[]);
   
