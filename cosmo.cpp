@@ -56,11 +56,14 @@ std::string to_string(const CosmoParamSet &p){
       return "Planck18";
       break;
     case CosmoParamSet::BigMultiDark :
-        return "BigMultiDark";
-        break;
+      return "BigMultiDark";
+      break;
     case CosmoParamSet::Uchuu :
-          return "Uchuu";
-          break;
+      return "Uchuu";
+      break;
+    case CosmoParamSet::Flagship :
+      return "Flagship";
+      break;
     default:
       return "NoSet";
       break;
@@ -304,6 +307,32 @@ void COSMOLOGY::SetConcordenceCosmology(CosmoParamSet cosmo_p){
     dndlnk=0.0;
     gamma=0.55;
     sig8 = 0.811;
+    
+    darkenergy=1;
+
+  }else if(cosmo_p == CosmoParamSet::Flagship){
+    
+    // Euclid Flagship 2 (Euclid Collab.: Castander et al. 2025, A&A)
+    // Om = 0.319, Ob = 0.049, OL = 0.681 - Or - Onu
+    //   with Or = 0.00005509, Onu = 0.00140343 (m_nu = 0.0587 eV, normal hierarchy)
+    // w = -1.0, h = 0.67, ns = 0.96, As = 2.1e-9 at k_piv = 0.05 Mpc^-1 -> sig8 = 0.813
+    // NB: Or and Onu are dropped here; Oml = 1-Omo to keep exact flatness,
+    // which setinternals() requires for the delta_c branch.
+    
+    h = 0.67;
+    Omo = 0.319;
+    Oml = 1-Omo;
+    
+    Omb = 0.049;
+    
+    ww=-1.0;
+    ww1=0.0;
+    n=0.96;
+    Omnu=0;
+    Nnu=3.0;
+    dndlnk=0.0;
+    gamma=0.55;
+    sig8 = 0.813;
     
     darkenergy=1;
     

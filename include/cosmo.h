@@ -34,7 +34,7 @@
 #ifndef cosmo_declare
 
 /// sets of cosmological paremeters for specific simulations and observations
-enum class CosmoParamSet {WMAP5yr,Millennium,Planck1yr,Planck15,Planck18,BigMultiDark,Uchuu,none};
+enum class CosmoParamSet {WMAP5yr,Millennium,Planck1yr,Planck15,Planck18,BigMultiDark,Uchuu,Flagship,none};
 
 std::string to_string(const CosmoParamSet &p);
 std::ostream &operator<<(std::ostream &os,const CosmoParamSet &p);
